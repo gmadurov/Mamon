@@ -1,0 +1,4 @@
+### for local testing 
+
+use url = "http://10.0.2.2:8000" instead of localhost:8000
+change LOCAL variable in the context/AuthContext.js file to true
