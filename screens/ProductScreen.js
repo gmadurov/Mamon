@@ -16,7 +16,6 @@ import { GlobalStyles } from "../constants/styles";
 const ProductScreen = ({ sell }) => {
   const { GET, products } = useContext(ProductContext);
   const [refreshing, setRefreshing] = useState(false);
-  console.log(products);
   function renderProducts(itemData) {
     return <ProductTile product={itemData.item} />;
   }

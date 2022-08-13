@@ -13,7 +13,13 @@ import ApiContext from "../context/ApiContext";
     
     DELETE: DELETE,
  */
-const ProductContext = createContext();
+const ProductContext = createContext({
+  products: [],
+  GET: async (product) => {},
+  POST: async (product) => {},
+  PUT: async (product) => {},
+  DELETE: async (product) => {},
+});
 export default ProductContext;
 
 export const ProductProvider = ({ children }) => {
@@ -22,7 +28,7 @@ export const ProductProvider = ({ children }) => {
   async function GET() {
     setProducts([]);
     const { data } = await ApiRequest("/api/product/");
-    setProducts(()=>data);
+    setProducts(() => data);
   }
   async function POST(product) {
     const { data } = await ApiRequest("/api/product/", {

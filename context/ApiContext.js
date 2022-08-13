@@ -2,7 +2,8 @@ import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import { createContext, useContext } from "react";
 import AuthContext, { baseUrl } from "./AuthContext";
-// import { AsyncStorage } from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 // ("https://stropdas2.herokuapp.com/");
 /**### use this instead of fetch
@@ -17,8 +18,16 @@ import AuthContext, { baseUrl } from "./AuthContext";
  * ApiFileRequest: ApiFileRequest,
  * ### use this instead of fetch for files
  * @params {url: string , config : object}
- * @returns \{ res, data \} */
-const ApiContext = createContext();
+ * @returns \{ res, data \}
+ *
+ * refreshToken: refreshToken
+ * use this to refresh tockens
+ * */
+const ApiContext = createContext({
+  ApiRequest: async (url = "", config = {}) => {},
+  ApiFileRequest: async (url = "", config = {}) => {},
+  refreshToken: async (authTokens = {}) => {},
+});
 export default ApiContext;
 
 export const ApiProvider = ({ children }) => {
@@ -31,7 +40,7 @@ export const ApiProvider = ({ children }) => {
     const res = await fetch(urlFetch, config);
     const data = await res.json();
     if (res.status !== 200) {
-      console.log(`Error ${res.status} fetching ${url}`);
+      Alert.alert(`Error ${res.status} fetching ${url}`);
     }
     return [res, data];
   };
@@ -48,8 +57,8 @@ export const ApiProvider = ({ children }) => {
     if (res.status === 200) {
       setAuthTokens(data); // if cycling refresh tokens
       setUser(() => jwt_decode(data.access));
-      // AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
-      // AsyncStorage.setItem("user", JSON.stringify(data.access));
+      await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
+      await AsyncStorage.setItem("user", JSON.stringify(data.access));
     } else {
       console.log(`Problem met de refresh token: ${res}`);
       logoutFunc();
@@ -63,7 +72,7 @@ export const ApiProvider = ({ children }) => {
     //   dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
     // const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
     // if (isExpiredRefresh) {
-    //   console.log("refresh token is expired, you were logged out");
+      // Alert.alert("refresh token is expired, you were logged out");
     //   logoutFunc();
     // } else {
     //   // refreshToken(authTokens);
@@ -102,10 +111,10 @@ export const ApiProvider = ({ children }) => {
     if (user) {
       const [res, data] = await originalRequest(url, config);
       if (res.status === 401) {
-        console.log("Unauthorized", url, config);
+        Alert.alert("Unauthorized", url, config);
       }
       if (res.status === 403) {
-        console.log("Permision denied", url, config);
+        Alert.alert("Permision denied", url, config);
       }
       return { res, data };
     }
@@ -117,6 +126,7 @@ export const ApiProvider = ({ children }) => {
     user: user,
     ApiRequest: ApiRequest,
     ApiFileRequest: ApiFileRequest,
+    refreshToken: refreshToken,
   };
   return (
     <ApiContext.Provider value={value_dic}>{children}</ApiContext.Provider>

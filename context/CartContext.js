@@ -12,7 +12,13 @@ import AuthContext from "./AuthContext";
 
     buy_cart: buy_cart,
      */
-const CartContext = createContext();
+const CartContext = createContext({
+  cart: [],
+  setCart: () => {},
+  add_to_cart: () => {},
+  remove_from_cart: () => {},
+  buy_cart: async() => {},
+});
 export default CartContext;
 
 export const CartProvider = ({ children }) => {

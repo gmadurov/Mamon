@@ -8,7 +8,6 @@ import { HolderProvider } from "./HolderContext";
 
 const FullContext = createContext();
 export default FullContext;
-
 export const FullProvider = ({ children }) => {
   const data = {};
   return (

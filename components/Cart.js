@@ -49,15 +49,16 @@ export const Cart = ({ sell }) => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
       let holder = holders?.find((holder) => holder.id === buyer);
-      console.log(holder?.stand > total);
-      if (holder?.stand > total || total > 0.5 || sell) {
-        setDisabled(true);
-      } else {
-        setDisabled(false);
+      if (sell) {
+        if (holder?.stand > total && total > 0.5) {
+          setDisabled(true);
+        } else {
+          setDisabled(false);
+        }
       }
     }
-    // checkStand();
-  }, [buyer]);
+    checkStand();
+  }, [buyer, total]);
 
   return (
     <View style={styles.gridItem}>
@@ -112,8 +113,11 @@ export const Cart = ({ sell }) => {
               pressed ? styles.buttonPressed : styles.button,
             ]}
             color="green"
-            disabled={!disabled}
-            onPress={() => buy_cart(buyer, sell)}
+            disabled={disabled}
+            onPress={() => {
+              buy_cart(buyer, sell);
+              setBuyer();
+            }}
             title={
               "Buy €" +
               parseFloat(total).toPrecision(
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
   gridItem: {
     flex: 1,
     margin: 16,
-    height: 150,
+    // height: 150,
     borderRadius: 8,
     elevation: 4,
     backgroundColor: GlobalStyles.colors.primary3,

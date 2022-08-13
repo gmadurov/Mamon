@@ -2,7 +2,15 @@ import { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
 import ApiContext from "../context/ApiContext";
 
-const HolderContext = createContext();
+const HolderContext = createContext({
+  holders: [],
+  searchHolders: [],
+  GET: async () => {},
+  POST: async (holder) => {},
+  PUT: async (holder) => {},
+  DELETE: async (holder) => {},
+  SEARCH: async (holder) => {},
+});
 export default HolderContext;
 
 export const HolderProvider = ({ children }) => {

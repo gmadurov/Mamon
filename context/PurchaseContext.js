@@ -10,7 +10,13 @@ import ApiContext from "../context/ApiContext";
     PUT: PUT,
 
     DELETE: DELETE */
-const PurchaseContext = createContext();
+const PurchaseContext = createContext({
+  purchases: [],
+  GET: async (purchase) => {},
+  POST: async (purchase) => {},
+  PUT: async (purchase) => {},
+  DELETE: async (purchase) => {},
+});
 export default PurchaseContext;
 
 export const PurchaseProvider = ({ children }) => {
@@ -22,7 +28,6 @@ export const PurchaseProvider = ({ children }) => {
     setPurchases(data);
   }
   async function POST(purchase) {
-    console.log(purchase);
     const { res, data } = await ApiRequest("/api/purchase/", {
       method: "POST",
       headers: { "Content-type": "application/json" },

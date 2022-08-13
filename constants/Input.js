@@ -1,23 +1,28 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from "react-native";
 
-import { GlobalStyles } from './styles';
+import { GlobalStyles } from "./styles";
 
-function Input({ label, invalid, style, textInputConfig }) {
-
-  const inputStyles = [styles.input];
-
-  if (textInputConfig && textInputConfig.multiline) {
-    inputStyles.push(styles.inputMultiline)
-  }
-
-  if (invalid) {
-    inputStyles.push(styles.invalidInput);
-  }
-
+function Input({
+  label,
+  keyboardType,
+  secure,
+  onUpdateValue,
+  value,
+  isInvalid,
+}) {
   return (
-    <View style={[styles.inputContainer, style]}>
-      <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
-      <TextInput style={inputStyles} {...textInputConfig} />
+    <View style={styles.inputContainer}>
+      <Text style={[styles.label, isInvalid && styles.labelInvalid]}>
+        {label}
+      </Text>
+      <TextInput
+        style={[styles.input, isInvalid && styles.inputInvalid]}
+        autoCapitalize={"none"}
+        keyboardType={keyboardType}
+        secureTextEntry={secure}
+        onChangeText={onUpdateValue}
+        value={value}
+      />
     </View>
   );
 }
@@ -26,29 +31,23 @@ export default Input;
 
 const styles = StyleSheet.create({
   inputContainer: {
-    marginHorizontal: 4,
     marginVertical: 8,
   },
   label: {
-    fontSize: 12,
-    color: GlobalStyles.colors.primary100,
+    color: GlobalStyles.colors.textColorLight,
     marginBottom: 4,
   },
+  labelInvalid: {
+    color: GlobalStyles.colors.errorMessage,
+  },
   input: {
-    backgroundColor: GlobalStyles.colors.primary100,
-    color: GlobalStyles.colors.primary700,
-    padding: 6,
-    borderRadius: 6,
-    fontSize: 18,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    backgroundColor: GlobalStyles.colors.primary1,
+    borderRadius: 4,
+    fontSize: 16,
   },
-  inputMultiline: {
-    minHeight: 100,
-    textAlignVertical: 'top'
+  inputInvalid: {
+    backgroundColor: GlobalStyles.colors.errorMessage,
   },
-  invalidLabel: {
-    color: GlobalStyles.colors.error500
-  },
-  invalidInput: {
-    backgroundColor: GlobalStyles.colors.error50
-  }
 });

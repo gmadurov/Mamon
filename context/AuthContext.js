@@ -1,3 +1,4 @@
+import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import { createContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import jwt_decode from "jwt-decode";
@@ -14,7 +15,6 @@ export const baseUrl = () => {
   }
   return url;
 };
-// import { AsyncStorage } from "@react-native-community/async-storage";
 
 /** loginFunc: loginFunc,
  *
@@ -39,7 +39,24 @@ export const baseUrl = () => {
  * authTokens: authTokens,
  */
 
-const AuthContext = createContext();
+const AuthContext = createContext({
+  loginFunc: async (username, password) => {},
+  logoutFunc: async () => {},
+  setAuthTokens: () => {},
+  setUser: () => {},
+  user: {
+    token_type: "access",
+    exp: Date,
+    iat: Date,
+    jti: "",
+    user_id: 0,
+    name: "",
+    role: [],
+    lid_id: 0,
+  },
+  authTokens: { access: "", refresh: "" },
+  start: async () => {},
+});
 export default AuthContext;
 export const AuthProvider = ({ children }) => {
   // dont use useFetch here because it will not work
@@ -68,17 +85,18 @@ export const AuthProvider = ({ children }) => {
     if (res.status === 200) {
       setAuthTokens(data);
       setUser(jwt_decode(data.access));
-      // AsyncStorage.setItem("authTokens", JSON.stringify(data));
-      // AsyncStorage.setItem("user", JSON.stringify(data.access));
-      navigation.replace("ProductsPage");
+      await AsyncStorage.setItem("authTokens", JSON.stringify(data));
+      await AsyncStorage.setItem("user", JSON.stringify(data.access));
+      // navigation.replace("ProductsPage");
     } else {
-      console.log(`Error with ${data.detail}`);
+      console.warn(`Error with ${data.detail}`);
     }
   };
 
   const logOutUser = () => {
-    // AsyncStorage.removeItem("authTokens");
-    // AsyncStorage.removeItem("user");
+    console.log(AsyncStorage);
+    AsyncStorage.removeItem("authTokens");
+    AsyncStorage.removeItem("user");
     setAuthTokens(null);
     setUser(null);
     navigation.replace("LoginPage");
