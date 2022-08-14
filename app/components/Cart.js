@@ -5,7 +5,7 @@ import HolderContext from "../context/HolderContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import Select from "./Select";
 import { Button } from "@rneui/themed";
-import { FlatList } from "react-native-gesture-handler";
+// import { FlatList } from "react-native-gesture-handler";
 import PropTypes from "prop-types";
 import CartItem from "./CartItem";
 import { GlobalStyles } from "../constants/styles";
@@ -14,7 +14,6 @@ export const Cart = ({ sell }) => {
   const { holders, SEARCH } = useContext(HolderContext);
   const { products } = useContext(ProductContext);
   const [buyer, setBuyer] = useState(0);
-  const [credit, setCredit] = useState(false);
   const [disabled, setDisabled] = useState(true);
   let total = 0;
   cart?.map(
@@ -164,10 +163,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: GlobalStyles.colors.primary4,
   },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
+  // title: {
+  //   fontWeight: "bold",
+  //   fontSize: 18,
+  // },
   view1: {
     flex: 1,
     flexDirection: "row",

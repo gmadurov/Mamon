@@ -72,7 +72,7 @@ export const HolderProvider = ({ children }) => {
     }
     get();
     // eslint-disable-next-line
-  }, []);
+  });
 
   const data = {
     holders: holders,

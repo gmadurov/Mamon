@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
   },
-  buttonText: {
-    textAlign: "center",
-    color: GlobalStyles.colors.primary1,
-    backgroundColor: GlobalStyles.colors.primary5,
-  },
+  // buttonText: {
+  //   textAlign: "center",
+  //   color: GlobalStyles.colors.primary1,
+  //   backgroundColor: GlobalStyles.colors.primary5,
+  // },
 });

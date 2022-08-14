@@ -66,7 +66,7 @@ export const ProductProvider = ({ children }) => {
       await GET();
     }
     get();
-  }, []);
+  });
   const data = {
     products: products,
     GET: GET,

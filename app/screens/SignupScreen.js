@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+/* import { useContext, useState } from 'react';
 import { Alert } from 'react-native';
 
 import AuthContent from '../components/Auth/AuthContent';
@@ -33,3 +33,4 @@ function SignupScreen() {
 }
 
 export default SignupScreen;
+ */
