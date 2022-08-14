@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 path = "/home/gusmadvol/Developer/wwwcie/payment/MySocCard/backend"
 if os.getcwd() == path:
-    from environment.env import setENV, setURL
+    from environment.env import setURL
 
     # set to false before uploading
     setURL()
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    ######### self added
     "users.apps.UsersConfig",
     "purchase.apps.PurchaseConfig",
     "rest_framework",
@@ -71,6 +72,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    #### self added
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
 ]
 from api.authentication import CORS_ALLOW_ALL_ORIGINS, REST_FRAMEWORK, SIMPLE_JWT
