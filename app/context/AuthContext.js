@@ -1,4 +1,4 @@
-import { AsyncStorage } from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import jwt_decode from "jwt-decode";
@@ -45,9 +45,9 @@ const AuthContext = createContext({
   setAuthTokens: () => {},
   setUser: () => {},
   user: {
-    token_type: "access",
-    exp: Date,
-    iat: Date,
+    token_type: "",
+    exp: "",
+    iat: "",
     jti: "",
     user_id: 0,
     name: "",
@@ -57,22 +57,20 @@ const AuthContext = createContext({
   authTokens: { access: "", refresh: "" },
   start: async () => {},
 });
+
 export default AuthContext;
 export const AuthProvider = ({ children }) => {
   // dont use useFetch here because it will not work
+
   const [authTokens, setAuthTokens] = useState();
-  // () =>
-  //   AsyncStorage.getItem("authTokens") &&
-  //   JSON.parse(AsyncStorage.getItem("authTokens"))
   const [user, setUser] = useState();
-  // () =>
-  //   AsyncStorage.getItem("user") &&
-  //   jwt_decode(JSON.parse(AsyncStorage.getItem("user")))
+  /**this function is simply to wake up the backend when working with heroku */
   const start = async () => {
     await fetch(`${baseUrl()}`);
   };
   const navigation = useNavigation();
-  const loginFunc = async (username, password) => {
+
+  async function loginFunc(username, password) {
     let res = await fetch(`${baseUrl()}/api/users/token/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -83,27 +81,26 @@ export const AuthProvider = ({ children }) => {
     });
     let data = await res.json();
     if (res.status === 200) {
-      setAuthTokens(data);
-      setUser(jwt_decode(data.access));
+      setAuthTokens(() => data);
+      setUser(() => jwt_decode(data.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data));
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
       // navigation.replace("ProductsPage");
     } else {
       console.warn(`Error with ${data.detail}`);
     }
-  };
+  }
 
-  const logOutUser = () => {
-    console.log(AsyncStorage);
-    AsyncStorage.removeItem("authTokens");
-    AsyncStorage.removeItem("user");
-    setAuthTokens(null);
-    setUser(null);
-    navigation.replace("LoginPage");
-  };
+  async function logoutFunc() {
+    // console.log("loged Out", AsyncStorage.getAllKeys());
+    await AsyncStorage.multiRemove(["authTokens", "user"]);
+    setAuthTokens();
+    setUser();
+    // navigation.replace("LoginPage");
+  }
   const data = {
     loginFunc: loginFunc,
-    logoutFunc: logOutUser,
+    logoutFunc: logoutFunc,
     setAuthTokens: setAuthTokens,
     setUser: setUser,
     user: user,

@@ -2,25 +2,43 @@ import { useState, useContext } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { GlobalStyles } from "../constants/styles";
 import CartContext from "../context/CartContext";
+import ProductContext from "../context/ProductContext";
 import IconButton from "./IconButton";
 
-const ProductTile = ({ quantity, product }) => {
+const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
   const { add_to_cart, remove_from_cart } = useContext(CartContext);
+  const { DELETE } = useContext(ProductContext);
   const [deleted, setDeleted] = useState(false);
   const onAdd = () => {
-    add_to_cart(product);
+    if (edit) {
+      setSelected(product.id);
+    } else {
+      add_to_cart(product);
+    }
   };
-  const onRemove = () => {
-    remove_from_cart(product);
+  const onRemove = async () => {
+    if (edit) {
+      await DELETE(product);
+    } else {
+      remove_from_cart(product);
+    }
   };
+
+  let [BGC, iBGC] = deleted
+    ? [GlobalStyles.colors.primary4, GlobalStyles.colors.primary1]
+    : ([GlobalStyles.colors.primary1, GlobalStyles.colors.primary4][
+        (BGC, iBGC)
+      ] =
+        product.id === selected
+          ? [GlobalStyles.colors.primary2, GlobalStyles.colors.primary4]
+          : [GlobalStyles.colors.primary1, GlobalStyles.colors.primary4]);
+
   return (
     <View
       style={[
         styles.gridItem,
         {
-          backgroundColor: !deleted
-            ? GlobalStyles.colors.primary1
-            : GlobalStyles.colors.primary2,
+          backgroundColor: BGC,
         },
       ]}
     >
@@ -28,52 +46,37 @@ const ProductTile = ({ quantity, product }) => {
         android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         style={({ pressed }) => [
           styles.button,
-          pressed ? styles.buttonPressed : null,
+          pressed ? styles.buttonPressed : { flex: 1 },
         ]}
         onPress={deleted ? onRemove : onAdd}
       >
-        {!quantity && (
-          <Text
-            style={{
-              textAlign: "right",
-              backgroundColor: !deleted
-                ? GlobalStyles.colors.primary1
-                : GlobalStyles.colors.primary2,
-            }}
-          >
-            Delete
-            <IconButton
-              name="trash-outline"
-              onPress={() => setDeleted(!deleted)}
-              color={
-                deleted
-                  ? GlobalStyles.colors.primary1
-                  : GlobalStyles.colors.primary2
-              }
-              style={{
-                textAlign: "right",
-                color: deleted
-                  ? GlobalStyles.colors.primary1
-                  : GlobalStyles.colors.primary2,
-              }}
-            />
-          </Text>
-        )}
-
+        <IconButton
+          name="trash-outline"
+          onPress={() => setDeleted(!deleted)}
+          color={iBGC}
+          style={{
+            flex: 1,
+            textAlign: "right",
+            color: iBGC,
+          }}
+        />
         <View
           style={[
             styles.innerContainer,
             {
-              backgroundColor: !deleted
-                ? GlobalStyles.colors.primary1
-                : GlobalStyles.colors.primary2,
+              backgroundColor: BGC,
             },
           ]}
         >
           <Text style={styles.title}>
+            {edit === true && !quantity && deleted && "Delete"}
             {quantity && quantity} {product?.name}
+            {edit === true && !quantity && deleted && " from database "}
           </Text>
-          <Text style={styles.title}>{!quantity && "€" + product?.price}</Text>
+
+          {!(edit === true && !quantity && deleted) && (
+            <Text style={styles.title}>€ {product?.price}</Text>
+          )}
         </View>
       </Pressable>
     </View>
@@ -84,7 +87,7 @@ export default ProductTile;
 
 const styles = StyleSheet.create({
   gridItem: {
-    flex: 1,
+    flex: 2,
     margin: 16,
     height: 150,
     borderRadius: 8,
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   innerContainer: {
-    flex: 1,
+    flex: 4,
     padding: 16,
     borderRadius: 8,
     justifyContent: "center",

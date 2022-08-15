@@ -1,4 +1,5 @@
 from datetime import timedelta
+
 #### AUTHENTICATION
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000",
@@ -14,9 +15,9 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=90),
-    "ROTATE_REFRESH_TOKENS": False,  # hard authentication
-    "BLACKLIST_AFTER_ROTATION": False,  # harder authentication
-    "UPDATE_LAST_LOGIN": False,
+    "ROTATE_REFRESH_TOKENS": True,  # hard authentication
+    "BLACKLIST_AFTER_ROTATION": True,  # harder authentication
+    "UPDATE_LAST_LOGIN": True,
     "ALGORITHM": "HS256",
     "VERIFYING_KEY": None,
     "AUDIENCE": None,

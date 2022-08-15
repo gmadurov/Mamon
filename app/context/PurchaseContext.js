@@ -24,7 +24,11 @@ export const PurchaseProvider = ({ children }) => {
   const [purchases, setPurchases] = useState([]);
   async function GET() {
     setPurchases([]);
-    const { data } = await ApiRequest("/api/purchase/");
+    // ApiRequest("/api/purchase/")
+    //   .then(({ data }) => setPurchases(data))
+    //   .catch(({ res }) => console.warn("Error with the Purchase request", res));
+
+    const { res, data } = await ApiRequest("/api/purchase/");
     setPurchases(data);
   }
   async function POST(purchase) {
@@ -63,7 +67,7 @@ export const PurchaseProvider = ({ children }) => {
       await GET();
     }
     get();
-  });
+  }, []);
   const data = {
     purchases: purchases,
     GET: GET,

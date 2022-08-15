@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import {
   FlatList,
+  KeyboardAvoidingView,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -9,15 +10,24 @@ import {
 } from "react-native";
 import ProductContext from "../context/ProductContext";
 import ProductTile from "../components/ProductTile";
-import PropTypes from "prop-types";
 import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
+import ProductForm from "../components/ProductForm";
 
-const ProductScreen = ({ sell }) => {
+const ProductScreen = ({ edit, sell }) => {
   const { GET, products } = useContext(ProductContext);
   const [refreshing, setRefreshing] = useState(false);
+  const [selected, setSelected] = useState(0);
+
   function renderProducts(itemData) {
-    return <ProductTile product={itemData.item} />;
+    return (
+      <ProductTile
+        product={itemData.item}
+        edit={edit}
+        selected={selected}
+        setSelected={setSelected}
+      />
+    );
   }
 
   async function getProducts() {
@@ -26,16 +36,15 @@ const ProductScreen = ({ sell }) => {
     setRefreshing(false);
   }
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => getProducts()}
-        />
-      }
-    >
+    <>
       <View style={styles.cartView}>
-        <Cart sell={sell} />
+        {edit ? (
+          <KeyboardAvoidingView style={styles.cartView}>
+            <ProductForm create selected={selected} setSelected={setSelected} />
+          </KeyboardAvoidingView>
+        ) : (
+          <Cart sell={sell} />
+        )}
       </View>
       <View style={styles.productView}>
         <Text style={styles.text}>Producten</Text>
@@ -44,13 +53,16 @@ const ProductScreen = ({ sell }) => {
           keyExtractor={(item) => item.id}
           renderItem={renderProducts}
           numColumns={2}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => getProducts()}
+            />
+          }
         />
       </View>
-    </ScrollView>
+    </>
   );
-};
-ProductScreen.propTypes = {
-  sell: PropTypes.bool.isRequired,
 };
 export default ProductScreen;
 
@@ -61,5 +73,5 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   cartView: { flex: 1 },
-  productView: { flex: 1 },
+  productView: { flex: 2 },
 });

@@ -1,13 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
 const LogOutScreen = ({ navigation }) => {
   const { logoutFunc } = useContext(AuthContext);
-  async function perform() {
-    useEffect(() => {
-      logoutFunc().then(() => navigation.navigate("LoginScreen"));
-    }, []);
-  }
-  perform();
+
+  useEffect(() => {
+    async function logout() {
+      await logoutFunc();
+    }
+    logout();
+  }, []);
   return <></>;
 };
 

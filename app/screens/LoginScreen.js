@@ -9,16 +9,17 @@ function LoginScreen() {
 
   const { loginFunc } = useContext(AuthContext);
 
-  async function loginHandler({ username, password }) {
+  async function loginHandler(username, password) {
     setIsAuthenticating(true);
     try {
       await loginFunc(username, password);
     } catch (error) {
-      Alert.alert(
+      console.log(error);
+      Alert.alert([
         "Authentication failed!",
         "Could not log you in. Please check your credentials or try again later!",
-        error
-      );
+        error,
+      ]);
       setIsAuthenticating(false);
     }
   }

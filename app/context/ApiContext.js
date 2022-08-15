@@ -24,7 +24,9 @@ import { Alert } from "react-native";
  * use this to refresh tockens
  * */
 const ApiContext = createContext({
-  ApiRequest: async (url = "", config = {}) => {},
+  ApiRequest: async (url = "", config = {}) => {
+    res, data;
+  },
   ApiFileRequest: async (url = "", config = {}) => {},
   refreshToken: async (authTokens = {}) => {},
 });
@@ -44,36 +46,38 @@ export const ApiProvider = ({ children }) => {
     }
     return [res, data];
   };
+
   /** gets the refresh token and update the local state and local storage */
   const refreshToken = async (authTokens) => {
     const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        refresh: authTokens?.refresh,
+        refresh: JSON.parse(authTokens).refresh,
       }),
     });
     let data = await res.json();
     if (res.status === 200) {
       setAuthTokens(data); // if cycling refresh tokens
-      setUser(() => jwt_decode(data.access));
+      setUser(() => jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
     } else {
       console.log(`Problem met de refresh token: ${res}`);
-      logoutFunc();
+      await logoutFunc();
     }
   };
+
   /** ## use this instead of fetch
    * @params {url: string , config : object}
    * @returns \{ res, data \}*/
   const ApiRequest = async (url, config = {}) => {
-    // const isExpiredRefresh =
-    //   dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
-    // const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
+    const isExpiredRefresh =
+      dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
+    const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
     // if (isExpiredRefresh) {
-      // Alert.alert("refresh token is expired, you were logged out");
-    //   logoutFunc();
+    //   Alert.alert("refresh token is expired, you were logged out");
+    //   await logoutFunc();
     // } else {
     //   // refreshToken(authTokens);
     // }
@@ -86,14 +90,17 @@ export const ApiProvider = ({ children }) => {
     // if (!config["headers"]["Content-type"]) {
     //   config["headers"]["Content-type"] = "application/json";
     // }
-    // // if (user) {
-    // //   const [res, data] = await originalRequest(url, config);
-    // //   if (res !== 200) {
-    // //     console.log("request Failed");
-    // //   } else {
-    // //     return { res, data };
-    // //   }
-    // // }
+    // if (user) {
+    //   console.log({ user, url, config });
+    //   const [res, data] = await originalRequest(url, config);
+    //   if (res !== 200) {
+    //     console.log("request Failed");
+    //   } else {
+    //     return { res, data };
+    //   }
+    // } else {
+    //   return { res: 503, data: [{}] };
+    // }
     const [res, data] = await originalRequest(url, config);
     return { res, data };
   };

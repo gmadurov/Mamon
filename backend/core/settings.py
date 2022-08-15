@@ -54,14 +54,16 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     ######### self added
-    "users.apps.UsersConfig",
+    "rest_framework_simplejwt.token_blacklist",
     "purchase.apps.PurchaseConfig",
+    "rest_framework_simplejwt",
+
+    "users.apps.UsersConfig",
+    
     "rest_framework",
     "corsheaders",
-    "rest_framework_simplejwt.token_blacklist",
-    "storages",
-    "rest_framework_simplejwt",
     "colorfield",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -161,8 +163,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-
 STATIC_URL = "/static/"
+# start
+MEDIA_URL = "/images/"
+# STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [BASE_DIR / "static"]
+MEDIA_ROOT = BASE_DIR / "static/images"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type

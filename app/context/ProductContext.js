@@ -27,8 +27,9 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   async function GET() {
     setProducts([]);
-    const { data } = await ApiRequest("/api/product/");
-    setProducts(() => data);
+    ApiRequest("/api/product/")
+      .then(({ data }) => setProducts(data))
+      .catch(({ res }) => console.warn('Error with the Product request', res));
   }
   async function POST(product) {
     const { data } = await ApiRequest("/api/product/", {
@@ -36,7 +37,7 @@ export const ProductProvider = ({ children }) => {
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(product),
     });
-    setProducts([...products, data]);
+    setProducts(() => [...products, data]);
   }
   async function PUT(product) {
     const { data } = await ApiRequest(`/api/product/${product.id}`, {
@@ -46,7 +47,7 @@ export const ProductProvider = ({ children }) => {
       },
       body: JSON.stringify(product),
     });
-    setProducts(
+    setProducts(() =>
       products.map((product_from_map) =>
         product.id === product_from_map.id ? data : product_from_map
       )
@@ -59,6 +60,12 @@ export const ProductProvider = ({ children }) => {
         "Content-type": "application/json",
       },
     });
+    setProducts(() =>
+      products.map(
+        (product_from_map) =>
+          product.id !== product_from_map.id && product_from_map
+      )
+    );
   }
 
   useEffect(() => {
@@ -66,7 +73,7 @@ export const ProductProvider = ({ children }) => {
       await GET();
     }
     get();
-  });
+  }, []);
   const data = {
     products: products,
     GET: GET,

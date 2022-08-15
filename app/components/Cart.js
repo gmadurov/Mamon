@@ -131,7 +131,7 @@ export const Cart = ({ sell }) => {
   );
 };
 Cart.propTypes = {
-  sell: PropTypes.bool.isRequired,
+  sell: PropTypes.bool,
 };
 export default Cart;
 
@@ -168,12 +168,10 @@ const styles = StyleSheet.create({
   //   fontSize: 18,
   // },
   view1: {
-    flex: 1,
     flexDirection: "row",
     backgroundColor: GlobalStyles.colors.primary2,
   },
   view2: {
-    flex: 1,
     flexDirection: "row",
     backgroundColor: GlobalStyles.colors.primary2,
   },

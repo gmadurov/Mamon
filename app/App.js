@@ -9,11 +9,18 @@ import { FullProvider } from "./context/FullContext";
 import LoginScreen from "./screens/LoginScreen";
 import { GlobalStyles } from "./constants/styles";
 import AuthContext from "./context/AuthContext";
-import { useCallback, useContext, useEffect, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import * as SplashScreen from "expo-splash-screen";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DrawerNavigator from "./navigation/DrawerNavigator";
+import ApiContext from "./context/ApiContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -64,18 +71,19 @@ function AuthenticatedStack() {
 function Root() {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
 
-  const { refreshTokens } = useContext(AuthContext);
+  const { refreshToken } = useContext(ApiContext);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     async function fetchToken() {
       const storedTokens = await AsyncStorage.getItem("authTokens");
+      // const storedTokens = {refresh: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2MDU5NDg0NCwiaWF0IjoxNjYwNTg5NDQ0LCJqdGkiOiJlMGY3YWZhODRkNzU0NGJjOWZlODgwZGNkNjhhMTRiMCIsInVzZXJfaWQiOjEsIm5hbWUiOiJHIE1hZHVybyIsInJvbGVzIjpbXSwiaG9sZGVyX2lkIjoxfQ.tsadTwKMDE9xGrGGFygUvfrz_hbT1f0JD3KOqEEGhkY"}
       if (storedTokens) {
-        refreshTokens(storedTokens);
+        await refreshToken(storedTokens);
       }
       setIsTryingLogin(false);
     }
     fetchToken();
-  });
+  }, []);
 
   const onLayoutRootView = useCallback(async () => {
     if (!isTryingLogin) {
@@ -96,7 +104,7 @@ function Root() {
 
 function Navigation() {
   const { user } = useContext(AuthContext);
-
+  console.log({user});
   return (
     <>
       {!user && <AuthStack />}
@@ -118,5 +126,4 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-});
+const styles = StyleSheet.create({});

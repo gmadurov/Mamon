@@ -19,8 +19,9 @@ export const HolderProvider = ({ children }) => {
   const [searchHolders, setSearchHolders] = useState([]);
   async function GET() {
     setHolders([]);
-    const { data } = await ApiRequest("/api/holder/");
-    setHolders(() => data);
+    ApiRequest("/api/holder/")
+      .then(({ data }) => setHolders(data))
+      .catch(({ res }) => console.warn('Error with the Holder request', res));
   }
   async function POST(holder) {
     const { data } = await ApiRequest("/api/holder/", {
@@ -72,7 +73,7 @@ export const HolderProvider = ({ children }) => {
     }
     get();
     // eslint-disable-next-line
-  });
+  }, []);
 
   const data = {
     holders: holders,

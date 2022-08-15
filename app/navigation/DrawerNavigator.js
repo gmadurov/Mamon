@@ -1,10 +1,11 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GlobalStyles } from "../constants/styles";
 import ProductScreen from "../screens/ProductScreen";
-import Cart from "./components/Cart";
-import LogOutScreen from "./screens/LogOutScreen";
+import Cart from "../components/Cart";
+import LogOutScreen from "../screens/LogOutScreen";
 const Drawer = createDrawerNavigator();
 
+/** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
@@ -22,7 +23,7 @@ const DrawerNavigator = () => {
       /> */}
       <Drawer.Screen
         name="Producten"
-        children={() => <ProductScreen sell={true} />}
+        children={() => <ProductScreen sell />}
         options={{
           title: "Bacchus 2.0",
           backgroundColor: GlobalStyles.colors.primary1,
@@ -30,17 +31,23 @@ const DrawerNavigator = () => {
       />
       <Drawer.Screen
         name="Log"
-        children={() => <ProductScreen sell={false} />}
+        children={() => <ProductScreen />}
         options={{
           title: "Bacchus 2.0 (Log)",
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      <Drawer.Screen name="Cart" children={() => <Cart sell={true} />} />
-      <Drawer.Screen name="LogCart" children={() => <Cart sell={false} />} />
+      <Drawer.Screen
+        name="EditProduct"
+        children={() => <ProductScreen edit />}
+        options={{
+          title: "Edit products",
+          backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
       <Drawer.Screen name="LogOut" component={LogOutScreen} />
     </Drawer.Navigator>
-  )
-}
+  );
+};
 
-export default DrawerNavigator
+export default DrawerNavigator;

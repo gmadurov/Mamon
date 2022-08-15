@@ -13,7 +13,10 @@ import {
 import { Button, Card } from "@rneui/themed";
 import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
-
+/**
+ *
+ * This is a modal selection button with the ability to search for things in based on label and search you pass in the options
+ */
 function Select({
   defaultValue,
   options,
@@ -36,7 +39,10 @@ function Select({
     inputStyles.push(styles.invalidInput);
   }
   // let options;
+  // search options based on label and search parameters
+  // search param might not work yet
   options = options.filter((option) =>
+    // option.search?.toLowerCase().includes(search.toLowerCase()) |
     option.label.toLowerCase().includes(search.toLowerCase())
   );
 

@@ -67,7 +67,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
     //   });
     //   return;
     // }
-    onAuthenticate({ username, password });
+    onAuthenticate(username, password);
   }
 
   return (
