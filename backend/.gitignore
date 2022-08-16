@@ -1,3 +1,10 @@
 environment/
 .env
-db*
+
+DEVELOP
+
+*.pyc
+*~
+*.sh
+*.swp
+*.dump
