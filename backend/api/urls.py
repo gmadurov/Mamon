@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
-from rest_framework_simplejwt.views import TokenRefreshView
 from api.tokens import MyTokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 urlpatterns = [
@@ -15,5 +15,5 @@ urlpatterns = [
     path("holder/<str:pk>", views.showHolder, name="holder"),
     path("users/token/", MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("users/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    
+    path(r"login/", views.LoginAllUsers, name="ledenToken"),
 ]

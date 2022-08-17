@@ -67,6 +67,7 @@ export const PurchaseProvider = ({ children }) => {
       await GET();
     }
     get();
+    // eslint-disable-next-line
   }, []);
   const data = {
     purchases: purchases,

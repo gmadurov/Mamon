@@ -1,0 +1,4 @@
+Local development 
+put enviroment variables in .env file 
+use pipenv shell
+this will load .env into the environment as the enviroment variables 

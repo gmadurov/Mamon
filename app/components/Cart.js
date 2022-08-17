@@ -37,7 +37,7 @@ export const Cart = ({ sell }) => {
     return (
       <CartItem
         quantity={itemData.item.order}
-        product={products.find(
+        product={products?.find(
           (product) => product.id === itemData.item.product
         )}
       />
@@ -50,13 +50,14 @@ export const Cart = ({ sell }) => {
       let holder = holders?.find((holder) => holder.id === buyer);
       if (sell) {
         if (holder?.stand > total && total > 0.5) {
-          setDisabled(true);
+          setDisabled(!true);
         } else {
-          setDisabled(false);
+          setDisabled(!false);
         }
       }
     }
     checkStand();
+    // eslint-disable-next-line
   }, [buyer, total]);
 
   return (

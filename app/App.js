@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import "./polyfills";
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -9,13 +10,7 @@ import { FullProvider } from "./context/FullContext";
 import LoginScreen from "./screens/LoginScreen";
 import { GlobalStyles } from "./constants/styles";
 import AuthContext from "./context/AuthContext";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { useCallback, useContext, useLayoutEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -78,8 +73,10 @@ function Root() {
       const storedTokens = await AsyncStorage.getItem("authTokens");
       // const storedTokens = {refresh: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2MDU5NDg0NCwiaWF0IjoxNjYwNTg5NDQ0LCJqdGkiOiJlMGY3YWZhODRkNzU0NGJjOWZlODgwZGNkNjhhMTRiMCIsInVzZXJfaWQiOjEsIm5hbWUiOiJHIE1hZHVybyIsInJvbGVzIjpbXSwiaG9sZGVyX2lkIjoxfQ.tsadTwKMDE9xGrGGFygUvfrz_hbT1f0JD3KOqEEGhkY"}
       if (storedTokens) {
-        await refreshToken(storedTokens);
+        await refreshToken(JSON.parse(storedTokens), true);
       }
+      // setAuthTokens();
+      // setUser();
       setIsTryingLogin(false);
     }
     fetchToken();
@@ -104,7 +101,6 @@ function Root() {
 
 function Navigation() {
   const { user } = useContext(AuthContext);
-  console.log({user});
   return (
     <>
       {!user && <AuthStack />}

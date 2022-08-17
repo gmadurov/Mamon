@@ -8,6 +8,7 @@ const LogOutScreen = ({ navigation }) => {
       await logoutFunc();
     }
     logout();
+    // eslint-disable-next-line
   }, []);
   return <></>;
 };

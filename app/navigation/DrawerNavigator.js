@@ -1,8 +1,8 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GlobalStyles } from "../constants/styles";
 import ProductScreen from "../screens/ProductScreen";
-import Cart from "../components/Cart";
 import LogOutScreen from "../screens/LogOutScreen";
+import PurchaseScreen from "../screens/PurchaseScreen";
 const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
@@ -22,6 +22,14 @@ const DrawerNavigator = () => {
         }}
       /> */}
       <Drawer.Screen
+        name="PurchaseScreen"
+        children={() => <PurchaseScreen />}
+        options={{
+          title: "My Purchases",
+          backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
+      <Drawer.Screen
         name="Producten"
         children={() => <ProductScreen sell />}
         options={{
@@ -29,6 +37,7 @@ const DrawerNavigator = () => {
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
+
       <Drawer.Screen
         name="Log"
         children={() => <ProductScreen />}
@@ -37,6 +46,7 @@ const DrawerNavigator = () => {
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
+
       <Drawer.Screen
         name="EditProduct"
         children={() => <ProductScreen edit />}

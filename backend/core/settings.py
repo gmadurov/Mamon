@@ -24,23 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-path = "/home/gusmadvol/Developer/wwwcie/payment/MySocCard/backend"
-if os.getcwd() == path:
-    from environment.env import setURL
-
-    # set to false before uploading
-    setURL()
-    # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = True if os.environ.get("DEBUG") == "True" else False
-    LOCAL = not True
-else:
-    DEBUG = True if os.environ.get("DEBUG") == "True" else False
-    LOCAL = False
+# set to false before uploading
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True if os.environ.get("DEBUG") == "True" else False
+LOCAL = not True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2", "bacchus2.herokuapp.com"]
 
 
@@ -57,9 +48,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "purchase.apps.PurchaseConfig",
     "rest_framework_simplejwt",
-
     "users.apps.UsersConfig",
-    
     "rest_framework",
     "corsheaders",
     "colorfield",

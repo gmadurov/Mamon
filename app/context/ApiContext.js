@@ -39,6 +39,8 @@ export const ApiProvider = ({ children }) => {
   /** makes the original request called but with the Bearer set and to the correct location */
   const originalRequest = async (url, config) => {
     let urlFetch = `${baseUrl()}${url}`;
+    console.log(urlFetch, config);
+
     const res = await fetch(urlFetch, config);
     const data = await res.json();
     if (res.status !== 200) {
@@ -48,18 +50,27 @@ export const ApiProvider = ({ children }) => {
   };
 
   /** gets the refresh token and update the local state and local storage */
-  const refreshToken = async (authTokens) => {
+  const refreshToken = async (authToken, resignin = false) => {
     const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        refresh: JSON.parse(authTokens).refresh,
+        refresh: authToken?.refresh,
       }),
     });
     let data = await res.json();
+    console.log(`${baseUrl()}/api/users/token/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        refresh: resignin
+          ? JSON.parse(authTokens).refresh
+          : authTokens?.refresh,
+      }),
+    });
     if (res.status === 200) {
       setAuthTokens(data); // if cycling refresh tokens
-      setUser(() => jwt_decode(data?.access));
+      setUser(jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
     } else {
@@ -75,18 +86,19 @@ export const ApiProvider = ({ children }) => {
     const isExpiredRefresh =
       dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
     const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
-    // if (isExpiredRefresh) {
-    //   Alert.alert("refresh token is expired, you were logged out");
-    //   await logoutFunc();
-    // } else {
-    //   // refreshToken(authTokens);
-    // }
-    // if (isExpired && authTokens) {
-    //   refreshToken(authTokens);
-    // }
-    // config["headers"] = {
-    //   Authorization: `Bearer ${authTokens?.access}`,
-    // };
+    console.log({ isExpired, isExpiredRefresh });
+    if (isExpiredRefresh) {
+      Alert.alert("refresh token is expired, you were logged out");
+      await logoutFunc();
+    } else {
+      await refreshToken(authTokens);
+    }
+    if (isExpired && authTokens) {
+      await refreshToken(authTokens);
+    }
+    config["headers"] = {
+      Authorization: `Bearer ${JSON.parse(authTokens)?.access}`,
+    };
     // if (!config["headers"]["Content-type"]) {
     //   config["headers"]["Content-type"] = "application/json";
     // }

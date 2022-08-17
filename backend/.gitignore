@@ -8,3 +8,4 @@ DEVELOP
 *.sh
 *.swp
 *.dump
+*.sqlite3

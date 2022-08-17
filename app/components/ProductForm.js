@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Platform, Alert, StyleSheet, Text, View } from "react-native";
 import ProductContext from "../context/ProductContext";
 import Input from "../constants/Input";
 import { GlobalStyles } from "../constants/styles";
@@ -25,6 +25,7 @@ const ProductForm = ({ style, create, selected, setSelected }) => {
         : ""
     );
     setDisabled();
+     // eslint-disable-next-line
   }, [selected]);
 
   function handleSubmit() {

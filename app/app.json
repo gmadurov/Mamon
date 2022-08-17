@@ -1,9 +1,10 @@
 {
   "expo": {
-    "name": "MySocCard",
-    "slug": "MySocCard",
+    "name": "Bacchus 2.0",
+    "slug": "bacchus-2",
     "version": "1.0.0",
     "orientation": "portrait",
+    "owner": "gusmadvol",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {

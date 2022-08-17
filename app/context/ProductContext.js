@@ -48,7 +48,7 @@ export const ProductProvider = ({ children }) => {
       body: JSON.stringify(product),
     });
     setProducts(() =>
-      products.map((product_from_map) =>
+      products?.map((product_from_map) =>
         product.id === product_from_map.id ? data : product_from_map
       )
     );
@@ -61,7 +61,7 @@ export const ProductProvider = ({ children }) => {
       },
     });
     setProducts(() =>
-      products.map(
+      products?.map(
         (product_from_map) =>
           product.id !== product_from_map.id && product_from_map
       )
@@ -73,6 +73,7 @@ export const ProductProvider = ({ children }) => {
       await GET();
     }
     get();
+    // eslint-disable-next-line
   }, []);
   const data = {
     products: products,
