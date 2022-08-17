@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 # set to false before uploading
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ.get("DEBUG") == "True" else False
+DEBUG = True #if os.environ.get("DEBUG") == "True" else False
 LOCAL = not True
 
 # SECURITY WARNING: keep the secret key used in production secret!
