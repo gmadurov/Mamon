@@ -29,7 +29,6 @@ const ProductScreen = ({ edit, sell }) => {
       />
     );
   }
-
   async function getProducts() {
     setRefreshing(true);
     await GET();

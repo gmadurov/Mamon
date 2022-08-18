@@ -11,7 +11,7 @@ import CartItem from "./CartItem";
 import { GlobalStyles } from "../constants/styles";
 export const Cart = ({ sell }) => {
   const { cart, setCart, buy_cart } = useContext(CartContext);
-  const { holders, SEARCH } = useContext(HolderContext);
+  const { GET, holders, SEARCH } = useContext(HolderContext);
   const { products } = useContext(ProductContext);
   const [buyer, setBuyer] = useState(0);
   const [disabled, setDisabled] = useState(true);
@@ -54,6 +54,8 @@ export const Cart = ({ sell }) => {
         } else {
           setDisabled(!false);
         }
+      } else {
+        setDisabled(false);
       }
     }
     checkStand();
@@ -86,6 +88,7 @@ export const Cart = ({ sell }) => {
       <View style={styles.view1}>
         <Select
           defaultValue={buyer}
+          refreshFunction={GET}
           options={optionsHolders}
           optionFunction={loadOptions}
           onSelect={(e) => setBuyer(e)}

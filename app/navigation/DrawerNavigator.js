@@ -3,6 +3,7 @@ import { GlobalStyles } from "../constants/styles";
 import ProductScreen from "../screens/ProductScreen";
 import LogOutScreen from "../screens/LogOutScreen";
 import PurchaseScreen from "../screens/PurchaseScreen";
+import AccountScreen from "../screens/AccountScreen";
 const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
@@ -21,14 +22,7 @@ const DrawerNavigator = () => {
           ),
         }}
       /> */}
-      <Drawer.Screen
-        name="PurchaseScreen"
-        children={() => <PurchaseScreen />}
-        options={{
-          title: "My Purchases",
-          backgroundColor: GlobalStyles.colors.primary1,
-        }}
-      />
+
       <Drawer.Screen
         name="Producten"
         children={() => <ProductScreen sell />}
@@ -46,7 +40,22 @@ const DrawerNavigator = () => {
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-
+      <Drawer.Screen
+        name="PurchaseScreen"
+        children={() => <PurchaseScreen />}
+        options={{
+          title: "My Purchases",
+          backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
+      <Drawer.Screen
+        name="AccountScreen"
+        children={() => <AccountScreen />}
+        options={{
+          title: "My Account",
+          backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
       <Drawer.Screen
         name="EditProduct"
         children={() => <ProductScreen edit />}

@@ -14,8 +14,8 @@ import ApiContext from "../context/ApiContext";
     DELETE: DELETE,
  */
 const ProductContext = createContext({
-  products: [],
-  GET: async (product) => {},
+  products: [{ name: "", price: "" }],
+  GET: async () => {},
   POST: async (product) => {},
   PUT: async (product) => {},
   DELETE: async (product) => {},
@@ -23,13 +23,12 @@ const ProductContext = createContext({
 export default ProductContext;
 
 export const ProductProvider = ({ children }) => {
-  const { ApiRequest } = useContext(ApiContext);
+  const { user, ApiRequest } = useContext(ApiContext);
   const [products, setProducts] = useState([]);
   async function GET() {
     setProducts([]);
-    ApiRequest("/api/product/")
-      .then(({ data }) => setProducts(data))
-      .catch(({ res }) => console.warn('Error with the Product request', res));
+    const { res, data } = await ApiRequest("/api/product/");
+    setProducts(() => data);
   }
   async function POST(product) {
     const { data } = await ApiRequest("/api/product/", {
@@ -72,9 +71,12 @@ export const ProductProvider = ({ children }) => {
     async function get() {
       await GET();
     }
-    get();
+    if (user) {
+      get();
+    }
+
     // eslint-disable-next-line
-  }, []);
+  }, [user]);
   const data = {
     products: products,
     GET: GET,

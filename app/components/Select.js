@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Modal,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,10 +28,12 @@ function Select({
   invalid,
   style,
   textInputConfig,
+  refreshFunction
 }) {
   const inputStyles = [styles.input, style];
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   if (textInputConfig && textInputConfig.multiline) {
     inputStyles.push(styles.inputMultiline);
   }
@@ -41,9 +44,9 @@ function Select({
   // let options;
   // search options based on label and search parameters
   // search param might not work yet
-  options = options.filter((option) =>
+  options = options?.filter((option) =>
     // option.search?.toLowerCase().includes(search.toLowerCase()) |
-    option.label.toLowerCase().includes(search.toLowerCase())
+    option?.label?.toLowerCase().includes(search.toLowerCase())
   );
 
   // useEffect(() => {
@@ -54,6 +57,12 @@ function Select({
   //   get();
   // }, [search]);
 
+  async function getHolders() {
+
+    setRefreshing(true)
+    await refreshFunction()
+    setRefreshing(false)
+  }
   return (
     <View
       style={[styles.inputContainer, style]}
@@ -129,9 +138,17 @@ function Select({
                 }}
               />
             </View>
-            <ScrollView style={styles.ScrollView}>
+            <ScrollView
+              style={styles.ScrollView}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => getHolders()}
+                />
+              }
+            >
               <Card style={styles.seletionCard}>
-                {options.map((option) => (
+                {options?.map((option) => (
                   <TouchableOpacity
                     key={"select " + option.value}
                     onPress={() => {

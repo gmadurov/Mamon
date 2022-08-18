@@ -14,14 +14,13 @@ const HolderContext = createContext({
 export default HolderContext;
 
 export const HolderProvider = ({ children }) => {
-  const { ApiRequest } = useContext(ApiContext);
+  const { user, ApiRequest } = useContext(ApiContext);
   const [holders, setHolders] = useState([]);
   const [searchHolders, setSearchHolders] = useState([]);
   async function GET() {
     setHolders([]);
-    ApiRequest("/api/holder/")
-      .then(({ data }) => setHolders(data))
-      .catch(({ res }) => console.warn('Error with the Holder request', res));
+    const { res, data } = await ApiRequest("/api/holder/");
+    setHolders(() => data);
   }
   async function POST(holder) {
     const { data } = await ApiRequest("/api/holder/", {
@@ -53,7 +52,7 @@ export const HolderProvider = ({ children }) => {
     });
 
     setHolders(() =>
-      holders.map((holder_from_map) =>
+      holders?.map((holder_from_map) =>
         holder.id === holder_from_map.id ? data : holder_from_map
       )
     );
@@ -66,14 +65,6 @@ export const HolderProvider = ({ children }) => {
       },
     });
   }
-
-  useEffect(() => {
-    async function get() {
-      await GET();
-    }
-    get();
-    // eslint-disable-next-line
-  }, []);
 
   const data = {
     holders: holders,

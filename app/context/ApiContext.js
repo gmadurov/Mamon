@@ -24,11 +24,19 @@ import { Alert } from "react-native";
  * use this to refresh tockens
  * */
 const ApiContext = createContext({
-  ApiRequest: async (url = "", config = {}) => {
-    res, data;
-  },
+  ApiRequest: async (url = "", config = {}) => {},
   ApiFileRequest: async (url = "", config = {}) => {},
   refreshToken: async (authTokens = {}) => {},
+  user: {
+    token_type: "",
+    exp: "",
+    iat: "",
+    jti: "",
+    user_id: 0,
+    name: "",
+    role: [],
+    lid_id: 0,
+  },
 });
 export default ApiContext;
 
@@ -37,47 +45,39 @@ export const ApiProvider = ({ children }) => {
   const { user, setAuthTokens, setUser, authTokens, logoutFunc } =
     useContext(AuthContext);
   /** makes the original request called but with the Bearer set and to the correct location */
-  const originalRequest = async (url, config) => {
+  async function originalRequest(url, config) {
     let urlFetch = `${baseUrl()}${url}`;
-    console.log(urlFetch, config);
+    // console.log(urlFetch, config);
 
     const res = await fetch(urlFetch, config);
     const data = await res.json();
-    if (res.status !== 200) {
-      Alert.alert(`Error ${res.status} fetching ${url}`);
+    if (res?.status !== 200) {
+      Alert.alert(`Error ${res?.status} fetching ${url}`);
     }
+    console.log([res, data]);
     return [res, data];
-  };
+  }
 
   /** gets the refresh token and update the local state and local storage */
-  const refreshToken = async (authToken, resignin = false) => {
+  async function refreshToken(authToken) {
     const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      /*  */ method: "POST",
+      headers: { Accept: "*/*", "Content-Type": "application/json" },
       body: JSON.stringify({
         refresh: authToken?.refresh,
       }),
     });
     let data = await res.json();
-    console.log(`${baseUrl()}/api/users/token/refresh/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        refresh: resignin
-          ? JSON.parse(authTokens).refresh
-          : authTokens?.refresh,
-      }),
-    });
-    if (res.status === 200) {
-      setAuthTokens(data); // if cycling refresh tokens
+    if (res?.status === 200) {
+      setAuthTokens(() => data); // if cycling refresh tokens
       setUser(jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
     } else {
-      console.log(`Problem met de refresh token: ${res}`);
+      console.log(`Problem met de refresh token: ${res?.status}`);
       await logoutFunc();
     }
-  };
+  }
 
   /** ## use this instead of fetch
    * @params {url: string , config : object}
@@ -86,35 +86,36 @@ export const ApiProvider = ({ children }) => {
     const isExpiredRefresh =
       dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
     const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
-    console.log({ isExpired, isExpiredRefresh });
     if (isExpiredRefresh) {
-      Alert.alert("refresh token is expired, you were logged out");
+      Alert.alert("refresh token has expired, you were logged out");
       await logoutFunc();
-    } else {
-      await refreshToken(authTokens);
     }
     if (isExpired && authTokens) {
+      console.log("isExpired 1");
       await refreshToken(authTokens);
+      console.log("isExpired 2");
     }
     config["headers"] = {
-      Authorization: `Bearer ${JSON.parse(authTokens)?.access}`,
+      Authorization: `Bearer ${authTokens?.access}`,
     };
-    // if (!config["headers"]["Content-type"]) {
-    //   config["headers"]["Content-type"] = "application/json";
-    // }
-    // if (user) {
-    //   console.log({ user, url, config });
-    //   const [res, data] = await originalRequest(url, config);
-    //   if (res !== 200) {
-    //     console.log("request Failed");
-    //   } else {
-    //     return { res, data };
-    //   }
-    // } else {
-    //   return { res: 503, data: [{}] };
-    // }
-    const [res, data] = await originalRequest(url, config);
-    return { res, data };
+    if (!config["headers"]["Content-type"]) {
+      config["headers"]["Content-type"] = "application/json";
+    }
+    if (user) {
+      const [res, data] = await originalRequest(url, config);
+      if (res?.status !== 200) {
+        console.warn("request Failed", res?.status);
+      } else {
+        // console.log("request successful");
+        // console.log(data);
+        return { res:res, data:data };
+      }
+    } else {
+      // console.log("no user", url, config);
+      return { res: { status: 503 }, data: [] };
+    }
+    // const [res, data] = await originalRequest(url, config);
+    // return { res, data };
   };
   /** ## ust this instead of fetch for Files
    * @params {url: string , config : object}
@@ -129,10 +130,10 @@ export const ApiProvider = ({ children }) => {
     };
     if (user) {
       const [res, data] = await originalRequest(url, config);
-      if (res.status === 401) {
+      if (res?.status === 401) {
         Alert.alert("Unauthorized", url, config);
       }
-      if (res.status === 403) {
+      if (res?.status === 403) {
         Alert.alert("Permision denied", url, config);
       }
       return { res, data };

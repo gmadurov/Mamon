@@ -1,13 +1,11 @@
 import { useContext } from "react";
-import HolderContext from "../context/HolderContext";
 import ProductContext from "../context/ProductContext";
 import { StyleSheet, Text, View } from "react-native";
 import { Card } from "@rneui/themed";
 
 const Purchase = ({ purchase }) => {
-  const { holders } = useContext(HolderContext);
   const { products } = useContext(ProductContext);
-  console.log(purchase);
+  // console.log(purchase);
   let total = 0;
   purchase?.orders?.map(
     (order) =>
@@ -19,8 +17,8 @@ const Purchase = ({ purchase }) => {
     <Card style={styles.container}>
       <Text>
         {/* {holders?.find((holder) => holder.id === purchase?.buyer).name}  */}
-        For a {purchase?.payed ? "payed" : "Loged"} total of €
-        {parseFloat(total).toPrecision(total <= 10 ? 3 : total <= 100 ? 4 : 5)}
+        For a {purchase?.payed ? "payed" : "loged"} total of €
+        {parseFloat(total).toPrecision(total <= 10 ? 3 : total <= 100 ? 4 : 5)}:
       </Text>
       {purchase?.orders?.map((order) => (
         <View key={"cart product" + order.product}>

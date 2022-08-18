@@ -20,7 +20,7 @@ const PurchaseContext = createContext({
 export default PurchaseContext;
 
 export const PurchaseProvider = ({ children }) => {
-  const { ApiRequest } = useContext(ApiContext);
+  const { user, ApiRequest } = useContext(ApiContext);
   const [purchases, setPurchases] = useState([]);
   async function GET() {
     setPurchases([]);
@@ -28,11 +28,11 @@ export const PurchaseProvider = ({ children }) => {
     //   .then(({ data }) => setPurchases(data))
     //   .catch(({ res }) => console.warn("Error with the Purchase request", res));
 
-    const { res, data } = await ApiRequest("/api/purchase/");
+    const { data } = await ApiRequest("/api/purchase/");
     setPurchases(data);
   }
   async function POST(purchase) {
-    const { res, data } = await ApiRequest("/api/purchase/", {
+    const { data } = await ApiRequest("/api/purchase/", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(purchase),
@@ -66,9 +66,12 @@ export const PurchaseProvider = ({ children }) => {
     async function get() {
       await GET();
     }
-    get();
+    if (user) {
+      get();
+    }
+
     // eslint-disable-next-line
-  }, []);
+  }, [user]);
   const data = {
     purchases: purchases,
     GET: GET,

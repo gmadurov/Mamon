@@ -10,12 +10,21 @@ import { FullProvider } from "./context/FullContext";
 import LoginScreen from "./screens/LoginScreen";
 import { GlobalStyles } from "./constants/styles";
 import AuthContext from "./context/AuthContext";
-import { useCallback, useContext, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import * as SplashScreen from "expo-splash-screen";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DrawerNavigator from "./navigation/DrawerNavigator";
 import ApiContext from "./context/ApiContext";
+import HolderContext from "./context/HolderContext";
+import PurchaseContext from "./context/PurchaseContext";
+import ProductContext from "./context/ProductContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -66,21 +75,33 @@ function AuthenticatedStack() {
 function Root() {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
 
-  const { refreshToken } = useContext(ApiContext);
+  const { user, refreshToken } = useContext(ApiContext);
+  const Holder = useContext(HolderContext);
+  const Purchase = useContext(PurchaseContext);
+  const Product = useContext(ProductContext);
 
   useLayoutEffect(() => {
     async function fetchToken() {
       const storedTokens = await AsyncStorage.getItem("authTokens");
-      // const storedTokens = {refresh: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2MDU5NDg0NCwiaWF0IjoxNjYwNTg5NDQ0LCJqdGkiOiJlMGY3YWZhODRkNzU0NGJjOWZlODgwZGNkNjhhMTRiMCIsInVzZXJfaWQiOjEsIm5hbWUiOiJHIE1hZHVybyIsInJvbGVzIjpbXSwiaG9sZGVyX2lkIjoxfQ.tsadTwKMDE9xGrGGFygUvfrz_hbT1f0JD3KOqEEGhkY"}
       if (storedTokens) {
+        console.log("refresh app 1");
         await refreshToken(JSON.parse(storedTokens), true);
+        console.log("refresh app 2");
       }
-      // setAuthTokens();
-      // setUser();
       setIsTryingLogin(false);
     }
     fetchToken();
   }, []);
+  useEffect(() => {
+    async function fetchToken() {
+      if (!isTryingLogin) {
+        await Purchase.GET();
+        await Product.GET();
+        await Holder.GET();
+      }
+    }
+    fetchToken();
+  }, [isTryingLogin]);
 
   const onLayoutRootView = useCallback(async () => {
     if (!isTryingLogin) {

@@ -17,7 +17,7 @@ const CartContext = createContext({
   setCart: () => {},
   add_to_cart: () => {},
   remove_from_cart: () => {},
-  buy_cart: async() => {},
+  buy_cart: async (buy, sell) => {},
 });
 export default CartContext;
 
@@ -60,7 +60,7 @@ export const CartProvider = ({ children }) => {
     await POST({
       orders: cart,
       seller: user?.holder_id ? user?.holder_id : 0,
-      payed: sell,
+      payed: sell === true ? true : false,
       buyer: buyer ? buyer : 0,
     });
     setCart([]);
