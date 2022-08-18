@@ -28,7 +28,7 @@ function Select({
   invalid,
   style,
   textInputConfig,
-  refreshFunction
+  refreshFunction,
 }) {
   const inputStyles = [styles.input, style];
   const [search, setSearch] = useState("");
@@ -58,10 +58,9 @@ function Select({
   // }, [search]);
 
   async function getHolders() {
-
-    setRefreshing(true)
-    await refreshFunction()
-    setRefreshing(false)
+    setRefreshing(true);
+    await refreshFunction();
+    setRefreshing(false);
   }
   return (
     <View
@@ -69,17 +68,17 @@ function Select({
       onPress={() => setModalVisible(false)}
     >
       <Button
+        android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         activeOpacity={0.6}
         style={inputStyles}
         underlayColor={GlobalStyles.colors.primary3}
         onPress={() => setModalVisible(!modalVisible)}
-      >
-        <Text style={[styles.label, invalid && styles.invalidLabel]}>
-          {defaultValue
+        title={
+          defaultValue
             ? options?.find((option) => option.value === defaultValue).label
-            : label}
-        </Text>
-      </Button>
+            : label
+        }
+      />
       <Modal
         animationType="none"
         transparent={true}
