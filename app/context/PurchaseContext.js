@@ -11,7 +11,20 @@ import ApiContext from "../context/ApiContext";
 
     DELETE: DELETE */
 const PurchaseContext = createContext({
-  purchases: [],
+  purchases: [
+    {
+      buyer: 0,
+      id: 0,
+      orders: [
+        {
+          id: 0,
+          product: 0,
+          quantity: 0,
+        },
+      ],
+      payed: false,
+    },
+  ],
   GET: async (purchase) => {},
   POST: async (purchase) => {},
   PUT: async (purchase) => {},

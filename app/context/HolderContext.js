@@ -3,7 +3,21 @@ import { useContext } from "react";
 import ApiContext from "../context/ApiContext";
 
 const HolderContext = createContext({
-  holders: [],
+  holders: [
+    {
+      id: 1,
+      ledenbase_id: 0,
+      name: "",
+      stand: 0,
+      user: {
+        email: "",
+        first_name: "",
+        id: 1,
+        last_name: "",
+        username: "",
+      },
+    },
+  ],
   searchHolders: [],
   GET: async () => {},
   POST: async (holder) => {},

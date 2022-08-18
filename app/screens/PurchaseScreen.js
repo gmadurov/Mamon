@@ -6,7 +6,6 @@ import Purchase from "../components/Purchase";
 const PurchaseScreen = () => {
   const { GET, purchases } = useContext(PurchaseContext);
   const [refreshing, setRefreshing] = useState(false);
-
   function renderItem(itemData) {
     return <Purchase purchase={itemData.item} />;
   }

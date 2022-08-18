@@ -14,7 +14,7 @@ import ApiContext from "../context/ApiContext";
     DELETE: DELETE,
  */
 const ProductContext = createContext({
-  products: [{ name: "", price: "" }],
+  products: [{ id: 0, name: "", price: "" }],
   GET: async () => {},
   POST: async (product) => {},
   PUT: async (product) => {},
