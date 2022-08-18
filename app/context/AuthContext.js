@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   const navigation = useNavigation();
 
   async function loginFunc(username, password) {
-    let res = await fetch(`${baseUrl()}/api/users/token/`, {
+    let res = await fetch(`${baseUrl()}/api/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
