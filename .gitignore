@@ -1,0 +1,12 @@
+environment/
+.env
+
+DEVELOP
+
+*.pyc
+*~
+*.sh
+*.swp
+*.dump
+*.sqlite3
+.expo/
