@@ -91,6 +91,7 @@ function Root() {
       setIsTryingLogin(false);
     }
     fetchToken();
+    // eslint-disable-next-line
   }, []);
   useEffect(() => {
     async function fetchToken() {
@@ -101,6 +102,7 @@ function Root() {
       }
     }
     fetchToken();
+    // eslint-disable-next-line
   }, [isTryingLogin]);
 
   const onLayoutRootView = useCallback(async () => {
