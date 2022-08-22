@@ -9,6 +9,7 @@ import { Button } from "@rneui/themed";
 import PropTypes from "prop-types";
 import CartItem from "./CartItem";
 import { GlobalStyles } from "../constants/styles";
+import { FlatList } from "react-native";
 export const Cart = ({ sell }) => {
   const { cart, setCart, buy_cart } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
@@ -25,18 +26,20 @@ export const Cart = ({ sell }) => {
   let optionsHolders = holders?.map((holder) => ({
     value: holder.id,
     label: holder?.name,
+    searchHelp: holder?.ledenbase_id.toString(),
   }));
   async function loadOptions(input = "") {
     let searchHolders = await SEARCH({ search: input });
     optionsHolders = searchHolders?.map((holder) => ({
       value: holder?.id,
       label: holder?.name,
+      searchHelp: holder?.ledenbase_id.toString(),
     }));
   }
   function renderProducts(itemData) {
     return (
       <CartItem
-        quantity={itemData.item.order}
+        quantity={itemData.item.quantity}
         product={products?.find(
           (product) => product.id === itemData.item.product
         )}
@@ -64,25 +67,30 @@ export const Cart = ({ sell }) => {
 
   return (
     <View style={styles.gridItem}>
-      <View style={[styles.innerContainer, {}]}>
+      <View
+        style={[
+          styles.innerContainer,
+          !cart.length > 0 && { alignItems: "center" },
+        ]}
+      >
         {!cart.length > 0 ? (
           <Text>Cart is empty</Text>
         ) : (
-          cart?.map((order) => (
-            <View key={"cart product" + order.product}>
-              <Text>
-                {order.quantity}{" "}
-                {products?.find((product) => product.id === order.product).name}
-                {order.quantity > 1 && "s"}
-              </Text>
-            </View>
-          ))
-          // <FlatList
-          //   data={cart}
-          //   keyExtractor={(order) => "cart product" + order.product}
-          //   renderItem={renderProducts}
-          //   numColumns={5}
-          // />
+          // cart?.map((order) => (
+          //   <View key={"cart product" + order.product}>
+          //     <Text>
+          //       {order.quantity}{" "}
+          //       {products?.find((product) => product.id === order.product).name}
+          //       {order.quantity > 1 && "s"}
+          //     </Text>
+          //   </View>
+          // ))
+          <FlatList
+            data={cart}
+            keyExtractor={(item) => "cart product" + item.product}
+            renderItem={renderProducts}
+            numColumns={1}
+          />
         )}
       </View>
       <View style={styles.view1}>
@@ -122,11 +130,13 @@ export const Cart = ({ sell }) => {
               setBuyer();
             }}
             title={
-              "Buy €" +
-              parseFloat(total).toPrecision(
-                total <= 10 ? 3 : total <= 100 ? 4 : 5
-              ) +
-              " "
+              disabled
+                ? "Geen Saldo"
+                : "Buy €" +
+                  parseFloat(total).toPrecision(
+                    total <= 10 ? 3 : total <= 100 ? 4 : 5
+                  ) +
+                  " "
             }
           />
         </View>
@@ -164,7 +174,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     justifyContent: "center",
-    alignItems: "center",
+    // alignItems: "center",
     backgroundColor: GlobalStyles.colors.primary4,
   },
   // title: {

@@ -20,7 +20,7 @@ import IconButton from "./IconButton";
  */
 function Select({
   defaultValue,
-  options,
+  options = { value: "", lable: "", searchHelp: "" },
   loadOptions,
   label,
   onSelect,
@@ -44,10 +44,16 @@ function Select({
   // let options;
   // search options based on label and search parameters
   // search param might not work yet
-  options = options?.filter((option) =>
-    // option.search?.toLowerCase().includes(search.toLowerCase()) |
-    option?.label?.toLowerCase().includes(search.toLowerCase())
-  );
+  options = options?.filter((option) => {
+    if (
+      option.searchHelp?.toLowerCase().includes(search.toLowerCase()) |
+      option.label?.toLowerCase().includes(search.toLowerCase())
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  });
 
   // useEffect(() => {
   //   async function get() {
@@ -70,7 +76,6 @@ function Select({
       <Button
         android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         activeOpacity={0.6}
-        style={inputStyles}
         underlayColor={GlobalStyles.colors.primary3}
         onPress={() => setModalVisible(!modalVisible)}
         title={

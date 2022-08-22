@@ -15,8 +15,8 @@ import AuthContext from "./AuthContext";
 const CartContext = createContext({
   cart: [],
   setCart: () => {},
-  add_to_cart: () => {},
-  remove_from_cart: () => {},
+  add_to_cart: (product) => {},
+  remove_from_cart: (product, quantity = 1) => {},
   buy_cart: async (buy, sell) => {},
 });
 export default CartContext;
@@ -44,17 +44,24 @@ export const CartProvider = ({ children }) => {
         )
       : setCart(() => [...cart, { quantity: 1, product: product.id }]);
   }
-  function remove_from_cart(product) {
-    cart.some((order) => order.product === product.id) &&
-    cart.find((order) => order.product === product.id).quantity > 1
-      ? setCart(() =>
-          cart.map((order) =>
-            order.product === product.id
-              ? { ...order, quantity: order.quantity - 1 }
-              : order
-          )
-        )
-      : setCart(() => cart.filter((order) => order.product !== product.id));
+  function remove_from_cart(product, quantity = 1) {
+    if (cart.some((order) => order.product === product.id)) {
+      if (
+        cart.find((order) => order.product === product.id).quantity === quantity
+      ) {
+        setCart(() => cart.filter((order) => order.product !== product.id));
+      } else {
+        cart.find((order) => order.product === product.id).quantity > 1
+          ? setCart(() =>
+              cart.map((order) =>
+                order.product === product.id
+                  ? { ...order, quantity: order.quantity - quantity }
+                  : order
+              )
+            )
+          : setCart(() => cart.filter((order) => order.product !== product.id));
+      }
+    }
   }
   async function buy_cart(buyer, sell) {
     await POST({
