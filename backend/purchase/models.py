@@ -1,6 +1,6 @@
 from operator import mod
-from re import U
-import uuid
+# from re import U
+# import uuid
 from django.db import models
 from colorfield.fields import ColorField
 
@@ -27,9 +27,9 @@ class Purchase(models.Model):
     orders = models.ManyToManyField("Order", related_name="ordered")
 
     created = models.DateTimeField(auto_now_add=True)
-    id = models.UUIDField(
-        default=uuid.uuid4, unique=True, primary_key=True, editable=False
-    )
+    # id = models.UUIDField(
+    #     default=uuid.uuid4, unique=True, primary_key=True, editable=False
+    # )
 
     def __str__(self):
         return (
