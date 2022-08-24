@@ -6,7 +6,6 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import Select from "./Select";
 import { Button } from "@rneui/themed";
 // import { FlatList } from "react-native-gesture-handler";
-import PropTypes from "prop-types";
 import CartItem from "./CartItem";
 import { GlobalStyles } from "../constants/styles";
 import { FlatList } from "react-native";
@@ -144,9 +143,7 @@ export const Cart = ({ sell }) => {
     </View>
   );
 };
-Cart.propTypes = {
-  sell: PropTypes.bool,
-};
+
 export default Cart;
 
 const styles = StyleSheet.create({

@@ -10,22 +10,23 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "dayjs": "^1.11.4",
-    "jwt-decode": "^3.1.2",
-    "@rneui/base": "^4.0.0-rc.6",
-    "expo-updates": "~0.14.4",
-    "@rneui/themed": "^4.0.0-rc.6",
-    "expo-status-bar": "~1.4.0",
     "@expo/vector-icons": "^13.0.0",
-    "expo-splash-screen": "~0.16.1",
-    "react-native-screens": "~3.15.0",
-    "react-native-reanimated": "~2.9.1",
+    "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-navigation/drawer": "^6.4.3",
     "@react-navigation/native": "^6.0.11",
-    "react-native-gesture-handler": "~2.5.0",
     "@react-navigation/native-stack": "^6.7.0",
+    "@rneui/base": "^4.0.0-rc.6",
+    "@rneui/themed": "^4.0.0-rc.6",
+    "dayjs": "^1.11.4",
+    "expo-splash-screen": "~0.16.1",
+    "expo-status-bar": "~1.4.0",
+    "expo-updates": "~0.14.4",
+    "jwt-decode": "^3.1.2",
+    "react-native": "0.68.2",
+    "react-native-gesture-handler": "~2.5.0",
+    "react-native-reanimated": "~2.9.1",
     "react-native-safe-area-context": "4.3.1",
-    "@react-native-async-storage/async-storage": "~1.17.3"
+    "react-native-screens": "~3.15.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

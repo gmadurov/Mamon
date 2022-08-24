@@ -3,6 +3,7 @@ import os
 
 import jwt
 import requests
+from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -10,6 +11,7 @@ from purchase.models import Order, Product, Purchase
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import Holder
 
 from .serializers import HolderSerializer, ProductSerializer, PurchaseSerializer
@@ -212,17 +214,11 @@ def LoginAllUsers(request):
             User.objects.get(username=request.data["username"]).holder.ledenbase_id
         ) > 1:
             raise Exception("User is from ledenbase")
-        token = safe_json_decode(
-            requests.post(
-                f"{request.scheme}://{request.get_host()}/api/users/token/",
-                data={
-                    "password": request.data["password"],
-                    "username": request.data["username"],
-                },
-            )
-        )[1]
+        user = authenticate(
+            password=request.data["password"],
+            username=request.data["username"],
+        )
     except:
-
         res, ledenbaseUser = safe_json_decode(
             requests.post(
                 os.environ.get("BACKEND_URL") + "/v2/login/",
@@ -245,6 +241,7 @@ def LoginAllUsers(request):
                 username=request.data["username"],
                 first_name=ledenbaseUser["user"]["first_name"],
                 last_name=ledenbaseUser["user"]["last_name"],
+                # user purposely doesnt have a password set here to make sure it 
             )
             holder = Holder.objects.get(
                 user=user,
@@ -252,12 +249,7 @@ def LoginAllUsers(request):
             holder.ledenbase_id = ledenbaseUser["user"]["id"]
             holder.save()
 
-        refresh = MyTokenObtainPairSerializer.get_token(user)
-        token = safe_json_decode(
-            requests.post(
-                f"{request.scheme}://{request.get_host()}/api/users/token/refresh/",
-                data={"refresh": refresh},
-            )
-        )[1]
+    refresh = RefreshToken.for_user(user)
+    response = {"refresh": str(refresh), "access": str(refresh.access_token)}
 
-    return Response(token or None)
+    return Response(response )
