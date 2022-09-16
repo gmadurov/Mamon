@@ -8,7 +8,8 @@ DEVELOP
 *.sh
 *.swp
 *.dump
+*.sqlite3
 backend/*.sqlite3
 .expo/
 .env
-backend/db.*
+backend/db.sqlite3
