@@ -1,0 +1,23 @@
+
+
+add remote to git repo 
+
+git push metis <branch>
+
+op metis 
+dokku apps:create mamon 
+
+dokku postgres:create mamon-db -I 14
+dokku postgres:link mamon-db mamon-db # set mamon DATABASE_URL variaable to mamon -db link 
+
+
+dokku config:set mamon <key>=<value>
+mkdir /home/mamon/staticfiles
+dokku storage:mount mamon /backend/staticfiles:/home/mamon/staticfiles
+
+dokku letsencrypt:enable mamon 
+
+
+
+
+dokku ssh-keys:add key_name <KEY>

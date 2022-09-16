@@ -32,7 +32,7 @@ LOCAL = True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2", "mamon2.herokuapp.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2", "mamon2.herokuapp.com", 'mamon.esrtheta.nl']
 
 JWT_KEY = os.environ.get("JWT_KEY")
 
