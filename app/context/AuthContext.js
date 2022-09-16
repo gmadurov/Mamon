@@ -6,7 +6,7 @@ import jwt_decode from "jwt-decode";
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
 export const baseUrl = () => {
-  let LOCAL = !true;
+  let LOCAL = true;
   let url;
   if (LOCAL) {
     url = "http://10.0.2.2:8080"; // this is what works for local tests
@@ -82,7 +82,10 @@ export const AuthProvider = ({ children }) => {
     let data = await res.json();
     if (res?.status === 200) {
       setAuthTokens(() => data);
-      setUser(() => jwt_decode(data.access));
+      setUser(
+        () =>
+          jwt_decode(data.access) 
+      );
       await AsyncStorage.setItem("authTokens", JSON.stringify(data));
       // await AsyncStorage.setItem("user", JSON.stringify(data.access));
       // navigation.replace("ProductsPage");

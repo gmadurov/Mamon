@@ -15,7 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import Holder
 
 from .serializers import HolderSerializer, ProductSerializer, PurchaseSerializer
-from .tokens import MyTokenObtainPairSerializer
+from .tokens import MyTokenObtainPairSerializer, MyTokenObtainPairView
 
 API_URL = "/api/"
 
@@ -241,7 +241,7 @@ def LoginAllUsers(request):
                 username=request.data["username"],
                 first_name=ledenbaseUser["user"]["first_name"],
                 last_name=ledenbaseUser["user"]["last_name"],
-                # user purposely doesnt have a password set here to make sure it 
+                # user purposely doesnt have a password set here to make sure it
             )
             holder = Holder.objects.get(
                 user=user,
@@ -252,4 +252,4 @@ def LoginAllUsers(request):
     refresh = RefreshToken.for_user(user)
     response = {"refresh": str(refresh), "access": str(refresh.access_token)}
 
-    return Response(response )
+    return Response(response)

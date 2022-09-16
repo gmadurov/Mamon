@@ -27,13 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # set to false before uploading
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get("DEBUG") == "True" else False
-LOCAL = not True
+LOCAL = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2", "bacchus2.herokuapp.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2", "mamon2.herokuapp.com"]
 
+JWT_KEY = os.environ.get("JWT_KEY")
 
 # Application definition
 

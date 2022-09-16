@@ -1,4 +1,5 @@
 from operator import mod
+
 # from re import U
 # import uuid
 from django.db import models
@@ -16,6 +17,19 @@ class Product(models.Model):
 
     def __str__(self):
         return str(self.name) + ", €" + str(self.price)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=20)
+    description = models.TextField(null=True, blank=True)
+    products = models.ManyToManyField(
+        Product,
+        related_name="cat_products",
+        blank=True,
+    )   
+    def __str__(self):
+        return str(self.name) 
+
 
 
 class Purchase(models.Model):
@@ -39,8 +53,9 @@ class Purchase(models.Model):
                 sum([item.quantity * item.product.price for item in self.orders.all()])
             )
         )
-    class Meta: 
-        ordering =['-created']
+
+    class Meta:
+        ordering = ["-created"]
 
 
 class Order(models.Model):

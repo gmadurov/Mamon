@@ -4,10 +4,14 @@ import ProductScreen from "../screens/ProductScreen";
 import LogOutScreen from "../screens/LogOutScreen";
 import PurchaseScreen from "../screens/PurchaseScreen";
 import AccountScreen from "../screens/AccountScreen";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
 const DrawerNavigator = () => {
+  const { user, authTokens } = useContext(AuthContext);
+  console.log(user, authTokens.access);
   return (
     <Drawer.Navigator
     // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
@@ -27,7 +31,7 @@ const DrawerNavigator = () => {
         name="Producten"
         children={() => <ProductScreen sell />}
         options={{
-          title: "Bacchus 2.0",
+          title: "Mamon",
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
@@ -36,7 +40,7 @@ const DrawerNavigator = () => {
         name="Log"
         children={() => <ProductScreen />}
         options={{
-          title: "Bacchus 2.0 (Log)",
+          title: "Mamon Log",
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />

@@ -70,7 +70,9 @@ export const ApiProvider = ({ children }) => {
     let data = await res.json();
     if (res?.status === 200) {
       setAuthTokens(() => data); // if cycling refresh tokens
-      setUser(jwt_decode(data?.access));
+      setUser(
+        jwt_decode(data?.access) 
+      );
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
     } else {
@@ -108,7 +110,7 @@ export const ApiProvider = ({ children }) => {
       } else {
         // console.log("request successful");
         // console.log(data);
-        return { res:res, data:data };
+        return { res: res, data: data };
       }
     } else {
       // console.log("no user", url, config);

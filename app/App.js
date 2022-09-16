@@ -63,7 +63,7 @@ function AuthenticatedStack() {
         name="ProductsPage"
         component={ProductScreen}
         options={{
-          title: "Bacchus 2.0",
+          title: "Mamon",
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
