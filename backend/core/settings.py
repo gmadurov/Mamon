@@ -32,7 +32,13 @@ LOCAL = False
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2", "mamon2.herokuapp.com", 'mamon.esrtheta.nl']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "10.0.2.2",
+    "mamon2.herokuapp.com",
+    "mamon.esrtheta.nl",
+]
 
 JWT_KEY = os.environ.get("JWT_KEY")
 
@@ -92,6 +98,8 @@ TEMPLATES = [
         },
     },
 ]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"  # new
+
 
 WSGI_APPLICATION = "core.wsgi.application"
 
@@ -158,7 +166,7 @@ STATIC_URL = "/static/"
 MEDIA_URL = "/images/"
 # STATICFILES_DIRS = [BASE_DIR / "static"]
 STATICFILES_DIRS = [BASE_DIR / "static"]
-MEDIA_ROOT = BASE_DIR / "static/images"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
