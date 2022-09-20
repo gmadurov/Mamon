@@ -1,7 +1,7 @@
 asgiref==3.5.2
 certifi==2022.6.15
 charset-normalizer==2.1.0
-Django==4.1
+Django==4.0
 django-colorfield==0.7.2
 django-cors-headers==3.13.0
 django-storages==1.13.1

@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 # set to false before uploading
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ.get("DEBUG") == "True" else False
+DEBUG = True  if os.environ.get("DEBUG") == "True" else False
 LOCAL = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -34,8 +34,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 ALLOWED_HOSTS = [
     "localhost",
-    "127.0.0.1",
-    "10.0.2.2",
     "mamon2.herokuapp.com",
     "mamon.esrtheta.nl",
 ]
@@ -161,13 +159,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-STATIC_URL = "/static/"
-# start
-MEDIA_URL = "/images/"
 # STATICFILES_DIRS = [BASE_DIR / "static"]
-STATICFILES_DIRS = [BASE_DIR / "static"]
-MEDIA_ROOT = BASE_DIR / "mediafiles"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [ "static"]
+
+# print(BASE_DIR)
+STATIC_ROOT = BASE_DIR /'staticfiles'
+STATIC_URL  = '/staticfiles/'
+
+MEDIA_ROOT = 'mediafiles'
+MEDIA_URL  = '/mediafiles/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

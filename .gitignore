@@ -14,5 +14,5 @@ backend/*.sqlite3
 .env
 backend/db.sqlite3
 backend/static/
-backend/staticfiles/
-backend/mediafiles/
+# backend/staticfiles/
+# backend/mediafiles/

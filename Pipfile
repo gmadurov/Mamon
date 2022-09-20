@@ -3,9 +3,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
-
-
 [scripts]
 all = """sh -c \"
     python backend/manage.py makemigrations \
@@ -25,14 +22,11 @@ shell = """sh -c \"python backend/manage.py shell \""""
 collectStatic = """sh -c \"python backend/manage.py collectstatic \""""
 start = """sh -c \"cd app && expo start \""""
 
-
-
-
 [packages]
 asgiref = "==3.5.2"
 certifi = "==2022.6.15"
 charset-normalizer = "==2.1.0"
-django = "==4.1"
+django = "==4.0"
 django-colorfield = "==0.7.2"
 django-cors-headers = "==3.13.0"
 django-storages = "==1.13.1"
