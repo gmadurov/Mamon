@@ -5,6 +5,15 @@ export const GlobalStyles = {
     primary3: "#364652",
     primary4: "#F2542D",
     primary5: "#1E2EDE",
+
+
+
+    primary1: "#FFDD00", // backgorund
+    primary2: "#92B4A7",
+    primary3: "#364652",
+    offwhite: "#FAFAFA",
+    white: "#FFFFFF",
+
     accent500: "#f7bc0c",
     errorMessage: "#FE5F55",
     infoMessage: "#403F4C",

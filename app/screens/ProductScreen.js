@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import {
+  Dimensions,
   FlatList,
   KeyboardAvoidingView,
   RefreshControl,
@@ -13,7 +14,7 @@ import ProductTile from "../components/ProductTile";
 import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
 import ProductForm from "../components/ProductForm";
-
+const { width } = Dimensions.get("screen");
 const ProductScreen = ({ edit, sell }) => {
   const { GET, products } = useContext(ProductContext);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,7 +52,7 @@ const ProductScreen = ({ edit, sell }) => {
           data={products}
           keyExtractor={(item) => item.id}
           renderItem={renderProducts}
-          numColumns={2}
+          numColumns={Math.floor(width / 196)}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

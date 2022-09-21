@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "owner": "gusmadvol",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/pwa-icons/manifest-icon-512.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/pwa-icons/manifest-icon-512.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/pwa-icons/manifest-icon-512.png",
         "backgroundColor": "#FFFFFF"
       }
     },

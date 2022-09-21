@@ -12,13 +12,13 @@ function LoginScreen() {
   async function loginHandler(username, password) {
     setIsAuthenticating(true);
     try {
-      await loginFunc(username, password);
+      await loginFunc(username, password, setIsAuthenticating);
     } catch (error) {
-      Alert.alert([
-        "Authentication failed!",
-        "Could not log you in. Please check your credentials or try again later!",
-        error,
-      ]);
+      // Alert.alert([
+      //   "Authentication failed!",
+      //   "Could not log you in. Please check your credentials or try again later!",
+      //   error,
+      // ]);
       setIsAuthenticating(false);
     }
   }

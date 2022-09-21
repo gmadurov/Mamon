@@ -2,14 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import jwt_decode from "jwt-decode";
+import { showMessage, hideMessage } from "react-native-flash-message";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
 export const baseUrl = () => {
-  let LOCAL = !true;
+  let LOCAL = true;
   let url;
   if (LOCAL) {
-    url = "http://10.0.2.2:8080"; // this is what works for local tests
+    url = "http://10.0.2.2:8000"; // this is what works for local tests
   } else {
     url = "https://mamon2.herokuapp.com";
   }
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   };
   const navigation = useNavigation();
 
-  async function loginFunc(username, password) {
+  async function loginFunc(username, password, setIsAuthenticating) {
     let res = await fetch(`${baseUrl()}/api/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -82,15 +83,26 @@ export const AuthProvider = ({ children }) => {
     let data = await res.json();
     if (res?.status === 200) {
       setAuthTokens(() => data);
-      setUser(
-        () =>
-          jwt_decode(data.access) 
-      );
+      setUser(() => jwt_decode(data.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data));
       // await AsyncStorage.setItem("user", JSON.stringify(data.access));
       // navigation.replace("ProductsPage");
     } else {
-      console.warn(`Error with ${data.detail}`);
+      showMessage({
+        message: "Account info klopt niet",
+        description: data.message
+          ? data?.message
+          : data?.non_field_errors
+          ? data?.non_field_errors
+          : "",
+        type: "danger",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 1500,
+      });
+      setIsAuthenticating(false);
+      // navigation.navigate(-1);
     }
   }
 

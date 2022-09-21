@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 import AuthContext, { baseUrl } from "./AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
+import { showMessage } from "react-native-flash-message";
 
 // ("https://stropdas2.herokuapp.com/");
 /**### use this instead of fetch
@@ -52,9 +53,18 @@ export const ApiProvider = ({ children }) => {
     const res = await fetch(urlFetch, config);
     const data = await res.json();
     if (res?.status !== 200) {
-      Alert.alert(`Error ${res?.status} fetching ${url}`);
+      // Alert.alert(`Error ${res?.status} fetching ${url}`);
+      showMessage({
+        message: `Error ${res?.status}`,
+        description: `fetching ${url}`,
+        type: "danger",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 1500,
+      });
     }
-    console.log([res, data]);
+    // console.log([res, data]);
     return [res, data];
   }
 
@@ -70,13 +80,22 @@ export const ApiProvider = ({ children }) => {
     let data = await res.json();
     if (res?.status === 200) {
       setAuthTokens(() => data); // if cycling refresh tokens
-      setUser(
-        jwt_decode(data?.access) 
-      );
+      setUser(jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
+      return user
     } else {
-      console.log(`Problem met de refresh token: ${res?.status}`);
+      // console.log(`Problem met de refresh token: ${res?.status}`);
+      showMessage({
+        message: "Refresh token expired",
+        description:
+          "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
+        type: "info",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 1500,
+      });
       await logoutFunc();
     }
   }
@@ -93,9 +112,9 @@ export const ApiProvider = ({ children }) => {
       await logoutFunc();
     }
     if (isExpired && authTokens) {
-      console.log("isExpired 1");
+      // console.log("isExpired 1");
       await refreshToken(authTokens);
-      console.log("isExpired 2");
+      // console.log("isExpired 2");
     }
     config["headers"] = {
       Authorization: `Bearer ${authTokens?.access}`,
@@ -105,11 +124,8 @@ export const ApiProvider = ({ children }) => {
     }
     if (user) {
       const [res, data] = await originalRequest(url, config);
-      if (res?.status !== 200) {
-        console.warn("request Failed", res?.status);
-      } else {
-        // console.log("request successful");
-        // console.log(data);
+      if (res?.status === 200) {
+        // console.warn("request Failed", res?.status);
         return { res: res, data: data };
       }
     } else {
@@ -125,7 +141,7 @@ export const ApiProvider = ({ children }) => {
   const ApiFileRequest = async (url, config = {}) => {
     const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
     if (isExpired) {
-      refreshToken(authTokens);
+      await refreshToken(authTokens);
     }
     config["headers"] = {
       Authorization: `Authentication ${authTokens?.access}`,
@@ -133,10 +149,28 @@ export const ApiProvider = ({ children }) => {
     if (user) {
       const [res, data] = await originalRequest(url, config);
       if (res?.status === 401) {
-        Alert.alert("Unauthorized", url, config);
+        // Alert.alert("", url, config);
+        showMessage({
+          message: `Unauthorized`,
+          description: ``,
+          type: "danger",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+        });
       }
       if (res?.status === 403) {
-        Alert.alert("Permision denied", url, config);
+        // Alert.alert("", url, config);
+        showMessage({
+          message: `Permision denied`,
+          description: ``,
+          type: "danger",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+        });
       }
       return { res, data };
     }

@@ -45,7 +45,10 @@ export const Cart = ({ sell }) => {
       />
     );
   }
-
+  async function buy() {
+    await buy_cart(buyer, sell);
+    setBuyer();
+  }
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
@@ -124,10 +127,7 @@ export const Cart = ({ sell }) => {
             ]}
             color="green"
             disabled={disabled}
-            onPress={() => {
-              buy_cart(buyer, sell);
-              setBuyer();
-            }}
+            onPress={buy}
             title={
               disabled
                 ? "Geen Saldo"
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     // alignItems: "center",
-    backgroundColor: GlobalStyles.colors.primary4,
+    backgroundColor: GlobalStyles.colors.offwhite,
   },
   // title: {
   //   fontWeight: "bold",

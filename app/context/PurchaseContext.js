@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
+import { showMessage } from "react-native-flash-message";
 import ApiContext from "../context/ApiContext";
 /**purchases: purchases,
  * 
@@ -49,6 +50,16 @@ export const PurchaseProvider = ({ children }) => {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(purchase),
+    });
+    showMessage({
+      message: `Purchase was successful`,
+      description: ``,
+      type: "succes",
+      floating: true,
+      hideStatusBar: true,
+      autoHide: true,
+      duration: 500,
+      position: "bottom",
     });
     setPurchases([...purchases, data]);
   }

@@ -1,5 +1,12 @@
 import { useState, useContext } from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+} from "react-native";
 import { GlobalStyles } from "../constants/styles";
 import CartContext from "../context/CartContext";
 import ProductContext from "../context/ProductContext";
@@ -68,6 +75,10 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
             },
           ]}
         >
+          <Image
+            source={require("../assets/user-default.jpg")}
+            style={styles.avatar}
+          />
           <Text style={styles.title}>
             {edit === true && !quantity && deleted && "Delete"}
             {quantity && quantity} {product?.name}
@@ -114,6 +125,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 15,
+    zIndex: 1,
+    // position: 'absolute',
+  },
+  avatar: {
+    width: 124,
+    height: 124,
+    borderRadius: 62,
+    borderWidth: 0,
+    opacity: 0.9,
+    position: "absolute",
+    marginBottom: 10,
   },
 });

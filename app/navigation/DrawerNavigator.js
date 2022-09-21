@@ -11,7 +11,7 @@ const Drawer = createDrawerNavigator();
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
 const DrawerNavigator = () => {
   const { user, authTokens } = useContext(AuthContext);
-  console.log(user, authTokens.access);
+  // console.log(user, authTokens?.access);
   return (
     <Drawer.Navigator
     // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
@@ -26,7 +26,7 @@ const DrawerNavigator = () => {
           ),
         }}
       /> */}
-
+      
       <Drawer.Screen
         name="Producten"
         children={() => <ProductScreen sell />}
@@ -44,15 +44,15 @@ const DrawerNavigator = () => {
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="PurchaseScreen"
         children={() => <PurchaseScreen />}
         options={{
           title: "My Purchases",
           backgroundColor: GlobalStyles.colors.primary1,
         }}
-      />
-      <Drawer.Screen
+      /> */}
+<Drawer.Screen
         name="AccountScreen"
         children={() => <AccountScreen />}
         options={{

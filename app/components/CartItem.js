@@ -28,7 +28,7 @@ const CartItem = ({ quantity, product }) => {
         name={"close-circle-outline"}
         size={24}
         style={styles.input}
-        color={GlobalStyles.colors.textColorLight}
+        color={GlobalStyles.colors.textColorDark}
         onPress={onRemove}
       />
     </View>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderRadius: 20,
     maxHeight: 50,
-    backgroundColor: GlobalStyles.colors.primary5,
+    backgroundColor: GlobalStyles.colors.white,
     shadowColor: GlobalStyles.colors.shadowColor,
     shadowOpacity: 0.25,
     shadowOffset: { width: 10, height: 12 },
@@ -73,13 +73,13 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     fontSize: 15,
-    color: GlobalStyles.colors.textColorLight,
+    color: GlobalStyles.colors.textColorDark,
   },
   input: {
     padding: 6,
     fontSize: 18,
     height: 35,
-    color: GlobalStyles.colors.textColorLight,
+    color: GlobalStyles.colors.textColorDark,
   },
 });
 

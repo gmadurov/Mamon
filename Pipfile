@@ -21,6 +21,7 @@ migrate = """sh -c \"python backend/manage.py migrate \""""
 shell = """sh -c \"python backend/manage.py shell \""""
 collectStatic = """sh -c \"python backend/manage.py collectstatic \""""
 start = """sh -c \"cd app && expo start \""""
+launch = """sh -c \"gunicorn core.wsgi --chdir backend  --log-file - \""""
 
 [packages]
 asgiref = "==3.5.2"

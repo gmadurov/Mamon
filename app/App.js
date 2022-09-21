@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "react-native-gesture-handler";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 import ProductScreen from "./screens/ProductScreen";
 import { FullProvider } from "./context/FullContext";
@@ -84,9 +85,28 @@ function Root() {
     async function fetchToken() {
       const storedTokens = await AsyncStorage.getItem("authTokens");
       if (storedTokens) {
-        console.log("refresh app 1");
-        await refreshToken(JSON.parse(storedTokens), true);
-        console.log("refresh app 2");
+        // console.log("refresh app 1");
+        showMessage({
+          message: `Authentication woord refreshed`,
+          description: ``,
+          type: "info",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+        });
+        const user = await refreshToken(JSON.parse(storedTokens), true);
+        if (user) {
+          showMessage({
+            message: `Authentication is refreshed`,
+            description: ``,
+            type: "info",
+            floating: true,
+            hideStatusBar: true,
+            autoHide: true,
+            duration: 1500,
+          });
+        }
       }
       setIsTryingLogin(false);
     }
@@ -132,6 +152,8 @@ function Navigation() {
   );
 }
 
+// messages
+// "success" (green), "warning" (orange), "danger" (red), "info" (blue) and "default" (gray)
 export default function App() {
   return (
     <>
@@ -141,6 +163,7 @@ export default function App() {
           <Root />
         </FullProvider>
       </NavigationContainer>
+      <FlashMessage position="top" />
     </>
   );
 }

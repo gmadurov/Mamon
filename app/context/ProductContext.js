@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
+import { showMessage } from "react-native-flash-message";
 import ApiContext from "../context/ApiContext";
 
 /**
@@ -46,11 +47,21 @@ export const ProductProvider = ({ children }) => {
       },
       body: JSON.stringify(product),
     });
+    console.log(data);
     setProducts(() =>
       products?.map((product_from_map) =>
         product.id === product_from_map.id ? data : product_from_map
       )
     );
+    showMessage({
+      message: `Product aangepast`,
+      description: `naar ${data.name} €${data.price}`,
+      type: "info",
+      floating: true,
+      hideStatusBar: true,
+      autoHide: true,
+      duration: 1500,
+    });
   }
   async function DELETE(product) {
     await ApiRequest(`/api/product/${product.id}`, {
