@@ -14,11 +14,10 @@ import ProductTile from "../components/ProductTile";
 import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
 import ProductForm from "../components/ProductForm";
-import NfcManager, {NfcTech} from 'react-native-nfc-manager';
-
 
 
 const { width } = Dimensions.get("screen");
+
 const ProductScreen = ({ edit, sell }) => {
   const { GET, products } = useContext(ProductContext);
   const [refreshing, setRefreshing] = useState(false);
@@ -41,9 +40,9 @@ const ProductScreen = ({ edit, sell }) => {
   }
   return (
     <>
-      <View style={styles.cartView}>
+      <View style={edit ? { flex: 2 } : styles.cartView}>
         {edit ? (
-          <KeyboardAvoidingView style={styles.cartView}>
+          <KeyboardAvoidingView style={[styles.cartView]}>
             <ProductForm create selected={selected} setSelected={setSelected} />
           </KeyboardAvoidingView>
         ) : (

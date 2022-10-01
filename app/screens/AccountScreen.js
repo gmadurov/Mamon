@@ -11,7 +11,7 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import AuthContext from "../context/AuthContext";
+import AuthContext, { baseUrl } from "../context/AuthContext";
 import { GlobalStyles } from "../constants/styles";
 import HolderContext from "../context/HolderContext";
 import { useNavigation } from "@react-navigation/native";
@@ -28,17 +28,15 @@ let HeaderHeight = 100;
 
 const AccountScreen = () => {
   const { user, authTokens } = useContext(AuthContext);
-  const { holders, PUT } = useContext(HolderContext);
+  const { holders, GET: getHolders, PUT } = useContext(HolderContext);
   const navigation = useNavigation();
   const holder = holders?.find((holder) => holder.id === user?.user_id);
   const { GET, purchases } = useContext(PurchaseContext);
   const [refreshing, setRefreshing] = useState(false);
-  function renderItem(itemData) {
-    return <Purchase purchase={itemData.item} />;
-  }
   async function refresh() {
     setRefreshing(true);
     await GET();
+    await getHolders();
     setRefreshing(false);
   }
 
@@ -65,6 +63,12 @@ const AccountScreen = () => {
   // useLayoutEffect(() => {
   //   navigation.setOptions({ title: "My Account" + holder?.stand });
   // }, [navigation]);
+  console.log(holder);
+  holder?.image !== "/mediafiles/holder/user-default.jpg"
+    ? console.log(holder?.image)
+    : holder?.image_ledenbase
+    ? console.log(holder?.image_ledenbase)
+    : console.log("../assets/user-default.jpg");
   return (
     <Block flex style={styles.profile}>
       <Block flex>
@@ -73,110 +77,133 @@ const AccountScreen = () => {
           style={styles.profileContainer}
           imageStyle={styles.profileBackground}
         >
-          {/* <ScrollView
+          <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ width, marginTop: "25%" }}
-          > */}
-          <Block flex style={styles.profileCard}>
-            <Block middle style={styles.avatarContainer}>
-              <Image
-                source={require("../assets/user-default.jpg")}
-                style={styles.avatar}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => refresh()}
               />
-            </Block>
-            <Block style={styles.info}>
-              <Block
-                middle
-                row
-                space="evenly"
-                style={{ marginTop: 20, paddingBottom: 24 }}
-              >
-                <Button
-                  small
-                  style={{ backgroundColor: GlobalStyles.colors.primary1 }}
-                  onPress={() => ChangeStand(10)}
-                >
-                  add €10
-                </Button>
-                <Button
-                  small
-                  style={{ backgroundColor: GlobalStyles.colors.primary1 }}
-                  onPress={() => ChangeStand(-10)}
-                >
-                  remove €10
-                </Button>
+            }
+          >
+            <Block flex style={styles.profileCard}>
+              <Block middle style={styles.avatarContainer}>
+                {holder?.image !== "/mediafiles/holder/user-default.jpg" ? (
+                  <Image
+                    source={{ uri: holder?.image }}
+                    style={styles.avatar}
+                  />
+                ) : holder?.image_ledenbase ? (
+                  <Image
+                    source={{ uri: holder?.image_ledenbase }}
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <Image
+                    source={require("../assets/user-default.jpg")}
+                    style={styles.avatar}
+                  />
+                )}
               </Block>
-            </Block>
-            <Block flex style={styles.info}>
-              <Block middle style={styles.nameInfo}>
-                <Text bold size={28} color="#32325D">
-                  {holder?.name}
-                </Text>
-                <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
-                  €{holder?.stand}
-                </Text>
-              </Block>
-              <Block row space="between">
-                <Block middle>
-                  <Text
-                    bold
-                    size={18}
-                    color="#525F7F"
-                    style={{ marginBottom: 4 }}
+              <Block style={styles.info}>
+                <Block
+                  middle
+                  row
+                  space="evenly"
+                  style={{ marginTop: 20, paddingBottom: 24 }}
+                >
+                  <Button
+                    small
+                    style={{ backgroundColor: GlobalStyles.colors.primary1 }}
+                    onPress={() => ChangeStand(10)}
                   >
-                    {purchases.length}
-                  </Text>
-                  <Text size={12} color={GlobalStyles.colors.textColorDark}>
-                    Orders
-                  </Text>
-                </Block>
-                <Block middle>
-                  <Text
-                    bold
-                    color="#525F7F"
-                    size={18}
-                    style={{ marginBottom: 4 }}
+                    add €10
+                  </Button>
+                  <Button
+                    small
+                    style={{ backgroundColor: GlobalStyles.colors.primary1 }}
+                    onPress={() => ChangeStand(-10)}
                   >
-                    {totalBier}
-                  </Text>
-                  <Text size={12} color={GlobalStyles.colors.textColorDark}>
-                    Biers
-                  </Text>
-                </Block>
-                <Block middle>
-                  <Text
-                    bold
-                    color="#525F7F"
-                    size={18}
-                    style={{ marginBottom: 4 }}
-                  >
-                    {totalHappen}
-                  </Text>
-                  <Text size={12} color={GlobalStyles.colors.textColorDark}>
-                    Happen
-                  </Text>
+                    remove €10
+                  </Button>
                 </Block>
               </Block>
-              <Block middle style={{ marginTop: 30, marginBottom: 16 }}>
-                <Block style={styles.divider} />
-              </Block>
-              <Block row space="between">
-                <Text bold size={16} color="#525F7F" style={{ marginTop: 12 }}>
-                  Purchases
-                </Text>
-                <Button
-                  small
-                  color="transparent"
-                  textStyle={{
-                    color: "#5E72E4",
-                    fontSize: 12,
-                    marginLeft: 24,
-                  }}
-                >
-                  View all
-                </Button>
-              </Block>
-              <FlatList
+              <Block flex style={styles.info}>
+                <Block middle style={styles.nameInfo}>
+                  <Text bold size={28} color="#32325D">
+                    {holder?.name}
+                  </Text>
+                  <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
+                    €{holder?.stand}
+                  </Text>
+                </Block>
+                <Block row space="between">
+                  <Block middle>
+                    <Text
+                      bold
+                      size={18}
+                      color="#525F7F"
+                      style={{ marginBottom: 4 }}
+                    >
+                      {purchases.length}
+                    </Text>
+                    <Text size={12} color={GlobalStyles.colors.textColorDark}>
+                      Orders
+                    </Text>
+                  </Block>
+                  <Block middle>
+                    <Text
+                      bold
+                      color="#525F7F"
+                      size={18}
+                      style={{ marginBottom: 4 }}
+                    >
+                      {totalBier}
+                    </Text>
+                    <Text size={12} color={GlobalStyles.colors.textColorDark}>
+                      Biers
+                    </Text>
+                  </Block>
+                  <Block middle>
+                    <Text
+                      bold
+                      color="#525F7F"
+                      size={18}
+                      style={{ marginBottom: 4 }}
+                    >
+                      {totalHappen}
+                    </Text>
+                    <Text size={12} color={GlobalStyles.colors.textColorDark}>
+                      Happen
+                    </Text>
+                  </Block>
+                </Block>
+                <Block middle style={{ marginTop: 30, marginBottom: 16 }}>
+                  <Block style={styles.divider} />
+                </Block>
+                <Block row space="between">
+                  <Text
+                    bold
+                    size={16}
+                    color="#525F7F"
+                    style={{ marginTop: 12 }}
+                  >
+                    Purchases
+                  </Text>
+                  <Button
+                    small
+                    color="transparent"
+                    textStyle={{
+                      color: "#5E72E4",
+                      fontSize: 12,
+                      marginLeft: 24,
+                    }}
+                  >
+                    View all
+                  </Button>
+                </Block>
+                {/* <FlatList
                 data={purchases}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
@@ -186,10 +213,14 @@ const AccountScreen = () => {
                     onRefresh={() => refresh()}
                   />
                 }
-              />
+              /> */}
+
+                {purchases.map((purchase) => (
+                  <Purchase key={purchase.id} purchase={purchase} />
+                ))}
+              </Block>
             </Block>
-          </Block>
-          {/* </ScrollView> */}
+          </ScrollView>
         </ImageBackground>
       </Block>
       {/* <ScrollView showsVerticalScrollIndicator={false} 

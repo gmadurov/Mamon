@@ -10,6 +10,7 @@ const ProductForm = ({ style, create, selected, setSelected }) => {
   const { products, POST, PUT } = useContext(ProductContext);
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
+  const [color, setColor] = useState("");
 
   useEffect(() => {
     setProductName(
@@ -24,8 +25,13 @@ const ProductForm = ({ style, create, selected, setSelected }) => {
           ).toString()
         : ""
     );
+    setColor(
+      selected !== 0
+        ? products?.find((product) => product.id === selected)?.color
+        : ""
+    );
     setDisabled();
-     // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [selected]);
 
   function handleSubmit() {
@@ -52,11 +58,12 @@ const ProductForm = ({ style, create, selected, setSelected }) => {
           onUpdateValue={setProductName}
           value={productName}
         />
+        <Input label="Color             " onUpdateValue={setColor} value={color} />
         <Input
           label="Product Price"
           onUpdateValue={setProductPrice}
           value={productPrice}
-          keyboardType="numeric"
+          keyboardType="numberic"
         />
       </View>
       <View style={styles.view1}>
@@ -103,6 +110,7 @@ const ProductForm = ({ style, create, selected, setSelected }) => {
           title={"Unselect product"}
         />
       </View>
+
       {/* </View> */}
     </View>
   );
