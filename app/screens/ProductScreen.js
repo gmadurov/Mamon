@@ -15,6 +15,7 @@ import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
 import ProductForm from "../components/ProductForm";
 
+
 const { width } = Dimensions.get("screen");
 
 const ProductScreen = ({ edit, sell }) => {
