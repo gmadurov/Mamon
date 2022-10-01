@@ -14,6 +14,10 @@ import ProductTile from "../components/ProductTile";
 import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
 import ProductForm from "../components/ProductForm";
+import NfcManager, {NfcTech} from 'react-native-nfc-manager';
+
+
+
 const { width } = Dimensions.get("screen");
 const ProductScreen = ({ edit, sell }) => {
   const { GET, products } = useContext(ProductContext);

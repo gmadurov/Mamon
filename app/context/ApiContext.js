@@ -25,8 +25,12 @@ import { showMessage } from "react-native-flash-message";
  * use this to refresh tockens
  * */
 const ApiContext = createContext({
-  ApiRequest: async (url = "", config = {}) => {},
-  ApiFileRequest: async (url = "", config = {}) => {},
+  ApiRequest: async (url = "", config = {}) => {
+    return { res: [], data: [] };
+  },
+  ApiFileRequest: async (url = "", config = {}) => {
+    return { res: [], data: [] };
+  },
   refreshToken: async (authTokens = {}) => {},
   user: {
     token_type: "",
@@ -83,7 +87,7 @@ export const ApiProvider = ({ children }) => {
       setUser(jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
-      return user
+      return user;
     } else {
       // console.log(`Problem met de refresh token: ${res?.status}`);
       showMessage({
