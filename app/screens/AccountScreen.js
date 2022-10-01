@@ -28,7 +28,7 @@ let HeaderHeight = 100;
 
 const AccountScreen = () => {
   const { user, authTokens } = useContext(AuthContext);
-  const { holders, GET:getHolders, PUT } = useContext(HolderContext);
+  const { holders, GET: getHolders, PUT } = useContext(HolderContext);
   const navigation = useNavigation();
   const holder = holders?.find((holder) => holder.id === user?.user_id);
   const { GET, purchases } = useContext(PurchaseContext);
@@ -36,7 +36,7 @@ const AccountScreen = () => {
   async function refresh() {
     setRefreshing(true);
     await GET();
-    await getHolders()
+    await getHolders();
     setRefreshing(false);
   }
 
@@ -63,7 +63,12 @@ const AccountScreen = () => {
   // useLayoutEffect(() => {
   //   navigation.setOptions({ title: "My Account" + holder?.stand });
   // }, [navigation]);
-  // console.log(holder);
+  console.log(holder);
+  holder?.image !== "/mediafiles/holder/user-default.jpg"
+    ? console.log(holder?.image)
+    : holder?.image_ledenbase
+    ? console.log(holder?.image_ledenbase)
+    : console.log("../assets/user-default.jpg");
   return (
     <Block flex style={styles.profile}>
       <Block flex>
@@ -86,7 +91,12 @@ const AccountScreen = () => {
               <Block middle style={styles.avatarContainer}>
                 {holder?.image !== "/mediafiles/holder/user-default.jpg" ? (
                   <Image
-                    source={baseUrl() + holder?.image}
+                    source={{ uri: holder?.image }}
+                    style={styles.avatar}
+                  />
+                ) : holder?.image_ledenbase ? (
+                  <Image
+                    source={{ uri: holder?.image_ledenbase }}
                     style={styles.avatar}
                   />
                 ) : (

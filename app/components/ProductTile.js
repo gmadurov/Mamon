@@ -74,7 +74,7 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
           ]}
         >
           {product?.image_url ? (
-            <Image source={product?.image_url} style={styles.avatar} />
+            <Image source={{ uri: product?.image_url }} style={styles.avatar} />
           ) : (
             <Image
               source={require("../assets/default-product.png")}

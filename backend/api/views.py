@@ -234,7 +234,12 @@ def LoginAllUsers(request):
                 status=res.status_code,
             )
         try:
-            user = Holder.objects.get(ledenbase_id=ledenbaseUser["user"]["id"]).user
+            print(ledenbaseUser)
+            holder = Holder.objects.get(ledenbase_id=ledenbaseUser["user"]["id"])
+            user =  holder.user
+            holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser['user']['photo_url']
+            holder.save()
+            
         except:
             # create user and update holder info as required if user is not in database
             user = User.objects.create(
@@ -247,6 +252,7 @@ def LoginAllUsers(request):
                 user=user,
             )
             holder.ledenbase_id = ledenbaseUser["user"]["id"]
+            holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser['user']['photo_url']
             holder.save()
 
     refresh = RefreshToken.for_user(user)

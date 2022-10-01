@@ -19,6 +19,9 @@ class Holder(models.Model):
         blank=True,
         default="holder/user-default.jpg",
     )
+    image_ledenbase = models.CharField(max_length=100,null=True, blank=True)
+
+
 
     @property
     def name(self):
