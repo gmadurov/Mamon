@@ -63,12 +63,12 @@ const AccountScreen = () => {
   // useLayoutEffect(() => {
   //   navigation.setOptions({ title: "My Account" + holder?.stand });
   // }, [navigation]);
-  console.log(holder);
-  holder?.image !== "/mediafiles/holder/user-default.jpg"
-    ? console.log(holder?.image)
-    : holder?.image_ledenbase
-    ? console.log(holder?.image_ledenbase)
-    : console.log("../assets/user-default.jpg");
+  // console.log(holder);
+  // holder?.image !== "/mediafiles/holder/user-default.jpg"
+  //   ? console.log(holder?.image)
+  //   : holder?.image_ledenbase
+  //   ? console.log(holder?.image_ledenbase)
+  //   : console.log("../assets/user-default.jpg");
   return (
     <Block flex style={styles.profile}>
       <Block flex>

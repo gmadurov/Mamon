@@ -234,7 +234,7 @@ def LoginAllUsers(request):
                 status=res.status_code,
             )
         try:
-            print(ledenbaseUser)
+            # print(ledenbaseUser)
             holder = Holder.objects.get(ledenbase_id=ledenbaseUser["user"]["id"])
             user =  holder.user
             holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser['user']['photo_url']
