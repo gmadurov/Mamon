@@ -8,6 +8,7 @@ const HolderContext = createContext({
       id: 1,
       ledenbase_id: 0,
       name: "",
+      image: "",
       stand: 0,
       user: {
         email: "",

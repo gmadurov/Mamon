@@ -32,13 +32,11 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
   };
 
   let [BGC, iBGC] = deleted
-    ? [GlobalStyles.colors.primary4, GlobalStyles.colors.primary1]
-    : ([GlobalStyles.colors.primary1, GlobalStyles.colors.primary4][
-        (BGC, iBGC)
-      ] =
+    ? [GlobalStyles.colors.primary4, product?.color]
+    : ([product?.color, GlobalStyles.colors.primary4][(BGC, iBGC)] =
         product.id === selected
           ? [GlobalStyles.colors.primary2, GlobalStyles.colors.primary4]
-          : [GlobalStyles.colors.primary1, GlobalStyles.colors.primary4]);
+          : [product?.color, GlobalStyles.colors.primary4]);
 
   return (
     <View
@@ -75,10 +73,14 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
             },
           ]}
         >
-          <Image
-            source={require("../assets/user-default.jpg")}
-            style={styles.avatar}
-          />
+          {product?.image_url ? (
+            <Image source={product?.image_url} style={styles.avatar} />
+          ) : (
+            <Image
+              source={require("../assets/default-product.png")}
+              style={styles.avatar}
+            />
+          )}
           <Text style={styles.title}>
             {edit === true && !quantity && deleted && "Delete"}
             {quantity && quantity} {product?.name}
@@ -88,6 +90,9 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
           {!(edit === true && !quantity && deleted) && (
             <Text style={styles.title}>€ {product?.price}</Text>
           )}
+        </View>
+        <View>
+          <Text> </Text>
         </View>
       </Pressable>
     </View>

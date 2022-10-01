@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
         floating: true,
         hideStatusBar: true,
         autoHide: true,
-        duration: 1500,
+        duration: 3500,
       });
       setIsAuthenticating(false);
       // navigation.navigate(-1);

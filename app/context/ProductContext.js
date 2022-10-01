@@ -15,7 +15,7 @@ import ApiContext from "../context/ApiContext";
     DELETE: DELETE,
  */
 const ProductContext = createContext({
-  products: [{ id: 0, name: "", price: "" }],
+  products: [{ id: 0, name: "", price: "", color: "", image_url: "" }],
   GET: async () => {},
   POST: async (product) => {},
   PUT: async (product) => {},
@@ -77,7 +77,7 @@ export const ProductProvider = ({ children }) => {
       )
     );
   }
-
+  // console.log(products);
   useEffect(() => {
     async function get() {
       await GET();
