@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mamon",
     "slug": "mamon-gus",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "owner": "gusmadvol",
     "icon": "./assets/pwa-icons/manifest-icon-512.png",
@@ -19,16 +19,26 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gusmadvol.mamongus"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/pwa-icons/manifest-icon-512.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.gusmadvol.mamongus"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0351d157-7e89-41ee-88b4-1f20f506fc77"
+      }
+    },
+    "plugins": [
+      "react-native-nfc-manager"
+    ]
   }
 }
