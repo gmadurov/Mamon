@@ -7,14 +7,19 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Q
-from purchase.models import Order, Product, Purchase
+from purchase.models import Category, Order, Product, Purchase
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import Holder
 
-from .serializers import HolderSerializer, ProductSerializer, PurchaseSerializer
+from .serializers import (
+    CategorySerializer,
+    HolderSerializer,
+    ProductSerializer,
+    PurchaseSerializer,
+)
 from .tokens import MyTokenObtainPairSerializer, MyTokenObtainPairView
 
 API_URL = "/api/"
@@ -206,6 +211,19 @@ def showHolder(request, pk):
     return Response(serializer.data)
 
 
+@api_view(["GET", "POST"])
+def cateories(request):
+    data = request.data
+    if request.method == "GET":
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+    if request.method == "POST":
+        categorie = Category.objects.create()
+        serializer = CategorySerializer(categorie, many=False)
+        return Response(serializer.data)
+
+
 @api_view(["POST"])
 def LoginAllUsers(request):
 
@@ -236,10 +254,12 @@ def LoginAllUsers(request):
         try:
             # print(ledenbaseUser)
             holder = Holder.objects.get(ledenbase_id=ledenbaseUser["user"]["id"])
-            user =  holder.user
-            holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser['user']['photo_url']
+            user = holder.user
+            holder.image_ledenbase = (
+                os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
+            )
             holder.save()
-            
+
         except:
             # create user and update holder info as required if user is not in database
             user = User.objects.create(
@@ -252,7 +272,9 @@ def LoginAllUsers(request):
                 user=user,
             )
             holder.ledenbase_id = ledenbaseUser["user"]["id"]
-            holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser['user']['photo_url']
+            holder.image_ledenbase = (
+                os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
+            )
             holder.save()
 
     refresh = RefreshToken.for_user(user)

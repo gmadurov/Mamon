@@ -6,4 +6,5 @@ class PurchaseConfig(AppConfig):
     name = "purchase"
 
     def ready(self):
+        ''' this will runc each time something is saved/or deleted in this app'''
         import purchase.signals

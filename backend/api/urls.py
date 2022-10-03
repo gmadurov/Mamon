@@ -10,6 +10,7 @@ urlpatterns = [
     path("product/", views.showProducts, name="products"),
     path("product/<str:pk>", views.showProduct, name="product"),
     path("purchase/", views.showPurchases, name="purchases"),
+    path("category/", views.cateories, name="categories"),
     path("purchase/<str:pk>", views.showPurchase, name="purchase"),
     path("holder/", views.showHolders, name="holders"),
     path("holder/<str:pk>", views.showHolder, name="holder"),

@@ -14,5 +14,6 @@ backend/*.sqlite3
 .env
 backend/db.sqlite3
 backend/static/
+backend/templates/bacchus/
 # backend/staticfiles/
 # backend/mediafiles/
