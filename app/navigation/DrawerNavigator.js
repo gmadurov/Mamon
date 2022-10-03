@@ -6,7 +6,7 @@ import PurchaseScreen from "../screens/PurchaseScreen";
 import AccountScreen from "../screens/AccountScreen";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
-import ScanCard from "../screens/ScanCard";
+import SettingsScreen from "../screens/SettingsScreen";
 const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
@@ -70,10 +70,10 @@ const DrawerNavigator = () => {
         }}
       />
       <Drawer.Screen
-        name="ScanCard"
-        children={() => <ScanCard edit />}
+        name="Settings"
+        children={() => <SettingsScreen />}
         options={{
-          title: "Scan Card",
+          title: "Settings",
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       />

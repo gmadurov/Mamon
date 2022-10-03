@@ -5,7 +5,8 @@ import { PurchaseProvider } from "./PurchaseContext";
 import { CartProvider } from "./CartContext";
 import { ProductProvider } from "./ProductContext";
 import { HolderProvider } from "./HolderContext";
-
+import { SettingsProvider } from "./SettingsContext";
+/** provides Settings */
 const FullContext = createContext();
 export default FullContext;
 export const FullProvider = ({ children }) => {
@@ -14,13 +15,15 @@ export const FullProvider = ({ children }) => {
     <FullContext.Provider value={data}>
       <AuthProvider>
         <ApiProvider>
-          <HolderProvider>
-            <ProductProvider>
-              <PurchaseProvider>
-                <CartProvider>{children}</CartProvider>
-              </PurchaseProvider>
-            </ProductProvider>
-          </HolderProvider>
+          <SettingsProvider>
+            <HolderProvider>
+              <ProductProvider>
+                <PurchaseProvider>
+                  <CartProvider>{children}</CartProvider>
+                </PurchaseProvider>
+              </ProductProvider>
+            </HolderProvider>
+          </SettingsProvider>
         </ApiProvider>
         {/* ApiRequest: ApiRequest,
             ApiFileRequest: ApiFileRequest, */}

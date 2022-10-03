@@ -36,6 +36,7 @@ export default PurchaseContext;
 export const PurchaseProvider = ({ children }) => {
   const { user, ApiRequest } = useContext(ApiContext);
   const [purchases, setPurchases] = useState([]);
+
   async function GET() {
     setPurchases([]);
     // ApiRequest("/api/purchase/")

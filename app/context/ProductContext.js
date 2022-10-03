@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
 import { showMessage } from "react-native-flash-message";
 import ApiContext from "../context/ApiContext";
+import SettingsContext from "../context/SettingsContext";
 
 /**
  *     products: products,
@@ -16,6 +17,7 @@ import ApiContext from "../context/ApiContext";
  */
 const ProductContext = createContext({
   products: [{ id: 0, name: "", price: "", color: "", image_url: "" }],
+  selectedProducts: [{ id: 0, name: "", price: "", color: "", image_url: "" }],
   GET: async () => {},
   POST: async (product) => {},
   PUT: async (product) => {},
@@ -25,7 +27,9 @@ export default ProductContext;
 
 export const ProductProvider = ({ children }) => {
   const { user, ApiRequest } = useContext(ApiContext);
+  const { categories, selectedCategory } = useContext(SettingsContext);
   const [products, setProducts] = useState([]);
+
   async function GET() {
     setProducts([]);
     const { res, data } = await ApiRequest("/api/product/");
@@ -88,7 +92,17 @@ export const ProductProvider = ({ children }) => {
 
     // eslint-disable-next-line
   }, [user]);
+  let selectedProducts = categories
+    .filter((cat) => selectedCategory.includes(cat.id))
+    .map((cat) =>
+      cat.products.map((product) =>
+        products?.find((prod) => prod.id === product)
+      )
+    )
+    .flat();
+
   const data = {
+    selectedProducts: selectedProducts,
     products: products,
     GET: GET,
     POST: POST,

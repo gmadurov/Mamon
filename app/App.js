@@ -26,6 +26,7 @@ import ApiContext from "./context/ApiContext";
 import HolderContext from "./context/HolderContext";
 import PurchaseContext from "./context/PurchaseContext";
 import ProductContext from "./context/ProductContext";
+import SettingsContext from "./context/SettingsContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +81,7 @@ function Root() {
   const Holder = useContext(HolderContext);
   const Purchase = useContext(PurchaseContext);
   const Product = useContext(ProductContext);
+  const Settings = useContext(SettingsContext);
 
   useLayoutEffect(() => {
     async function fetchToken() {
@@ -117,6 +119,7 @@ function Root() {
     async function fetchToken() {
       if (!isTryingLogin) {
         await Purchase.GET();
+        await Settings.GET_categories();
         await Product.GET();
         await Holder.GET();
       }

@@ -19,7 +19,7 @@ import ProductForm from "../components/ProductForm";
 const { width } = Dimensions.get("screen");
 
 const ProductScreen = ({ edit, sell }) => {
-  const { GET, products } = useContext(ProductContext);
+  const { GET, selectedProducts } = useContext(ProductContext);
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState(0);
 
@@ -52,7 +52,7 @@ const ProductScreen = ({ edit, sell }) => {
       <View style={styles.productView}>
         <Text style={styles.text}>Producten</Text>
         <FlatList
-          data={products}
+          data={selectedProducts}
           keyExtractor={(item) => item.id}
           renderItem={renderProducts}
           numColumns={Math.floor(width / 196)}
