@@ -7,4 +7,4 @@ from .models import Category, Order, Product, Purchase
 admin.site.register(Product)
 admin.site.register(Purchase)
 admin.site.register(Category)
-# admin.site.register(Order)
+# admin.site.register(Order) #do not enable

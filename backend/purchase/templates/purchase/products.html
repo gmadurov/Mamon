@@ -1,0 +1,12 @@
+{% extends 'main.html'%}
+
+{% block content %}
+
+{% if products %}
+  {% for product in products%}
+  <a href='{% url "product" product.id %}'>
+    {{product.name}} € {{product.price}}
+  </a>
+  {% endfor %}
+{% endif %}
+{% endblock content %}
