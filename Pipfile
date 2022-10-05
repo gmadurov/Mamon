@@ -5,21 +5,21 @@ name = "pypi"
 
 [scripts]
 all = """sh -c \"
-    python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
-    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \
-    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py runserver \
+    python ~/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
+    && python ~/Developer/wwwcie/Mamon/backend/manage.py migrate \
+    && python ~/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \
 \"
 """
 update = """sh -c \"
-    python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
-    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \
+    python ~/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
+    && python ~/Developer/wwwcie/Mamon/backend/manage.py migrate \
 \"
 """
-runserver = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py runserver \""""
-makemigrations = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \""""
-migrate = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \""""
-shell = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py shell \""""
-collectStatic = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py collectstatic \""""
+runserver = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \""""
+makemigrations = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py makemigrations \""""
+migrate = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py migrate \""""
+shell = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py shell \""""
+collectStatic = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py collectstatic \""""
 start = """sh -c \"cd app && expo start \""""
 launch = """sh -c \"gunicorn core.wsgi --chdir backend  --log-file - \""""
 
