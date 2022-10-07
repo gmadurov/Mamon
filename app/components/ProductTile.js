@@ -7,6 +7,7 @@ import {
   View,
   Image,
 } from "react-native";
+import { Surface } from "react-native-paper";
 import { GlobalStyles } from "../constants/styles";
 import CartContext from "../context/CartContext";
 import ProductContext from "../context/ProductContext";
@@ -38,6 +39,45 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
           ? [GlobalStyles.colors.primary2, GlobalStyles.colors.primary4]
           : [product?.color, GlobalStyles.colors.primary4]);
 
+  return (
+    <Surface style={[ styles.gridItem,{ elevation: 2 }]}>
+      <Pressable
+        android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
+        style={({ pressed }) => [
+          styles.button,
+          pressed ? styles.buttonPressed : { flex: 1 },
+        ]}
+        onPress={deleted ? onRemove : onAdd}
+      >
+        <View
+          style={[
+            styles.innerContainer,
+            {
+              backgroundColor: BGC,
+            },
+          ]}
+        >
+          {product?.image_url ? (
+            <Image source={{ uri: product?.image_url }} style={styles.avatar} />
+          ) : (
+            <Image
+              source={require("../assets/default-product.png")}
+              style={styles.avatar}
+            />
+          )}
+          <Text style={styles.title}>
+            {edit === true && !quantity && deleted && "Delete"}
+            {quantity && quantity} {product?.name}
+            {edit === true && !quantity && deleted && " from database "}
+          </Text>
+
+          {!(edit === true && !quantity && deleted) && (
+            <Text style={styles.title}>€ {product?.price}</Text>
+          )}
+        </View>
+      </Pressable>
+    </Surface>
+  );
   return (
     <View
       style={[

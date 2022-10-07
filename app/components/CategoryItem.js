@@ -1,14 +1,13 @@
-import { Switch } from "@rneui/base";
-import { useContext, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useContext } from "react";
+import { StyleSheet } from "react-native";
 import SettingsContext from "../context/SettingsContext";
+import { Switch, Text } from "react-native-paper";
+import { GlobalStyles } from "../constants/styles";
 
 const CategoryItem = ({ item }) => {
   const { selectedCategory, setSelectedCategory } = useContext(SettingsContext);
   let category = item.item;
-  const [isSelected, setIsSelected] = useState(false);
-  //   setSelectedCategory((prev) => [...prev, category.id]);
-  function change() {
+  function change(base) {
     if (selectedCategory.includes(category.id)) {
       setSelectedCategory(() =>
         selectedCategory.map((pr) => pr !== category.id && pr)
@@ -17,19 +16,16 @@ const CategoryItem = ({ item }) => {
       setSelectedCategory(() => [...selectedCategory, category.id]);
     }
   }
+
   return (
-    <View>
-      <Text>{category.name}</Text>
+    <>
+      <Text variant="titleMedium">{category.name}</Text>
       <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={
-          selectedCategory.includes(category.id) ? "#f5dd4b" : "#f4f3f4"
-        }
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={change}
+        color={GlobalStyles.colors.primary1}
         value={selectedCategory.includes(category.id)}
+        onValueChange={change}
       />
-    </View>
+    </>
   );
 };
 

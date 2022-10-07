@@ -13,7 +13,10 @@ backend/*.sqlite3
 .expo/
 .env
 backend/db.sqlite3
-backend/static/
+# backend/static/
 backend/templates/bacchus/
 # backend/staticfiles/
 # backend/mediafiles/
+*copy/
+
+data/

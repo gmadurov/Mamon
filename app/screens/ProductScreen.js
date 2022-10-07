@@ -22,7 +22,7 @@ const ProductScreen = ({ edit, sell }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState(0);
-
+  console.log(selectedProducts);
   function renderProducts(itemData) {
     return (
       <ProductTile

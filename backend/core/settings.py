@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-from .utils import init_DB
+from .utils.utils import init_DB
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "colorfield",
     "storages",
+    # "django_seed",
 ]
 
 MIDDLEWARE = [
@@ -108,26 +109,37 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-if LOCAL:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+# if LOCAL:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
+#     # start
+# else:
+#     host, port, name, user, password = init_DB()
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": name,
+#             "USER": user,
+#             "PASSWORD": password,
+#             "HOST": host,
+#             "PORT": port,
+#         }
+#     }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_NAME"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": "postgres",
+        "PORT": 5432,
     }
-    # start
-else:
-    host, port, name, user, password = init_DB()
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": name,
-            "USER": user,
-            "PASSWORD": password,
-            "HOST": host,
-            "PORT": port,
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -163,14 +175,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # STATICFILES_DIRS = [BASE_DIR / "static"]
+
+STATIC_URL = "/static/"
+# start
+MEDIA_URL = "/images/"
+# STATICFILES_DIRS = [BASE_DIR / "static"]
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# print(BASE_DIR)
+MEDIA_ROOT = BASE_DIR / "static/images"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATIC_URL = "/staticfiles/"
-
-MEDIA_ROOT = "mediafiles"
-MEDIA_URL = "/mediafiles/"
+### end
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

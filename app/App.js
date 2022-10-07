@@ -27,7 +27,13 @@ import HolderContext from "./context/HolderContext";
 import PurchaseContext from "./context/PurchaseContext";
 import ProductContext from "./context/ProductContext";
 import SettingsContext from "./context/SettingsContext";
-
+import {
+  Provider as PaperProvider,
+  MD3DarkTheme,
+  MD3LightTheme,
+  MD2DarkTheme,
+  MD2LightTheme,
+} from "react-native-paper";
 const Stack = createNativeStackNavigator();
 
 function AuthStack() {
@@ -154,7 +160,16 @@ function Navigation() {
     </>
   );
 }
-
+const theme = {
+  2: {
+    light: GlobalStyles.colors.primary1,
+    dark: GlobalStyles.colors.primary2,
+  },
+  3: {
+    light: GlobalStyles.colors.primary3,
+    dark: GlobalStyles.colors.primary4,
+  },
+};
 // messages
 // "success" (green), "warning" (orange), "danger" (red), "info" (blue) and "default" (gray)
 export default function App() {
@@ -163,7 +178,9 @@ export default function App() {
       <StatusBar style="light" />
       <NavigationContainer>
         <FullProvider>
-          <Root />
+          <PaperProvider>
+            <Root />
+          </PaperProvider>
         </FullProvider>
       </NavigationContainer>
       <FlashMessage position="top" />
