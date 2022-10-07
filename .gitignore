@@ -17,3 +17,4 @@ backend/db.sqlite3
 backend/templates/bacchus/
 # backend/staticfiles/
 # backend/mediafiles/
+*copy/
