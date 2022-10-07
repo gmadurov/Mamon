@@ -5,23 +5,23 @@ name = "pypi"
 
 [scripts]
 all = """sh -c \"
-    python ~/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
-    && python ~/Developer/wwwcie/Mamon/backend/manage.py migrate \
-    && python ~/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \
+    python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
+    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \
+    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \
 \"
 """
 update = """sh -c \"
-    python ~/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
-    && python ~/Developer/wwwcie/Mamon/backend/manage.py migrate \
+    python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
+    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \
 \"
 """
-runserver = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \""""
-makemigrations = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py makemigrations \""""
-migrate = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py migrate \""""
-shell = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py shell \""""
-collectStatic = """sh -c \"python ~/Developer/wwwcie/Mamon/backend/manage.py collectstatic \""""
+runserver = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \""""
+makemigrations = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \""""
+migrate = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \""""
+shell = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py shell \""""
+collectStatic = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py collectstatic \""""
 start = """sh -c \"cd app && expo start \""""
-launch = """sh -c \"gunicorn core.wsgi --chdir backend  --log-file - \""""
+launch = """sh -c \"gunicorn core.wsgi --chdir /home/gusmadvol/Developer/wwwcie/Mamon/backend  --log-file - \""""
 
 [packages]
 asgiref = "==3.5.2"
@@ -44,6 +44,7 @@ requests = "==2.28.1"
 sqlparse = "==0.4.2"
 urllib3 = "==1.26.11"
 whitenoise = "==6.2.0"
+django-seed = "*"
 
 [dev-packages]
 
