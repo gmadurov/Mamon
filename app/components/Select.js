@@ -5,7 +5,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableHighlight,
   TouchableOpacity,
@@ -14,6 +13,8 @@ import {
 import { Button, Card } from "@rneui/themed";
 import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
+import { Caption, Searchbar, Text, useTheme } from "react-native-paper";
+
 /**
  *
  * This is a modal selection button with the ability to search for things in based on label and search you pass in the options
@@ -110,7 +111,7 @@ function Select({
                 />
               </TouchableHighlight>
             </View>
-            <View style={styles.modalView}>
+            {/*  <View style={styles.modalView}>
               <Ionicons
                 style={inputStyles}
                 name={"search"}
@@ -141,7 +142,17 @@ function Select({
                   onSelect(null);
                 }}
               />
-            </View>
+            </View> */}
+            <Searchbar
+              placeholder="Search"
+              onChangeText={(text) => setSearch(text)}
+              value={search}
+              onIconPress={
+                 () => {console.log('pressed');}
+              }
+              icon="menu"
+              style={{ margin: 4 }}
+            />
             <ScrollView
               style={styles.ScrollView}
               refreshControl={

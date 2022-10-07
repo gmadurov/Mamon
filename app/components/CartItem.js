@@ -10,26 +10,28 @@ const CartItem = ({ quantity, product }) => {
   const { products } = useContext(ProductContext);
   const { remove_from_cart } = useContext(CartContext);
   const [deleted, setDeleted] = useState(false);
-  const onRemove = () => {
-    remove_from_cart(product, quantity);
+  const onRemove = (amount) => {
+    remove_from_cart(product, amount);
   };
   return (
     <View style={styles.modalView}>
-      <Text style={styles.input}>
-        {quantity}{" "}
-        {
-          products?.find(
-            (product_from_find) => product_from_find.id === product.id
-          ).name
-        }
-        {quantity > 1 && "s"}
-      </Text>
+      <Pressable onPress={() => onRemove(1)}>
+        <Text style={styles.input}>
+          {quantity}{" "}
+          {
+            products?.find(
+              (product_from_find) => product_from_find.id === product.id
+            ).name
+          }
+          {quantity > 1 && "s"}
+        </Text>
+      </Pressable>
       <IconButton
         name={"close-circle-outline"}
         size={24}
         style={styles.input}
         color={GlobalStyles.colors.textColorDark}
-        onPress={onRemove}
+        onPress={() => onRemove(quantity)}
       />
     </View>
   );
