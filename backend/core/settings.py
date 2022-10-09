@@ -119,7 +119,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 #     # start
 # else:
 
-print(os.environ.get("DATABASE_URL", "\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\nn\n\n")
+print(os.environ.get("DATABASE_URL", "\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\nn\n\n"))
 # try: 
 #     DATABASES = {
 #     "default": {
