@@ -10,4 +10,4 @@ RUN mkdir /code
 WORKDIR /code
 ADD . /code/
 ENV PYTHONUNBUFFERED 1
-CMD ["python backend/manage.py migrate", "python backend/manage.py runserver 0.0.0.0:8000"]
+CMD python backend/manage.py migrate && python backend/manage.py runserver 0.0.0.0:8000
