@@ -118,21 +118,22 @@ WSGI_APPLICATION = "core.wsgi.application"
 #     }
 #     # start
 # else:
-   
-try: 
-    DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_NAME"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": "postgres",
-        "PORT": 5432,
-    }
-}
-except: 
-    host, port, name, user, password = init_DB()
-    DATABASES = {
+
+print(os.environ.get("DATABASE_URL", "\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\nn\n\n")
+# try: 
+#     DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.environ.get("POSTGRES_NAME"),
+#         "USER": os.environ.get("POSTGRES_USER"),
+#         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+#         "HOST": "postgres",
+#         "PORT": 5432,
+#     }
+# }
+# except: 
+host, port, name, user, password = init_DB()
+DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": name,

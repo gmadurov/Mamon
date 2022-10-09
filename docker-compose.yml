@@ -13,8 +13,13 @@ services:
 
   web:
     build: .
-    command: python backend/manage.py runserver 0.0.0.0:8000
-    # command: gunicorn core.wsgi:application --chdir backend -b 0.0.0.0:8000 --log-file -
+    # command: python backend/manage.py runserver 0.0.0.0:8000
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python backend/manage.py migrate
+        gunicorn core.wsgi --chdir backend -b 0.0.0.0:8000 --log-file -
     volumes:
       - .:/code
     ports:
