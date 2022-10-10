@@ -31,6 +31,7 @@ services:
       - JWT_KEY=qwerty
       - SECRET_KEY=$SECRET_KEY
       - BACKEND_URL= $BACKEND_URL
+      - DATABASE_URL= $DATABASE_URL
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
