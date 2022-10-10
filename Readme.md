@@ -98,7 +98,7 @@ npm start
 add remote to git repo
 
 ```
- git push metis <branch>
+ git remote add metis metis:master
 ```
 
 op metis
@@ -106,16 +106,33 @@ op metis
 ````
  dokku apps:create mamon
  dokku postgres:create mamon-db -I 14
- dokku postgres:link mamon-db mamon-db ```
+ dokku postgres:link mamon-db mamon```
 ````
 
 set mamon DATABASE_URL variaable to mamon -db link
 
 ```
+dokku domains:add mamon "mamon.esrtheta.nl"
 dokku config:set mamon <key>=<value>
 mkdir /home/mamon/staticfiles
 dokku storage:mount mamon /backend/staticfiles:/home/mamon/staticfiles
 dokku letsencrypt:enable mamon
 dokku ssh-keys:add key_name <KEY>
 
+```
+
+
+```
+dokku docker-options:add mamon deploy "-v /home/mamon/database:/code/database"
+dokku docker-options:add mamon deploy "-v /home/mamon/staticfiles:/code/staticfiles"
+dokku docker-options:add mamon deploy "-v /home/mamon/mediafiles:/code/mediafiles"
+dokku docker-options:add mamon run "-v /home/mamon/database:/code/database"
+dokku docker-options:add mamon run "-v /home/mamon/staticfiles:/code/staticfiles"
+dokku docker-options:add mamon run "-v /home/mamon/mediafiles:/code/mediafiles"
+
+
+ git push metis <branch>
+dokku builder-dockerfile:set mamon dockerfile-path
+
+dokku run mamon python backend/manage.py migrate --noinput
 ```
