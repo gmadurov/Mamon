@@ -1,37 +1,34 @@
 services:
-
   postgres:
     image: postgres
     ports:
       - 5432:5432
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
   web:
-    build: .
-    # command: python backend/manage.py runserver 0.0.0.0:8000
-        # gunicorn core.wsgi --chdir backend -b 0.0.0.0:8000 --log-file -
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     command:
       - /bin/sh
       - -c
       - |
-        python backend/manage.py migrate
-        python backend/manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
+        python manage.py migrate --noinput
+        python manage.py runserver  0.0.0.0:8000
+        # gunicorn core.wsgi -b 0.0.0.0:8000 --log-file -
     ports:
       - 8000:8000
+    volumes:
+      - ./backend:/code
     depends_on:
       - postgres
     environment:
       - JWT_KEY=qwerty
+      - BACKEND_URL=$BACKEND_URL
       - SECRET_KEY=$SECRET_KEY
-      - BACKEND_URL= $BACKEND_URL
-      - DATABASE_URL= $DATABASE_URL
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+      - DEBUG=True
+

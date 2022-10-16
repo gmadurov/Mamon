@@ -34,7 +34,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 ALLOWED_HOSTS = [
     "localhost",
-    "mamon2.herokuapp.com",
     "mamon.esrtheta.nl",
     "10.0.2.2",
 ]

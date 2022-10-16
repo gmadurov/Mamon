@@ -1,7 +1,6 @@
-Basic intro we user 
+Basic intro we user
 react-native-paper as a theme
-https://callstack.github.io/react-native-paper 
-
+https://callstack.github.io/react-native-paper
 
 # PIP environment I recomend not mixing the modules you need for webdev and the modules you normally use. For this I use a virtual enviroment(pipenv)
 
@@ -80,18 +79,18 @@ launch
 
 to initialize expo run the folowing commands
 
-``` shell
+```shell
 npm i -g expo-cli
-expo login 
+expo login
 ```
-to initialize the app run 
 
-``` shell
-npm install 
+to initialize the app run
+
+```shell
+npm install
 npm start
 
 ```
-
 
 # dokku
 
@@ -121,14 +120,13 @@ dokku ssh-keys:add key_name <KEY>
 
 ```
 
-
 ```
-dokku docker-options:add mamon deploy "-v /home/mamon/database:/code/database"
-dokku docker-options:add mamon deploy "-v /home/mamon/staticfiles:/code/staticfiles"
-dokku docker-options:add mamon deploy "-v /home/mamon/mediafiles:/code/mediafiles"
-dokku docker-options:add mamon run "-v /home/mamon/database:/code/database"
-dokku docker-options:add mamon run "-v /home/mamon/staticfiles:/code/staticfiles"
-dokku docker-options:add mamon run "-v /home/mamon/mediafiles:/code/mediafiles"
+dokku docker-options:add mamon deploy "-v /home/mamon/database:/code/backend/database"
+dokku docker-options:add mamon deploy "-v /home/mamon/staticfiles:/code/backend/staticfiles"
+dokku docker-options:add mamon deploy "-v /home/mamon/mediafiles:/code/backend/mediafiles"
+dokku docker-options:add mamon run "-v /home/mamon/database:/code/backend/database"
+dokku docker-options:add mamon run "-v /home/mamon/staticfiles:/code/backend/staticfiles"
+dokku docker-options:add mamon run "-v /home/mamon/mediafiles:/code/backend/mediafiles"
 
 
  git push metis <branch>
