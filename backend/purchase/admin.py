@@ -30,6 +30,7 @@ class CategoryAdmin(admin.ModelAdmin):
         "name",
         "description",
     ]
+    filter_horizontal = ["products"]
     # list_editable = ["description"]
     list_filter = ["products"]
     search_fields = ["name", "description", "products"]
@@ -41,7 +42,6 @@ class PurchaseAdmin(admin.ModelAdmin):
         "payed",
         "created",
     ]
-    list_editable = ["payed"]
     list_filter = ["buyer", "payed"]
     search_fields = ["buyer", "payed", "id"]
 

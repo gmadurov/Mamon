@@ -7,12 +7,10 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
 export const baseUrl = () => {
-  let LOCAL = true;
-  let url;
-  if (LOCAL) {
-    url = "http://10.0.2.2:8000"; // this is what works for local tests
-  } else {
-    url = "https://mamon2.herokuapp.com";
+  if (process.env.NODE_ENV === "development") {
+    url = "https://mamon.esrtheta.nl";
+  } else if (process.env.NODE_ENV === "production") {
+    url = "https://localhost:8000";
   }
   return url;
 };
