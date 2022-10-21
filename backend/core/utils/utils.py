@@ -1,10 +1,10 @@
 import os
 
 
-def init_DB():
+def init_DB(db):
     from urllib.parse import urlparse
 
-    splitted_url = urlparse(os.environ.get("DATABASE_URL"))
+    splitted_url = urlparse(db)
     scheme = splitted_url.scheme
     name = splitted_url.path[1:]
     user, extra, port = splitted_url.netloc.split(":")

@@ -131,7 +131,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 #     }
 # }
 # except:
-host, port, name, user, password = init_DB()
+host, port, name, user, password = init_DB(os.environ.get("DATABASE_URL"))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
