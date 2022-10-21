@@ -179,12 +179,13 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 # start
-MEDIA_URL = "/images/"
+MEDIA_URL = "/mediafiles/"
 # STATICFILES_DIRS = [BASE_DIR / "static"]
 STATICFILES_DIRS = [BASE_DIR / "static"]
-MEDIA_ROOT = BASE_DIR / "static/images"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 ### end
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

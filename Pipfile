@@ -5,25 +5,24 @@ name = "pypi"
 
 [scripts]
 all = """sh -c \"
-    python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
-    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \
-    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \
+    docker-compose run web python manage.py makemigrations \
+    && docker-compose run web python manage.py migrate \
+    && docker-compose run web python manage.py runserver localhost:8000 \
 \"
 """
 update = """sh -c \"
-    python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \
-    && python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \
+    docker-compose run web python manage.py makemigrations \
+    && docker-compose run web python manage.py migrate \
 \"
 """
-runserver = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py runserver localhost:8000 \""""
-makemigrations = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py makemigrations \""""
-migrate = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py migrate \""""
-shell = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py shell \""""
-collectStatic = """sh -c \"python /home/gusmadvol/Developer/wwwcie/Mamon/backend/manage.py collectstatic \""""
+runserver = """sh -c \"docker-compose run web python manage.py runserver localhost:8000 \""""
+makemigrations = """sh -c \"docker-compose run web python manage.py makemigrations \""""
+migrate = """sh -c \"docker-compose run web python manage.py migrate \""""
+shell = """sh -c \"docker-compose run web python manage.py shell \""""
+collectStatic = """sh -c \"docker-compose run web python manage.py collectstatic \""""
 start = """sh -c \"cd app && expo start \""""
-launch = """sh -c \"gunicorn core.wsgi --chdir /home/gusmadvol/Developer/wwwcie/Mamon/backend  --log-file - \""""
 freeze = """sh -c \"pip freeze > $(pwd)/backend/requirements.txt \""""
-createsuperuser = """sh -c \"python $(pwd)/backend/manage.py createsuperuser \""""
+createsuperuser = """sh -c \"docker-compose run web python manage.py createsuperuser \""""
 
 [packages]
 asgiref = "==3.5.2"

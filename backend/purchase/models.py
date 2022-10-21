@@ -15,7 +15,7 @@ from users.models import Holder, Personel
 class Product(models.Model):
     name = models.CharField(max_length=20, unique=True)
     price = models.FloatField(default=0)
-    color = ColorField(default="#FF0000")
+    color = ColorField(default="#ffdd00")
     # add image field without category field
     image = models.ImageField(
         upload_to="products/", null=True, blank=True, default="products/default.png"
