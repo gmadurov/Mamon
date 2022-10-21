@@ -119,7 +119,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 # else:
 
 # print(os.environ.get("DATABASE_URL", "\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\nn\n\n"))
-# try: 
+# try:
 #     DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
@@ -130,18 +130,18 @@ WSGI_APPLICATION = "core.wsgi.application"
 #         "PORT": 5432,
 #     }
 # }
-# except: 
+# except:
 host, port, name, user, password = init_DB()
 DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": name,
-            "USER": user,
-            "PASSWORD": password,
-            "HOST": host,
-            "PORT": port,
-        }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": name,
+        "USER": user,
+        "PASSWORD": password,
+        "HOST": host,
+        "PORT": port,
     }
+}
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -190,3 +190,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+ADMINS = [
+    ("Gustavo Maduro", "dev.gam.vollmer@gmail.com"),
+    ("webmaster", "webmaster@esrtheta.nl"),
+]
+MANAGERS = [
+    ("Gustavo Maduro", "dev.gam.vollmer@gmail.com"),
+    ("webmaster", "webmaster@dispuutstropdas.nl"),
+]
+# SECURE_SSL_REDIRECT = True
+CSRF_TRUSTED_ORIGINS = ["https://*.esrtheta.nl", "http://localhost:8000"]
