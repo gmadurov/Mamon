@@ -29,12 +29,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "first_name", "last_name", "email"]
 
+
 class HolderSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     name = serializers.ReadOnlyField()
+
     class Meta:
         model = Holder
         fields = "__all__"
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:

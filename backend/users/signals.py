@@ -14,4 +14,4 @@ def create_stand(sender, instance, created, **kwargs):
         user.save()
 
 
-post_save.connect(create_stand, sender=User)
+# post_save.connect(create_stand, sender=User)

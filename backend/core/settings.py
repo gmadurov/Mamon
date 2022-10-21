@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "colorfield",
     "storages",
-    # "django_seed",
+    "django_seed",
 ]
 
 MIDDLEWARE = [

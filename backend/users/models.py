@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 class Holder(models.Model):
     """stand, user{first_name, last_name}"""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     stand = models.FloatField(default=0.0)
     ledenbase_id = models.IntegerField(default=0, null=True, blank=True)
     image = models.ImageField(
@@ -19,24 +19,25 @@ class Holder(models.Model):
         blank=True,
         default="holder/user-default.jpg",
     )
-    image_ledenbase = models.CharField(max_length=100,null=True, blank=True)
-
-
+    image_ledenbase = models.CharField(max_length=100, null=True, blank=True)
 
     @property
     def name(self):
-        return str(self.user.first_name + " " + self.user.last_name)
+        return str(self.user.first_name or "" + " " + self.user.last_name or "")
 
     def __str__(self):
-        return (
-            str(self.user.first_name + " " + self.user.last_name)
-            + ", €"
-            + str(self.stand)
-        )
+        try:
+            return (
+                str(self.user.first_name + " " + self.user.last_name)
+                + ", €"
+                + str(self.stand)
+            )
+        except:
+            return "Holder"
 
 
 class Personel(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=15)
     image = models.ImageField(
         upload_to="personel/",
@@ -50,4 +51,7 @@ class Personel(models.Model):
         return str(self.user.first_name + " " + self.user.last_name)
 
     def __str__(self):
-        return str(self.user.first_name + " " + self.user.last_name) + " (Personel)"
+        try:
+            return str(self.user.first_name + " " + self.user.last_name) + " (Personel)"
+        except:
+            return "Personel"

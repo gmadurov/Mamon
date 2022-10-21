@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import redirect, render
 
-from .models import Holder
+from .models import Holder, Personel
 
 # Create your views here.
 
@@ -56,10 +56,7 @@ def logind(request):
             )
         )
         if res.status_code != 200:
-            return Response(
-                data=ledenbaseUser,
-                status=res.status_code,
-            )
+            return
         try:
             # print(ledenbaseUser)
             holder = Holder.objects.get(ledenbase_id=ledenbaseUser["user"]["id"])
@@ -88,71 +85,25 @@ def logind(request):
 
 
 def loginUser(request):
-    page = "login"
-
     if request.user.is_authenticated:
-        return redirect("products")
+        return redirect("purchases")
     if request.method == "POST":
-        print(request.POST)
+        # print(request.POST)
         try:
-            if (
-                User.objects.get(username=request.POST["username"]).holder.ledenbase_id
-            ) > 1:
-                raise Exception("User is from ledenbase")
-            user = authenticate(
-                password=request.POST["password"],
-                username=request.POST["username"],
-            )
-        except:
-            res, ledenbaseUser = safe_json_decode(
-                requests.post(
-                    os.environ.get("BACKEND_URL") + "/v2/login/",
-                    json={
-                        "password": request.POST["password"],
-                        "username": request.POST["username"],
-                    },
-                )
-            )
-            if res.status_code == 200:
-
-                try:
-                    # print(ledenbaseUser)
-                    holder = Holder.objects.get(
-                        ledenbase_id=ledenbaseUser["user"]["id"]
-                    )
-                    user = holder.user
-                    holder.image_ledenbase = (
-                        os.environ.get("BACKEND_URL")
-                        + ledenbaseUser["user"]["photo_url"]
-                    )
-                    holder.save()
-
-                except:
-                    # create user and update holder info as required if user is not in database
-                    user = User.objects.create(
-                        username=request.POST["username"],
-                        first_name=ledenbaseUser["user"]["first_name"],
-                        last_name=ledenbaseUser["user"]["last_name"],
-                        # user purposely doesnt have a password set here to make sure it
-                    )
-                    holder = Holder.objects.get(
-                        user=user,
-                    )
-                    holder.ledenbase_id = ledenbaseUser["user"]["id"]
-                    holder.image_ledenbase = (
-                        os.environ.get("BACKEND_URL")
-                        + ledenbaseUser["user"]["photo_url"]
-                    )
-                    holder.save()
-
-                    # messages.error(request, "Username does not exist")
-            else:
-                user = None
-                messages.error(request, "Username does not exist")
+            User.objects.get(username=request.POST["username"]).personel
+        except Personel.DoesNotExist:
+            messages.error(request, "Username does not exist")
+            print("here")
+        user = authenticate(
+            password=request.POST["pass word"],
+            username=request.POST["username"],
+        )
         if user:
             login(request, user)
             messages.info(request, "User was logged in")
-            return redirect(request.GET["next"] if "next" in request.GET else "purchases")
+            return redirect(
+                request.GET["next"] if "next" in request.GET else "purchases"
+            )
         else:
             messages.error(request, "Password is incorrect")
 

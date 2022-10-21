@@ -1,9 +1,11 @@
+import datetime
 from operator import mod
 
 # from re import U
 # import uuid
 from django.db import models
 from colorfield.fields import ColorField
+from django.db.models import Q
 
 from users.models import Holder, Personel
 
@@ -14,6 +16,10 @@ class Product(models.Model):
     name = models.CharField(max_length=20, unique=True)
     price = models.FloatField(default=0)
     color = ColorField(default="#FF0000")
+    # add image field without category field
+    image = models.ImageField(
+        upload_to="products/", null=True, blank=True, default="products/default.png"
+    )
 
     def __str__(self):
         return str(self.name) + ", €" + str(self.price)
@@ -54,6 +60,10 @@ class Purchase(models.Model):
             )
         )
 
+    @property
+    def total(self):
+        return sum([item.quantity * item.product.price for item in self.orders.all()])
+
     class Meta:
         ordering = ["-created"]
 
@@ -69,8 +79,11 @@ class Order(models.Model):
 
 class Report(models.Model):
     # bar_cycle = models.ForeignKey("Barcycle", verbose_name=("bar cycle"), on_delete=models.CASCADE)
-    ACTIONS = (("Open", "Open"), ("Close", "Close"))
-    date = models.DateField(auto_now_add=True)
+    ACTIONS = (
+        ("Open", "Open"),
+        ("Close", "Close"),
+    )
+    date = models.DateTimeField(auto_now_add=True)
     personel = models.ForeignKey(
         Personel, verbose_name=("creator"), on_delete=models.CASCADE
     )
@@ -82,6 +95,10 @@ class Report(models.Model):
 
     def __str__(self):
         return f"{self.personel.name}, {self.date.isoformat()} {self.action}"
+
+    @classmethod
+    def opening_reports(self):
+        return self.filter(action="Open")
 
 
 class Barcycle(models.Model):
@@ -103,7 +120,20 @@ class Barcycle(models.Model):
     @property
     def purchases(self):
         purchase = Purchase.objects.distinct().filter(
-            Q(created__gte=self.opening_report.date)
-            | Q(created__lte=self.closing_report.date)
+            created__range=[
+                self.opening_report.date,
+                self.closing_report.date
+                if self.closing_report
+                else datetime.datetime.now(),
+            ]
         )
         return purchase
+
+    # return date as name of object
+    def __str__(self):
+        if not self.closing_report:
+            return f'Open {self.opening_report.date.strftime("%a %d %b %Y, %H:%M:%S")} '
+        return f' {self.opening_report.date.strftime("%a %d %b %Y, %H:%M:%S")} - {self.closing_report.date.strftime("%a %d %b %Y, %H:%M:%S")}'
+
+    class Meta:
+        ordering = ["-opening_report__date"]
