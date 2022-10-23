@@ -260,10 +260,9 @@ def loginLedenbase(request):
 
 @api_view(["POST"])
 def LoginAllUsers(request):
-    print(request.data)
     user1 = User.objects.filter(username=request.data["username"])
     if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
-        print("user exists and doesnt have ledenbase id")
+        # print("user exists and doesnt have ledenbase id")
         user = authenticate(
             password=request.data["password"],
             username=request.data["username"],

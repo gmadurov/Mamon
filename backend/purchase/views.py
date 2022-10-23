@@ -33,7 +33,6 @@ def showProducts(request):
         or 0
         for prod in products
     }
-    print(quantity.get(7))
 
     content = {"products": products, "quantity": quantity}
     return render(request, "purchase/products.html", content)
@@ -45,6 +44,5 @@ def showProduct(request, pk):
     purchases = Purchase.objects.filter(orders__product=product).filter(
         buyer=request.user.holder
     )
-    print(purchases)
     content = {"product": product, "purchases": purchases}
     return render(request, "purchase/product.html", content)

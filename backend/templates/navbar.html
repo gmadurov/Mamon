@@ -69,12 +69,12 @@
         <a class="navbar-link">(€{{request.user.holder.stand}}) Profile </a>
         <div class="navbar-dropdown">
           {% if request.user.is_superuser or request.user.is_staff %}
-          <a class="navbar-item" href="{% url 'admin' %}"> Admin </a>
+          <a class="navbar-item" href="/admin/"/> Admin </a>
           <hr class="navbar-divider" />
           {% endif %}
 
           <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
-          <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
+          <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
           <hr class="navbar-divider" />
           <a class="navbar-item"> View Profile </a>
           <a class="navbar-item"> Edit Profile </a>
