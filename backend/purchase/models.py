@@ -42,14 +42,13 @@ class Purchase(models.Model):
     buyer = models.ForeignKey(
         Holder,
         on_delete=models.SET(Holder),
+        related_name="purchases",
     )
     payed = models.BooleanField(default=False)
     orders = models.ManyToManyField("Order", related_name="ordered")
 
     created = models.DateTimeField(auto_now_add=True)
-    # id = models.UUIDField(
-    #     default=uuid.uuid4, unique=True, primary_key=True, editable=False
-    # )
+    remaining_after_purchase = models.FloatField(default=0)
 
     def __str__(self):
         return (

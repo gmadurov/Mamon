@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from .models import Product, Purchase
+from .models import Order, Product, Purchase
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 
 # Create your views here.
 
@@ -22,12 +23,28 @@ def showPurchase(request, pk):
 @login_required(login_url="login")
 def showProducts(request):
     products = Product.objects.all()
-    content = {"products": products}
+    orders = Order.objects.all()
+    #   find how many of each product a request user has bought
+    quantity = {
+        prod.id: orders.filter(ordered__in=request.user.holder.purchases.all())
+        .filter(product=prod)
+        .aggregate(Sum("quantity"))
+        .get("quantity__sum")
+        or 0
+        for prod in products
+    }
+    print(quantity.get(7))
+
+    content = {"products": products, "quantity": quantity}
     return render(request, "purchase/products.html", content)
 
 
 @login_required(login_url="login")
 def showProduct(request, pk):
     product = Product.objects.get(id=pk)
-    content = {"product": product}
+    purchases = Purchase.objects.filter(orders__product=product).filter(
+        buyer=request.user.holder
+    )
+    print(purchases)
+    content = {"product": product, "purchases": purchases}
     return render(request, "purchase/product.html", content)

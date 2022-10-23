@@ -23,7 +23,7 @@
       <span aria-hidden="true"></span>
     </a>
   </div>
-
+  {% if request.user.personel %}
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
       <a class="navbar-item"> Bar Cycles </a>
@@ -51,12 +51,26 @@
         </div>
       </div>
     </div>
-
-    <div class="navbar-end">
+  {% else %}
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
       <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link"> Profile </a>
+        <a class="navbar-link"> Producten </a>
 
         <div class="navbar-dropdown">
+          <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="navbar-end">
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">(€{{request.user.holder.stand}}) Profile </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
+          <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
+          <hr class="navbar-divider" />
           <a class="navbar-item"> View Profile </a>
           <a class="navbar-item"> Edit Profile </a>
           <hr class="navbar-divider" />

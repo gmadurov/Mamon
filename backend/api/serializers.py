@@ -32,7 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class HolderSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    name = serializers.ReadOnlyField()
+    name = serializers.SerializerMethodField()
+
+    def get_name(self, holder):
+        return holder.user.first_name + " " + holder.user.last_name
 
     class Meta:
         model = Holder

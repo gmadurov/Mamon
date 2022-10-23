@@ -23,7 +23,7 @@ class Holder(models.Model):
 
     @property
     def name(self):
-        return str(self.user.first_name or "" + " " + self.user.last_name or "")
+        return str(self.user.first_name + " " + self.user.last_name)
 
     def __str__(self):
         try:

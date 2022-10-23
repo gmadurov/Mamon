@@ -12,10 +12,16 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["name"] = user.holder.name
         # print(user, user.lid, user.lid.name)
         token["roles"] = [group.name for group in user.groups.all()]
-        token["holder_id"] = user.holder.id
+        try:
+            token["holder_id"] = user.holder.id
+        except:
+            token["holder_id"] = None
+        try:
+            token["personel_id"] = user.personel.id
+        except:
+            token["personel_id"] = None
         return token
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-

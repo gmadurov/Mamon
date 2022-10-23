@@ -1,8 +1,47 @@
-{% extends 'main.html'%}
+{% extends 'main.html'%} {% block content %} {% load purchase_tags %} {% if product %} {% if purchases %}
 
-{% block content %}
+<div class="columns">
+    <div class="column is-two-thirds">
+        <table
+            class="table table-bordered table-striped table-hover "
+        >
+            <thead>
+            <tr>
+                <th>Product</th>
 
-{% if product %}
-    {{product.name}} € {{product.price}}
-{% endif %}
-{% endblock content %}
+                <th>Customer</th>
+
+                <th>Price</th>
+
+                <th>Date</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for purchase in purchases %}
+
+            <tr>
+                <td>{{ purchase.orders|getOrderInfo:product.id }}</td>
+
+                <td>{{ purchase.buyer.name }}</td>
+
+                <td>{{ purchase.total }}</td>
+
+                <td>{{ purchase.created }}</td>
+            </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="column is-two-thirds has-text-centered is-centered">
+    Je hebt {{ purchases|getTotal:product.id }} "{{ product.name }}" gekocht!!!
+    </div>
+</div
+{% else %}
+<h2>There are no purchases that contain "{{product.name}}" as a product</h2>
+{% endif %} {% else %}
+
+<h2>Product not found</h2>
+
+{% endif %} {% endblock content %}

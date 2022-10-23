@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.shortcuts import redirect, render
+
 
 from .models import Holder, Personel
 
@@ -31,81 +31,70 @@ def safe_json_decode(response):
 @login_required(login_url="login")
 def showUsers(request):
     users = Holder.objects.all()
-    # return render(request)
+    return render(request)
 
 
-def logind(request):
+@login_required(login_url="login")
+def home(request):
+    user = Holder.objects.get(user=request.user)
+    purchases = user.purchases.all()
+    content = {
+        "user": user,
+        "purchases": purchases,
+    }
+    return render(request, "users/home.html", content)
 
-    try:
-        if (
-            User.objects.get(username=request.data["username"]).holder.ledenbase_id
-        ) > 1:
-            raise Exception("User is from ledenbase")
-        user = authenticate(
-            password=request.data["password"],
-            username=request.data["username"],
+
+def loginLedenbase(request):
+    res, ledenbaseUser = safe_json_decode(
+        requests.post(
+            os.environ.get("BACKEND_URL") + "/v2/login/",
+            json={
+                "password": request.POST["password"],
+                "username": request.POST["username"],
+            },
         )
-    except:
-        res, ledenbaseUser = safe_json_decode(
-            requests.post(
-                os.environ.get("BACKEND_URL") + "/v2/login/",
-                json={
-                    "password": request.data["password"],
-                    "username": request.data["username"],
-                },
-            )
-        )
-        if res.status_code != 200:
-            return
-        try:
-            # print(ledenbaseUser)
-            holder = Holder.objects.get(ledenbase_id=ledenbaseUser["user"]["id"])
-            user = holder.user
-            holder.image_ledenbase = (
-                os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
-            )
-            holder.save()
+    )
+    if res.status_code != 200:
+        messages.error(request, ledenbaseUser["non_field_errors"])
+        return None
 
-        except:
-            # create user and update holder info as required if user is not in database
-            user = User.objects.create(
-                username=request.data["username"],
-                first_name=ledenbaseUser["user"]["first_name"],
-                last_name=ledenbaseUser["user"]["last_name"],
-                # user purposely doesnt have a password set here to make sure it
-            )
-            holder = Holder.objects.get(
-                user=user,
-            )
-            holder.ledenbase_id = ledenbaseUser["user"]["id"]
-            holder.image_ledenbase = (
-                os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
-            )
-            holder.save()
+    user, created = User.objects.get_or_create(
+        username=request.POST["username"],
+        first_name=ledenbaseUser["user"]["first_name"],
+        last_name=ledenbaseUser["user"]["last_name"],
+        # user purposely doesnt have a password set here to make sure it
+    )
+    holder, created = Holder.objects.get_or_create(
+        user=user,
+    )
+    holder.ledenbase_id = ledenbaseUser["user"]["id"]
+    holder.image_ledenbase = (
+        os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
+    )
+    holder.save()
+    return user
 
 
 def loginUser(request):
     if request.user.is_authenticated:
         return redirect("purchases")
     if request.method == "POST":
-        # print(request.POST)
-        try:
-            User.objects.get(username=request.POST["username"]).personel
-        except Personel.DoesNotExist:
-            messages.error(request, "Username does not exist")
-            print("here")
-        user = authenticate(
-            password=request.POST["pass word"],
-            username=request.POST["username"],
-        )
+        user1 = User.objects.filter(username=request.POST["username"])
+        if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
+            print("user exists and doesnt have ledenbase id")
+            user = authenticate(
+                password=request.POST["password"],
+                username=request.POST["username"],
+            )
+        else:
+            user = loginLedenbase(request)
         if user:
             login(request, user)
             messages.info(request, "User was logged in")
             return redirect(
-                request.GET["next"] if "next" in request.GET else "purchases"
+                request.GET["next"] if "next" in request.GET else "userHome"
             )
-        else:
-            messages.error(request, "Password is incorrect")
 
     return render(request, "users/login.html")
 

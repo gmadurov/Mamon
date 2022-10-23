@@ -21,9 +21,8 @@
   <body 
   style="background-color: #edeff1"
   >
-    {% include 'navbar.html' %}
-     
-     {% comment %} {% if messages %} {% for message in messages %}
+    {% block navbar %}{% include 'navbar.html' %}{% endblock navbar %}
+     {% if messages %} {% for message in messages %}
         <div class="columns">
           <div class="column is-2">
             <article id="alert" class="message is-{{message.tags}}">
@@ -39,7 +38,7 @@
             </article>
           </div>
         </div>
-    {% endfor %} {% endif %} {% endcomment %}
+    {% endfor %} {% endif %}
     <div class='columns is-offset-2 column is-8' style=''>
       {% block content %} {% endblock content %}
     </div>
