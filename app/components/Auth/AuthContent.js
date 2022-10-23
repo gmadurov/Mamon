@@ -10,7 +10,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
   const navigation = useNavigation();
   const [username, setUsername] = useState("GMaduro");
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState("");
-  const [password, setPassword] = useState("Tue1423525");
+  const [password, setPassword] = useState("");
   // const [enteredConfirmPassword, setEnteredConfirmPassword] = useState("");
 
   // const { email: emailIsInvalid, password: passwordIsInvalid } =
