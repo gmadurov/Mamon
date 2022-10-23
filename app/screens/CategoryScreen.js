@@ -1,11 +1,12 @@
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
-import { useContext, useEffect, useState } from "react";
-import SettingsContext from "../context/SettingsContext";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { useContext, useState } from "react";
+
 import CategoryItem from "../components/CategoryItem";
 import { Divider } from "react-native-paper";
+import SettingsContext from "../context/SettingsContext";
 
-const SettingsScreen = () => {
-  const { categories, selectedCategory, setSelectedCategory, GET_categories } =
+const CategoryScreen = () => {
+  const { categories,   GET_categories } =
     useContext(SettingsContext);
   const [refreshing, setRefreshing] = useState(false);
   async function refresh() {
@@ -27,6 +28,6 @@ const SettingsScreen = () => {
   );
 };
 
-export default SettingsScreen;
+export default CategoryScreen;
 
 const styles = StyleSheet.create({ container: {} });

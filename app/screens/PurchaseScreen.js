@@ -1,7 +1,8 @@
+import { FlatList, RefreshControl, StyleSheet } from "react-native";
 import { useContext, useState } from "react";
-import PurchaseContext from "../context/PurchaseContext";
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+
 import Purchase from "../components/Purchase";
+import PurchaseContext from "../context/PurchaseContext";
 
 const PurchaseScreen = () => {
   const { GET, purchases } = useContext(PurchaseContext);
@@ -13,7 +14,7 @@ const PurchaseScreen = () => {
     setRefreshing(true);
     await GET();
     setRefreshing(false);
-  }
+  } 
   return (
     <FlatList
       data={purchases}

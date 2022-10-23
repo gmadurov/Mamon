@@ -1,9 +1,10 @@
-import jwt_decode from "jwt-decode";
-import dayjs from "dayjs";
-import { createContext, useContext } from "react";
 import AuthContext, { baseUrl } from "./AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createContext, useContext } from "react";
+
 import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import dayjs from "dayjs";
+import jwt_decode from "jwt-decode";
 import { showMessage } from "react-native-flash-message";
 
 // ("https://stropdas2.herokuapp.com/");
@@ -20,7 +21,7 @@ import { showMessage } from "react-native-flash-message";
  * ### use this instead of fetch for files
  * @params {url: string , config : object}
  * @returns \{ res, data \}
- *
+ * 
  * refreshToken: refreshToken
  * use this to refresh tockens
  * */
@@ -74,15 +75,18 @@ export const ApiProvider = ({ children }) => {
 
   /** gets the refresh token and update the local state and local storage */
   async function refreshToken(authToken) {
+    const controller = new AbortController();
+    const { signal } = controller;
     const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
-      /*  */ method: "POST",
+      signal,
+      method: "POST",
       headers: { Accept: "*/*", "Content-Type": "application/json" },
       body: JSON.stringify({
         refresh: authToken?.refresh,
       }),
     });
-    let data = await res.json();
     if (res?.status === 200) {
+      let data = await res.json();
       setAuthTokens(() => data); // if cycling refresh tokens
       setUser(jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
@@ -102,6 +106,8 @@ export const ApiProvider = ({ children }) => {
       });
       await logoutFunc();
     }
+    // cancels the request if it taking too long
+    setTimeout(() => controller.abort(), 2000);
   }
 
   /** ## use this instead of fetch

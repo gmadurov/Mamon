@@ -1,15 +1,14 @@
-import { useState, useContext } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { GlobalStyles } from "../constants/styles";
+
 import CartContext from "../context/CartContext";
-import ProductContext from "../context/ProductContext";
+import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
+import ProductContext from "../context/ProductContext";
+import { useContext } from "react";
 
 const CartItem = ({ quantity, product }) => {
   const { products } = useContext(ProductContext);
   const { remove_from_cart } = useContext(CartContext);
-  const [deleted, setDeleted] = useState(false);
   const onRemove = (amount) => {
     remove_from_cart(product, amount);
   };
@@ -20,8 +19,8 @@ const CartItem = ({ quantity, product }) => {
           {quantity}{" "}
           {
             products?.find(
-              (product_from_find) => product_from_find.id === product.id
-            ).name
+              (product_from_find) => product_from_find?.id === product?.id
+            )?.name
           }
           {quantity > 1 && "s"}
         </Text>

@@ -1,10 +1,10 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import { GlobalStyles } from "./styles";
 
 function Input({
   label,
-  keyboardType,
+  keyboardType, 
   secure,
   onUpdateValue,
   value,

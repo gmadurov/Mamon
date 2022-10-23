@@ -1,16 +1,9 @@
-import { StatusBar } from "expo-status-bar";
 import "./polyfills";
-import { StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "react-native-gesture-handler";
-import FlashMessage, { showMessage } from "react-native-flash-message";
 
-import ProductScreen from "./screens/ProductScreen";
-import { FullProvider } from "./context/FullContext";
-import LoginScreen from "./screens/LoginScreen";
-import { GlobalStyles } from "./constants/styles";
-import AuthContext from "./context/AuthContext";
+import * as SplashScreen from "expo-splash-screen";
+
+import FlashMessage, { showMessage } from "react-native-flash-message";
 import {
   useCallback,
   useContext,
@@ -18,22 +11,27 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import * as SplashScreen from "expo-splash-screen";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import DrawerNavigator from "./navigation/DrawerNavigator";
 import ApiContext from "./context/ApiContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AuthContext from "./context/AuthContext";
+import DrawerNavigator from "./navigation/DrawerNavigator";
+import { FullProvider } from "./context/FullContext";
+import { GlobalStyles } from "./constants/styles";
 import HolderContext from "./context/HolderContext";
-import PurchaseContext from "./context/PurchaseContext";
-import ProductContext from "./context/ProductContext";
-import SettingsContext from "./context/SettingsContext";
+import LoginScreen from "./screens/LoginScreen";
+import { NavigationContainer } from "@react-navigation/native";
 import {
   Provider as PaperProvider,
-  MD3DarkTheme,
-  MD3LightTheme,
-  MD2DarkTheme,
-  MD2LightTheme,
 } from "react-native-paper";
+import ProductContext from "./context/ProductContext";
+import ProductScreen from "./screens/ProductScreen";
+import PurchaseContext from "./context/PurchaseContext";
+import SettingsContext from "./context/SettingsContext";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 const Stack = createNativeStackNavigator();
 
 function AuthStack() {
@@ -53,30 +51,32 @@ function AuthStack() {
 
 function AuthenticatedStack() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary3 },
-        headerTintColor: "white",
-        contentStyle: { backgroundColor: GlobalStyles.colors.primary1 },
-      }}
-    >
-      <Stack.Screen
-        name="Drawer"
-        component={DrawerNavigator}
-        options={{
-          headerShown: false,
+    <>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: GlobalStyles.colors.primary3 },
+          headerTintColor: "white",
+          contentStyle: { backgroundColor: GlobalStyles.colors.primary1 },
         }}
-      />
-      <Stack.Screen
-        name="ProductsPage"
-        component={ProductScreen}
-        options={{
-          title: "Mamon",
-          backgroundColor: GlobalStyles.colors.primary1,
-        }}
-      />
-      <Stack.Screen name="LoginPage" component={LoginScreen} />
-    </Stack.Navigator>
+      >
+        <Stack.Screen
+          name="Drawer"
+          component={DrawerNavigator}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ProductsPage"
+          component={ProductScreen}
+          options={{
+            title: "Mamon",
+            backgroundColor: GlobalStyles.colors.primary1,
+          }}
+        />
+        <Stack.Screen name="LoginPage" component={LoginScreen} />
+      </Stack.Navigator>
+    </>
   );
 }
 
@@ -93,7 +93,6 @@ function Root() {
     async function fetchToken() {
       const storedTokens = await AsyncStorage.getItem("authTokens");
       if (storedTokens) {
-        // console.log("refresh app 1");
         showMessage({
           message: `Authentication woord refreshed`,
           description: ``,
@@ -156,7 +155,11 @@ function Navigation() {
   return (
     <>
       {!user && <AuthStack />}
-      {user && <AuthenticatedStack />}
+      {user && (
+        <>
+          <AuthenticatedStack />
+        </>
+      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Colors, GlobalStyles } from "./styles";
+import { GlobalStyles } from "./styles";
 
 function Button({ children, onPress }) {
   return (
@@ -10,7 +10,7 @@ function Button({ children, onPress }) {
     >
       <View>
         <Text style={styles.buttonText}>{children}</Text>
-      </View>
+      </View> 
     </Pressable>
   );
 }

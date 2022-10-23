@@ -1,7 +1,8 @@
-import { useContext } from "react";
-import ProductContext from "../context/ProductContext";
 import { StyleSheet, Text, View } from "react-native";
+
 import { Card } from "@rneui/themed";
+import ProductContext from "../context/ProductContext";
+import { useContext } from "react";
 
 const Purchase = ({ purchase }) => {
   const { products } = useContext(ProductContext);

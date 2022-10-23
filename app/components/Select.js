@@ -1,19 +1,12 @@
-import { useEffect, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import {
-  Modal,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableHighlight,
-  TouchableOpacity,
-  View,
-} from "react-native";
 import { Button, Card } from "@rneui/themed";
+import { StyleSheet, View } from "react-native";
+import { useContext, useState } from "react";
+
+import FullContext from "../context/FullContext";
 import { GlobalStyles } from "../constants/styles";
-import IconButton from "./IconButton";
-import { Caption, Searchbar, Text, useTheme } from "react-native-paper";
+
+// import IconButton from "./IconButton";
+// import { Ionicons } from "@expo/vector-icons";
 
 /**
  *
@@ -31,10 +24,12 @@ function Select({
   textInputConfig,
   refreshFunction,
 }) {
+  const { setBottomSearch } = useContext(FullContext);
   const inputStyles = [styles.input, style];
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
   if (textInputConfig && textInputConfig.multiline) {
     inputStyles.push(styles.inputMultiline);
   }
@@ -78,14 +73,16 @@ function Select({
         android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         activeOpacity={0.6}
         underlayColor={GlobalStyles.colors.primary3}
-        onPress={() => setModalVisible(!modalVisible)}
+        // onPress={() => setModalVisible(!modalVisible)}
+        // this makes the difference between the modal and the botom sheet
+        onPress={() => setBottomSearch((nu) => !nu)}
         title={
           defaultValue
-            ? options?.find((option) => option.value === defaultValue).label
+            ? options?.find((option) => option?.value === defaultValue)?.label
             : label
         }
       />
-      <Modal
+      {/* <Modal
         animationType="none"
         transparent={true}
         visible={modalVisible}
@@ -111,45 +108,13 @@ function Select({
                 />
               </TouchableHighlight>
             </View>
-            {/*  <View style={styles.modalView}>
-              <Ionicons
-                style={inputStyles}
-                name={"search"}
-                size={24}
-                color={GlobalStyles.colors.iconColor}
-              />
-              <TextInput
-                style={inputStyles}
-                placeholder={placeholder}
-                {...textInputConfig}
-                onChangeText={(text) => {
-                  setSearch(text);
-                  // optionFunction(search);
-                }}
-              >
-                {defaultValue
-                  ? options?.find((option) => option.value === defaultValue)
-                      .label
-                  : search}
-              </TextInput>
-              <IconButton
-                name={"close-circle-outline"}
-                size={24}
-                style={inputStyles}
-                color={GlobalStyles.colors.iconColor}
-                onPress={() => {
-                  setSearch("");
-                  onSelect(null);
-                }}
-              />
-            </View> */}
             <Searchbar
-              placeholder="Search"
+              placeholder="Search                          "
               onChangeText={(text) => setSearch(text)}
               value={search}
-              onIconPress={
-                 () => {console.log('pressed');}
-              }
+              onIconPress={() => {
+                console.log("pressed");
+              }}
               icon="menu"
               style={{ margin: 4 }}
             />
@@ -179,7 +144,7 @@ function Select({
             </ScrollView>
           </Card>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 }

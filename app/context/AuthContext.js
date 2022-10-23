@@ -1,8 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { hideMessage, showMessage } from "react-native-flash-message";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
-import { showMessage, hideMessage } from "react-native-flash-message";
+import { useNavigation } from "@react-navigation/native";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
@@ -10,7 +11,9 @@ export const baseUrl = () => {
   if (process.env.NODE_ENV === "development") {
     url = "https://mamon.esrtheta.nl";
   } else if (process.env.NODE_ENV === "production") {
-    url = "https://localhost:8000";
+    url = "https://mamon.esrtheta.nl";
+  } else {
+    url = "http://10.0.2.2:8000";
   }
   return url;
 };
@@ -27,7 +30,7 @@ export const baseUrl = () => {
  * {
   "token_type": "access",
   "exp": unixdata,
-  "iat": unix date,
+  "iat": unix date, 
   "jti": "",
   "user_id": Int,
   "name": "",
@@ -48,7 +51,6 @@ const AuthContext = createContext({
     exp: "",
     iat: "",
     jti: "",
-    user_id: 0,
     name: "",
     role: [],
     lid_id: 0,

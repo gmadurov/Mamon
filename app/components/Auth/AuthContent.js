@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, View } from "react-native";
 
+import Button from "../../constants/Button";
 import { GlobalStyles } from "../../constants/styles";
 import Input from "../../constants/Input";
-import Button from "../../constants/Button";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 
 function AuthContent({ isLogin, onAuthenticate }) {
   const navigation = useNavigation();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("GMaduro");
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("Tue1423525");
   // const [enteredConfirmPassword, setEnteredConfirmPassword] = useState("");
 
   // const { email: emailIsInvalid, password: passwordIsInvalid } =

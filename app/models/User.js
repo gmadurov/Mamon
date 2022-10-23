@@ -7,4 +7,4 @@ class User {
       this.id = id;
     }
   }
-export default User
+export default User 

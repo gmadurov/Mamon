@@ -1,17 +1,19 @@
-import { useState, useContext } from "react";
 import {
+  Image,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
-  Image,
 } from "react-native";
-import { Surface } from "react-native-paper";
-import { GlobalStyles } from "../constants/styles";
+import { useContext, useState } from "react";
+
 import CartContext from "../context/CartContext";
-import ProductContext from "../context/ProductContext";
+import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
+import ProductContext from "../context/ProductContext";
+import { Surface } from "react-native-paper";
+import { baseUrl } from "../context/AuthContext";
 
 const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
   const { add_to_cart, remove_from_cart } = useContext(CartContext);
@@ -31,7 +33,6 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
       remove_from_cart(product);
     }
   };
-
   let [BGC, iBGC] = deleted
     ? [GlobalStyles.colors.primary4, product?.color]
     : ([product?.color, GlobalStyles.colors.primary4][(BGC, iBGC)] =
@@ -40,7 +41,7 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
           : [product?.color, GlobalStyles.colors.primary4]);
 
   return (
-    <Surface style={[ styles.gridItem,{ elevation: 2 }]}>
+    <Surface style={[styles.gridItem, { elevation: 2 }]}>
       <Pressable
         android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         style={({ pressed }) => [
@@ -57,8 +58,11 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
             },
           ]}
         >
-          {product?.image_url ? (
-            <Image source={{ uri: product?.image_url }} style={styles.avatar} />
+          {product?.image ? (
+            <Image
+              source={{ uri: baseUrl() + product?.image }}
+              style={styles.avatar}
+            />
           ) : (
             <Image
               source={require("../assets/default-product.png")}

@@ -1,20 +1,30 @@
-import { createContext } from "react";
-import { AuthProvider } from "./AuthContext";
+import { createContext, useState } from "react";
+
 import { ApiProvider } from "./ApiContext";
-import { PurchaseProvider } from "./PurchaseContext";
+import { AuthProvider } from "./AuthContext";
 import { CartProvider } from "./CartContext";
-import { ProductProvider } from "./ProductContext";
 import { HolderProvider } from "./HolderContext";
+import { ProductProvider } from "./ProductContext";
+import { PurchaseProvider } from "./PurchaseContext";
 import { SettingsProvider } from "./SettingsContext";
+
 /** provides Settings */
-const FullContext = createContext();
+const FullContext = createContext({
+  BottomSearch: false,
+  setBottomSearch: (value = true) => {},
+});
 export default FullContext;
 export const FullProvider = ({ children }) => {
-  const data = {};
+  const [BottomSearch, setBottomSearch] = useState(false);
+
+  const data = {
+    BottomSearch: BottomSearch,
+    setBottomSearch: setBottomSearch,
+  };
   return (
     <FullContext.Provider value={data}>
       <AuthProvider>
-        <ApiProvider>
+        <ApiProvider> 
           <SettingsProvider>
             <HolderProvider>
               <ProductProvider>

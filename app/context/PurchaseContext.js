@@ -1,7 +1,9 @@
 import { createContext, useEffect, useState } from "react";
-import { useContext } from "react";
+
+import ApiContext from "./ApiContext";
 import { showMessage } from "react-native-flash-message";
-import ApiContext from "../context/ApiContext";
+import { useContext } from "react";
+
 /**purchases: purchases,
  * 
     GET: GET,
@@ -21,7 +23,7 @@ const PurchaseContext = createContext({
           id: 0,
           product: 0,
           quantity: 0,
-        },
+        }, 
       ],
       payed: false,
     },

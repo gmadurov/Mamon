@@ -1,16 +1,17 @@
-import { useContext } from "react";
-import { StyleSheet } from "react-native";
-import SettingsContext from "../context/SettingsContext";
-import { Switch, Text } from "react-native-paper";
+import { StyleSheet, Text, View } from "react-native";
+
 import { GlobalStyles } from "../constants/styles";
+import SettingsContext from "../context/SettingsContext";
+import { Switch } from "react-native-paper";
+import { useContext } from "react";
 
 const CategoryItem = ({ item }) => {
   const { selectedCategory, setSelectedCategory } = useContext(SettingsContext);
   let category = item.item;
   function change(base) {
     if (selectedCategory.includes(category.id)) {
-      setSelectedCategory(() =>
-        selectedCategory.map((pr) => pr !== category.id && pr)
+      setSelectedCategory((list) =>
+        list.filter((pr) => pr !== category.id && pr)
       );
     } else {
       setSelectedCategory(() => [...selectedCategory, category.id]);
@@ -18,17 +19,25 @@ const CategoryItem = ({ item }) => {
   }
 
   return (
-    <>
-      <Text variant="titleMedium">{category.name}</Text>
+    <View style={styles.row}>
+      <Text>{category.name}</Text>
       <Switch
         color={GlobalStyles.colors.primary1}
         value={selectedCategory.includes(category.id)}
         onValueChange={change}
       />
-    </>
+    </View>
   );
 };
 
 export default CategoryItem;
 
-const styles = StyleSheet.create({ container: {} });
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+});

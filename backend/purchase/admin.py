@@ -39,9 +39,11 @@ class CategoryAdmin(admin.ModelAdmin):
 class PurchaseAdmin(admin.ModelAdmin):
     list_display = [
         "buyer",
+        "total",
         "payed",
         "created",
     ]
+    filter_horizontal = ["orders"]
     list_filter = ["buyer", "payed"]
     search_fields = ["buyer", "payed", "id"]
 
@@ -67,7 +69,13 @@ class PurchaseBarCycleInline(NonrelatedTabularInline):
     model = Purchase
     # extra = 1
     # filter_horizontal = ["created", "payed", "buyer", "orders"]
-    readonly_fields = ["created", "payed", "buyer", "orders"]
+    readonly_fields = [
+        "created",
+        "payed",
+        "buyer",
+        "orders",
+        "remaining_after_purchase",
+    ]
     # exclude = ["product", "quantity"]
     def get_form_queryset(self, obj):
         return self.model.objects.filter(
@@ -111,9 +119,10 @@ class ReportInlineAdmin(NonrelatedTabularInline):
         return False
 
     def has_add_permission(self, request, obj=None):
-        if obj.closing_report:
-            return False
-        return True
+        if obj:
+            if not obj.closing_report:
+                return True
+        return False
 
     def save_new_instance(self, parent, instance):
         parent.closing_report.id = instance.id
@@ -133,14 +142,14 @@ class BarcycleAdmin(admin.ModelAdmin):
     inlines = [ReportInlineAdmin, PurchaseBarCycleInline]
 
     def opening_personel(self, obj):
-        if obj.opening_report:
-            return obj.opening_report.personel.name
-        return "Not closed yet"
+        if not obj.opening_report:
+            return "Not closed yet"
+        return obj.opening_report.personel.name
 
     def closing_personel(self, obj):
-        if obj.closing_report:
-            return obj.closing_report.personel.name
-        return "Not closed yet"
+        if not obj.closing_report:
+            return "Not closed yet"
+        return obj.closing_report.personel.name
 
     def get_purchases(self, obj):
         # get all purchases that are withing the opning and closing report date range
@@ -157,12 +166,10 @@ class BarcycleAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if not obj:
             return self.readonly_fields + (
-                "opening_report",
-                "closing_report",
                 "total_dif_flowmeter1",
                 "total_dif_flowmeter2",
             )
-        if obj.closing_report:
+        elif obj.closing_report:
             return self.readonly_fields + (
                 "opening_report",
                 "closing_report",
@@ -178,14 +185,14 @@ class BarcycleAdmin(admin.ModelAdmin):
         )
 
     def total_dif_flowmeter1(self, obj):
-        if obj.closing_report:
-            return obj.closing_report.flow_meter1 - obj.opening_report.flow_meter1
-        return "Available at closing"
+        if not obj.closing_report:
+            return "Available at closing"
+        return obj.closing_report.flow_meter1 - obj.opening_report.flow_meter1
 
     def total_dif_flowmeter2(self, obj):
-        if obj.closing_report:
-            return obj.closing_report.flow_meter2 - obj.opening_report.flow_meter2
-        return "Available at closing"
+        if not obj.closing_report:
+            return "Available at closing"
+        return obj.closing_report.flow_meter2 - obj.opening_report.flow_meter2
 
     opening_personel.short_description = "Opening Personel"
     closing_personel.short_description = "Closing Personel"

@@ -35,7 +35,7 @@ export const SettingsProvider = ({ children }) => {
     }
     // eslint-disable-next-line
   }, [user]);
-  
+
   const data = {
     categories: categories,
     GET_categories: GET_categories,

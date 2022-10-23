@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+
 import AuthContext from "../context/AuthContext";
 const LogOutScreen = ({ navigation }) => {
   const { logoutFunc } = useContext(AuthContext);
@@ -14,3 +15,4 @@ const LogOutScreen = ({ navigation }) => {
 };
 
 export default LogOutScreen;
+ 

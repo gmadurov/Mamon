@@ -1,6 +1,6 @@
-import { createContext, useEffect, useState } from "react";
-import { useContext } from "react";
-import ApiContext from "../context/ApiContext";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import ApiContext from "./ApiContext";
 
 const HolderContext = createContext({
   holders: [
@@ -31,7 +31,7 @@ export default HolderContext;
 export const HolderProvider = ({ children }) => {
   const { user, ApiRequest } = useContext(ApiContext);
   const [holders, setHolders] = useState([]);
-  const [searchHolders, setSearchHolders] = useState([]);
+  const [searchHolders, setSearchHolders] = useState([]); 
   async function GET() {
     setHolders([]);
     const { res, data } = await ApiRequest("/api/holder/");

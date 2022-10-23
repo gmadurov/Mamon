@@ -1,4 +1,3 @@
-import { useContext, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -9,20 +8,23 @@ import {
   Text,
   View,
 } from "react-native";
-import ProductContext from "../context/ProductContext";
-import ProductTile from "../components/ProductTile";
+import { useContext, useState } from "react";
+
+import BottomSearch from "../navigation/BottomSearch";
 import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
+import HolderContext from "../context/HolderContext";
+import ProductContext from "../context/ProductContext";
 import ProductForm from "../components/ProductForm";
-
+import ProductTile from "../components/ProductTile";
 
 const { width } = Dimensions.get("screen");
 
 const ProductScreen = ({ edit, sell }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
+  const { GET: GET_HOLDER } = useContext(HolderContext);
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState(0);
-  console.log(selectedProducts);
   function renderProducts(itemData) {
     return (
       <ProductTile
@@ -36,6 +38,7 @@ const ProductScreen = ({ edit, sell }) => {
   async function getProducts() {
     setRefreshing(true);
     await GET();
+    await GET_HOLDER();
     setRefreshing(false);
   }
   return (
@@ -64,6 +67,10 @@ const ProductScreen = ({ edit, sell }) => {
           }
         />
       </View>
+      <BottomSearch
+        label="Kies Lid Hier"
+        placeholder="Kies Lid Hier"
+      />
     </>
   );
 };

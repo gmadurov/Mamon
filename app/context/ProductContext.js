@@ -1,13 +1,14 @@
 import { createContext, useEffect, useState } from "react";
-import { useContext } from "react";
+
+import ApiContext from "./ApiContext";
+import SettingsContext from "./SettingsContext";
 import { showMessage } from "react-native-flash-message";
-import ApiContext from "../context/ApiContext";
-import SettingsContext from "../context/SettingsContext";
+import { useContext } from "react";
 
 /**
  *     products: products,
  * 
-    GET: GET,
+    GET: GET, 
 
     POST: POST,
 
@@ -51,7 +52,6 @@ export const ProductProvider = ({ children }) => {
       },
       body: JSON.stringify(product),
     });
-    console.log(data);
     setProducts(() =>
       products?.map((product_from_map) =>
         product.id === product_from_map.id ? data : product_from_map
@@ -92,14 +92,17 @@ export const ProductProvider = ({ children }) => {
 
     // eslint-disable-next-line
   }, [user]);
-  let selectedProducts = categories
-    .filter((cat) => selectedCategory.includes(cat.id))
-    .map((cat) =>
-      cat.products.map((product) =>
-        products?.find((prod) => prod.id === product)
-      )
-    )
-    .flat();
+  let selectedProducts =
+    selectedCategory.length > 0
+      ? categories
+          .filter((cat) => selectedCategory.includes(cat.id))
+          .map((cat) =>
+            cat.products.map((product) =>
+              products?.find((prod) => prod.id === product)
+            )
+          )
+          .flat()
+      : products;
 
   const data = {
     selectedProducts: selectedProducts,

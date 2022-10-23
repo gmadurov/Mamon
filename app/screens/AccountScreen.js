@@ -1,25 +1,22 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useContext, useLayoutEffect, useState } from "react";
+import { Block, Text, theme } from "galio-framework";
 import {
-  StyleSheet,
-  View,
   Dimensions,
-  ScrollView,
   Image,
   ImageBackground,
   Platform,
-  FlatList,
   RefreshControl,
+  ScrollView,
+  StyleSheet,
 } from "react-native";
-import AuthContext, { baseUrl } from "../context/AuthContext";
+import { useContext, useState } from "react";
+
+import AuthContext from "../context/AuthContext";
+import { Button } from "@rneui/base";
 import { GlobalStyles } from "../constants/styles";
 import HolderContext from "../context/HolderContext";
-import { useNavigation } from "@react-navigation/native";
-import { Block, Text, theme } from "galio-framework";
-import { Button } from "@rneui/base";
-import PurchaseContext from "../context/PurchaseContext";
 import Purchase from "../components/Purchase";
-import ApiContext from "../context/ApiContext";
+import PurchaseContext from "../context/PurchaseContext";
+import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -27,9 +24,8 @@ const thumbMeasure = (width - 48 - 32) / 3;
 let HeaderHeight = 100;
 
 const AccountScreen = () => {
-  const { user, authTokens } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { holders, GET: getHolders, PUT } = useContext(HolderContext);
-  const navigation = useNavigation();
   const holder = holders?.find((holder) => holder.id === user?.user_id);
   const { GET, purchases } = useContext(PurchaseContext);
   const [refreshing, setRefreshing] = useState(false);
@@ -60,15 +56,6 @@ const AccountScreen = () => {
   async function ChangeStand(mutation) {
     await PUT({ ...holder, stand: holder?.stand + mutation });
   }
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({ title: "My Account" + holder?.stand });
-  // }, [navigation]);
-  // console.log(holder);
-  // holder?.image !== "/mediafiles/holder/user-default.jpg"
-  //   ? console.log(holder?.image)
-  //   : holder?.image_ledenbase
-  //   ? console.log(holder?.image_ledenbase)
-  //   : console.log("../assets/user-default.jpg");
   return (
     <Block flex style={styles.profile}>
       <Block flex>

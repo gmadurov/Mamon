@@ -1,26 +1,27 @@
-import { useState, useContext, useEffect } from "react";
-import CartContext from "../context/CartContext";
-import ProductContext from "../context/ProductContext";
-import HolderContext from "../context/HolderContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
-import Select from "./Select";
+import { useContext, useEffect, useState } from "react";
+
 import { Button } from "@rneui/themed";
+import CartContext from "../context/CartContext";
 // import { FlatList } from "react-native-gesture-handler";
 import CartItem from "./CartItem";
-import { GlobalStyles } from "../constants/styles";
 import { FlatList } from "react-native";
+import { GlobalStyles } from "../constants/styles";
+import HolderContext from "../context/HolderContext";
+import ProductContext from "../context/ProductContext";
+import Select from "./Select";
+
 export const Cart = ({ sell }) => {
-  const { cart, setCart, buy_cart } = useContext(CartContext);
+  const { cart, setCart, buy_cart, buyer, setBuyer } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
   const { products } = useContext(ProductContext);
-  const [buyer, setBuyer] = useState(0);
   const [disabled, setDisabled] = useState(true);
   let total = 0;
-  cart?.map(
-    (order) =>
-      (total +=
-        products?.find((product) => product.id === order.product).price *
-        order.quantity)
+  total = cart?.reduce(
+    (partialSum, a) =>
+      partialSum +
+      products?.find((product) => product.id === a.product)?.price * a.quantity,
+    0
   );
   let optionsHolders = holders?.map((holder) => ({
     value: holder.id,
@@ -78,15 +79,6 @@ export const Cart = ({ sell }) => {
         {!cart.length > 0 ? (
           <Text>Cart is empty</Text>
         ) : (
-          // cart?.map((order) => (
-          //   <View key={"cart product" + order.product}>
-          //     <Text>
-          //       {order.quantity}{" "}
-          //       {products?.find((product) => product.id === order.product).name}
-          //       {order.quantity > 1 && "s"}
-          //     </Text>
-          //   </View>
-          // ))
           <FlatList
             data={cart}
             keyExtractor={(item) => "cart product" + item.product}

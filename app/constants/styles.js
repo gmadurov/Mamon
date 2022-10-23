@@ -23,7 +23,7 @@ export const GlobalStyles = {
 
     androidRippleColor: "#ccc",
     shadowColor: "black",
-    textColorLight: "white",
+    textColorLight: "white", 
     textColorDark: "black",
     iconColor: 'grey',
   },

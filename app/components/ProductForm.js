@@ -1,9 +1,10 @@
+import { Alert, Platform, StyleSheet, Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
-import { Platform, Alert, StyleSheet, Text, View } from "react-native";
-import ProductContext from "../context/ProductContext";
-import Input from "../constants/Input";
-import { GlobalStyles } from "../constants/styles";
+
 import { Button } from "@rneui/base";
+import { GlobalStyles } from "../constants/styles";
+import Input from "../constants/Input";
+import ProductContext from "../context/ProductContext";
 
 const ProductForm = ({ style, create, selected, setSelected }) => {
   const [disabled, setDisabled] = useState(true);

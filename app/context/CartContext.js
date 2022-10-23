@@ -1,6 +1,8 @@
 import { createContext, useContext, useState } from "react";
-import PurchaseContext from "../context/PurchaseContext";
+
 import AuthContext from "./AuthContext";
+import PurchaseContext from "./PurchaseContext";
+import { number } from "prop-types";
 
 /**cart: cart,
  * 
@@ -14,6 +16,8 @@ import AuthContext from "./AuthContext";
      */
 const CartContext = createContext({
   cart: [],
+  buyer: number,
+  setBuyer: () => {},
   setCart: () => {},
   add_to_cart: (product) => {},
   remove_from_cart: (product, quantity = 1) => {},
@@ -29,9 +33,11 @@ export const CartProvider = ({ children }) => {
    * {quantity: int,
    *  product: product.id<int>}
    * when adding or removing from the cart you are
-   * looking up the oder by product key and then ajusting the quantity
+   * looking up the oder by product key and then ajusting the quantity 
    * if the quantity is 0 then you can remove the order from the cart
    */
+
+  const [buyer, setBuyer] = useState(null);
   const [cart, setCart] = useState([]);
   function add_to_cart(product) {
     cart.some((order) => order.product === product.id)
@@ -79,6 +85,8 @@ export const CartProvider = ({ children }) => {
     add_to_cart: add_to_cart,
     remove_from_cart: remove_from_cart,
     buy_cart: buy_cart,
+    buyer: buyer,
+    setBuyer: setBuyer,
   };
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;
 };
