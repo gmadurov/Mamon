@@ -4,32 +4,30 @@
     "slug": "mamon-gus",
     "version": "2.0.1",
     "owner": "gusmadvol",
-    "icon": "./assets/pwa-icons/manifest-icon-512.png",
+    "icon": "./src/assets/pwa-icons/manifest-icon-512.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/pwa-icons/manifest-icon-512.png",
+      "image": "./src/assets/pwa-icons/manifest-icon-512.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gusmadvol.mamongus"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/pwa-icons/manifest-icon-512.png",
+        "foregroundImage": "./src/assets/pwa-icons/manifest-icon-512.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.gusmadvol.mamongus"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/assets/favicon.png"
     },
     "extra": {
       "eas": {

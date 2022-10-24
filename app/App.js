@@ -1,4 +1,4 @@
-import "./polyfills";
+import "./src/polyfills";
 import "react-native-gesture-handler";
 
 import * as SplashScreen from "expo-splash-screen";
@@ -13,22 +13,20 @@ import {
   useState,
 } from "react";
 
-import ApiContext from "./context/ApiContext";
+import ApiContext from "./src/context/ApiContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AuthContext from "./context/AuthContext";
-import DrawerNavigator from "./navigation/DrawerNavigator";
-import { FullProvider } from "./context/FullContext";
-import { GlobalStyles } from "./constants/styles";
-import HolderContext from "./context/HolderContext";
-import LoginScreen from "./screens/LoginScreen";
+import AuthContext from "./src/context/AuthContext";
+import DrawerNavigator from "./src/navigation/DrawerNavigator";
+import { FullProvider } from "./src/context/FullContext";
+import { GlobalStyles } from "./src/constants/styles";
+import HolderContext from "./src/context/HolderContext";
+import LoginScreen from "./src/screens/LoginScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import {
-  Provider as PaperProvider,
-} from "react-native-paper";
-import ProductContext from "./context/ProductContext";
-import ProductScreen from "./screens/ProductScreen";
-import PurchaseContext from "./context/PurchaseContext";
-import SettingsContext from "./context/SettingsContext";
+import { Provider as PaperProvider } from "react-native-paper";
+import ProductContext from "./src/context/ProductContext";
+import ProductScreen from "./src/screens/ProductScreen";
+import PurchaseContext from "./src/context/PurchaseContext";
+import SettingsContext from "./src/context/SettingsContext";
 import { StatusBar } from "expo-status-bar";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -177,16 +175,18 @@ const theme = {
 // "success" (green), "warning" (orange), "danger" (red), "info" (blue) and "default" (gray)
 export default function App() {
   return (
-    <><SafeAreaView style={{flex:1}}>
-      <StatusBar style="light" />
-      <NavigationContainer>
-        <FullProvider>
-          <PaperProvider>
-            <Root />
-          </PaperProvider>
-        </FullProvider>
-      </NavigationContainer>
-      <FlashMessage position="top" /></SafeAreaView >
+    <>
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <NavigationContainer>
+          <FullProvider>
+            <PaperProvider>
+              <Root />
+            </PaperProvider>
+          </FullProvider>
+        </NavigationContainer>
+        <FlashMessage position="top" />
+      </SafeAreaView>
     </>
   );
 }
