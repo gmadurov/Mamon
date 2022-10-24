@@ -89,7 +89,7 @@ export const Cart = ({ sell }) => {
           />
         )}
       </View>
-      <View style={styles.view1}>
+      <View style={styles.view}>
         <Select
           defaultValue={buyer}
           refreshFunction={GET}
@@ -99,7 +99,7 @@ export const Cart = ({ sell }) => {
           label="Kies Lid Hier"
           placeholder="         Kies Lid Hier         "
         />
-        <View style={styles.view2}>
+        <View style={styles.view}>
           <Button
             android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
             style={({ pressed }) => [
@@ -165,18 +165,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     justifyContent: "center",
-    // alignItems: "center",
     backgroundColor: GlobalStyles.colors.offwhite,
   },
-  // title: {
-  //   fontWeight: "bold",
-  //   fontSize: 18,
-  // },
-  view1: {
-    flexDirection: "row",
-    backgroundColor: GlobalStyles.colors.primary2,
-  },
-  view2: {
+  view: {
     flexDirection: "row",
     backgroundColor: GlobalStyles.colors.primary2,
   },
