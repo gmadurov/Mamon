@@ -2,23 +2,24 @@ import {
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
-} from "react-native";
-import { useContext, useState } from "react";
+} from 'react-native';
+import { useContext, useState } from 'react';
 
-import BottomSearch from "../navigation/BottomSearch";
-import Cart from "../components/Cart";
-import { GlobalStyles } from "../constants/styles";
-import HolderContext from "../context/HolderContext";
-import ProductContext from "../context/ProductContext";
-import ProductForm from "../components/ProductForm";
-import ProductTile from "../components/ProductTile";
+import BottomSearch from '../navigation/BottomSearch';
+import Cart from '../components/Cart';
+import { GlobalStyles } from '../constants/styles';
+import HolderContext from '../context/HolderContext';
+import ProductContext from '../context/ProductContext';
+import ProductForm from '../components/ProductForm';
+import ProductTile from '../components/ProductTile';
 
-const { width } = Dimensions.get("screen");
+const { width } = Dimensions.get('screen');
 
 const ProductScreen = ({ edit, sell }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
@@ -43,34 +44,36 @@ const ProductScreen = ({ edit, sell }) => {
   }
   return (
     <>
-      <View style={edit ? { flex: 2 } : styles.cartView}>
-        {edit ? (
-          <KeyboardAvoidingView style={[styles.cartView]}>
-            <ProductForm create selected={selected} setSelected={setSelected} />
-          </KeyboardAvoidingView>
-        ) : (
-          <Cart sell={sell} />
-        )}
+      <View
+        style={[
+          { flex: 1 },
+          Platform.OS === 'android' && {
+            paddingBottom: 50,
+            flexDirection: 'row-reverse',
+          },
+        ]}>
+        <View style={ styles.cartView}>
+          
+            <Cart sell={sell} />
+          
+        </View>
+        <View style={styles.productView}>
+          <Text style={styles.text}>Producten</Text>
+          <FlatList
+            data={selectedProducts}
+            keyExtractor={(item) => item.id}
+            renderItem={renderProducts}
+            numColumns={Math.floor(width / 196)}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => getProducts()}
+              />
+            }
+          />
+        </View>
       </View>
-      <View style={styles.productView}>
-        <Text style={styles.text}>Producten</Text>
-        <FlatList
-          data={selectedProducts}
-          keyExtractor={(item) => item.id}
-          renderItem={renderProducts}
-          numColumns={Math.floor(width / 196)}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => getProducts()}
-            />
-          }
-        />
-      </View>
-      <BottomSearch
-        label="Kies Lid Hier"
-        placeholder="Kies Lid Hier"
-      />
+      <BottomSearch label="Kies Lid Hier" placeholder="Kies Lid Hier" />
     </>
   );
 };
@@ -80,7 +83,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 22,
     color: GlobalStyles.colors.textColor,
-    textAlign: "right",
+    textAlign: 'right',
   },
   cartView: { flex: 1 },
   productView: { flex: 2 },

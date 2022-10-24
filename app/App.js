@@ -4,6 +4,7 @@ import "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import { SafeAreaView, StyleSheet } from "react-native";
 import {
   useCallback,
   useContext,
@@ -29,7 +30,6 @@ import ProductScreen from "./screens/ProductScreen";
 import PurchaseContext from "./context/PurchaseContext";
 import SettingsContext from "./context/SettingsContext";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
@@ -177,7 +177,7 @@ const theme = {
 // "success" (green), "warning" (orange), "danger" (red), "info" (blue) and "default" (gray)
 export default function App() {
   return (
-    <>
+    <><SafeAreaView style={{flex:1}}>
       <StatusBar style="light" />
       <NavigationContainer>
         <FullProvider>
@@ -186,7 +186,7 @@ export default function App() {
           </PaperProvider>
         </FullProvider>
       </NavigationContainer>
-      <FlashMessage position="top" />
+      <FlashMessage position="top" /></SafeAreaView >
     </>
   );
 }

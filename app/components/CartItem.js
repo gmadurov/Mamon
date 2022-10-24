@@ -32,6 +32,7 @@ const CartItem = ({ quantity, product }) => {
         color={GlobalStyles.colors.textColorDark}
         onPress={() => onRemove(quantity)}
       />
+     
     </View>
   );
 };
@@ -39,43 +40,15 @@ const CartItem = ({ quantity, product }) => {
 export default CartItem;
 
 const styles = StyleSheet.create({
-  gridItem: {},
+  
   modalView: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    marginTop: 5,
-    elevation: 4,
-    borderRadius: 20,
-    maxHeight: 50,
-    backgroundColor: GlobalStyles.colors.white,
-    shadowColor: GlobalStyles.colors.shadowColor,
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 10, height: 12 },
-    shadowRadius: 8,
-    overflow: Platform.OS === "android" ? "hidden" : "visible",
-    marginBottom: 5,
+    margin:10,
   },
-  button: {
-    flex: 1,
-    backgroundColor: "blue",
-  },
-  buttonPressed: {
-    opacity: 0.5,
-  },
-  innerContainer: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 15,
-    color: GlobalStyles.colors.textColorDark,
-  },
+  
   input: {
     padding: 6,
     fontSize: 18,

@@ -5,6 +5,7 @@ import { Button } from "@rneui/themed";
 import CartContext from "../context/CartContext";
 // import { FlatList } from "react-native-gesture-handler";
 import CartItem from "./CartItem";
+import { Divider } from "react-native-paper";
 import { FlatList } from "react-native";
 import { GlobalStyles } from "../constants/styles";
 import HolderContext from "../context/HolderContext";
@@ -83,6 +84,7 @@ export const Cart = ({ sell }) => {
             data={cart}
             keyExtractor={(item) => "cart product" + item.product}
             renderItem={renderProducts}
+            ItemSeparatorComponent={Divider}
             numColumns={1}
           />
         )}
