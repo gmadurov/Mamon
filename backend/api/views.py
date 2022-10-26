@@ -112,10 +112,10 @@ def showPurchases(request):
     data = request.data
     if request.method == "GET":
         holder = request.user.holder
-        purschases = holder.purchases.all()  # Purchase.objects.all()
-        user = Holder.objects.get(user=request.user)
-        purchases = user.purchases.all()
-        serializer = PurchaseSerializer(purschases, many=True)
+        purchases = holder.purchases.all()  # Purchase.objects.all()
+        # user = Holder.objects.get(user=request.user)
+        # purchases = user.purchases.all()
+        serializer = PurchaseSerializer(purchases, many=True)
         return Response(serializer.data)
     if request.method == "POST":
         purchase = Purchase.objects.create(
