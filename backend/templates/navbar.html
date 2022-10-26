@@ -1,25 +1,27 @@
+{% if request.user.is_authenticated %}
+
 <nav
-  class="navbar columns is-offset-2 column is-two-thirds"
-  role="navigation"
-  aria-label="main navigation"
-  style="background-color: #edeff1"
+class="navbar columns is-offset-2 column is-two-thirds"
+role="navigation"
+aria-label="main navigation"
+style="background-color: #edeff1"
 >
-  <div class="navbar-brand">
-    {% comment %}
-    <a class="navbar-item" href="https://bulma.io">
-      <img src="" width="112" height="28" />
+<div class="navbar-brand">
+  {% comment %}
+  <a class="navbar-item" href="https://bulma.io">
+    <img src="" width="112" height="28" />
     </a>
     {% endcomment %}
-
+    
     <a
-      role="button"
-      class="navbar-burger"
-      aria-label="menu"
-      aria-expanded="false"
-      data-target="navbarBasicExample"
+    role="button"
+    class="navbar-burger"
+    aria-label="menu"
+    aria-expanded="false"
+    data-target="navbarBasicExample"
     >
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
@@ -27,12 +29,13 @@
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
       <a class="navbar-item"> Bar Cycles </a>
-
+      <a class="navbar-item" href={% url 'app' %}> App</a>
+      
       <a class="navbar-item"> Stock Mutations </a>
-
+      
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Products </a>
-
+        
         <div class="navbar-dropdown">
           <a class="navbar-item" href='{% url "products"%}'> All products </a>
           <a class="navbar-item"> Create Unit </a>
@@ -43,7 +46,7 @@
       </div>
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Users </a>
-
+        
         <div class="navbar-dropdown">
           <a class="navbar-item"> Overview Users </a>
           <hr class="navbar-divider" />
@@ -51,28 +54,28 @@
         </div>
       </div>
     </div>
-  {% else %}
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-      <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link"> Producten </a>
-
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
-        </div>
+    {% else %}
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link"> Producten </a>
+          
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
+          </div>
       </div>
     </div>
     {% endif %}
     <div class="navbar-end">
       <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">(€{{request.user.holder.stand}}) Profile </a>
+        <a class="navbar-link">(€{{request.user.holder.stand}}) {{request.user.holder.name}} </a>
         <div class="navbar-dropdown">
           {% if request.user.is_superuser or request.user.is_staff %}
           <a class="navbar-item" href="/admin/"/> Admin </a>
           <hr class="navbar-divider" />
           {% endif %}
-
+          
           <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
           <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
           <hr class="navbar-divider" />
@@ -85,3 +88,5 @@
     </div>
   </div>
 </nav>
+
+{% endif %}

@@ -103,3 +103,7 @@ def logoutUser(request):
     logout(request)
     messages.info(request, "User logged out")
     return redirect("login")
+
+
+def app(request):
+    return render(request, "users/app.html")
