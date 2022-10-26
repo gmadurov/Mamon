@@ -4,14 +4,15 @@ import "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { SafeAreaView, StyleSheet } from "react-native";
-import {
+import { NavigationContainer, ParamListBase } from "@react-navigation/native";
+import React,{
   useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
   useState,
 } from "react";
+import { SafeAreaView, StyleSheet } from "react-native";
 
 import ApiContext from "./src/context/ApiContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,7 +22,6 @@ import { FullProvider } from "./src/context/FullContext";
 import { GlobalStyles } from "./src/constants/styles";
 import HolderContext from "./src/context/HolderContext";
 import LoginScreen from "./src/screens/LoginScreen";
-import { NavigationContainer } from "@react-navigation/native";
 import { Provider as PaperProvider } from "react-native-paper";
 import ProductContext from "./src/context/ProductContext";
 import ProductScreen from "./src/screens/ProductScreen";
@@ -30,7 +30,7 @@ import SettingsContext from "./src/context/SettingsContext";
 import { StatusBar } from "expo-status-bar";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<ParamListBase>();
 
 function AuthStack() {
   return (

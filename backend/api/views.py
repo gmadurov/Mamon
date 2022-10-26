@@ -111,13 +111,12 @@ def showProduct(request, pk):
 def showPurchases(request):
     data = request.data
     if request.method == "GET":
-        try:
-            holder = request.user.holder
-            purschases = holder.purchase_set.all()  # Purchase.objects.all()
-            serializer = PurchaseSerializer(purschases, many=True)
-            return Response(serializer.data)
-        except:
-            return Response("No purchases")
+        holder = request.user.holder
+        purschases = holder.purchases.all()  # Purchase.objects.all()
+        user = Holder.objects.get(user=request.user)
+        purchases = user.purchases.all()
+        serializer = PurchaseSerializer(purschases, many=True)
+        return Response(serializer.data)
     if request.method == "POST":
         purchase = Purchase.objects.create(
             buyer=Holder.objects.get(id=data["buyer"]),

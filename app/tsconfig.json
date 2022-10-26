@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "module": "es6",
+    "target": "ESNext",
+    "allowJs": true,
+    "strict": true
+  },
+  "include": ["./src/"],
+  "extends": "expo/tsconfig.base",
+  "exclude": ["node_modules"]
+}

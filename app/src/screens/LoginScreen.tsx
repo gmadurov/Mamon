@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import AuthContent from "../components/Auth/AuthContent";
-import AuthContext from "../context/AuthContext";
+import AuthContext from "../context/AuthContext.tsx";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 
 function LoginScreen() {
@@ -9,7 +9,7 @@ function LoginScreen() {
 
   const { loginFunc } = useContext(AuthContext);
 
-  async function loginHandler(username, password) {
+  async function loginHandler(username: string, password: string) {
     setIsAuthenticating(true);
     try {
       await loginFunc(username, password, setIsAuthenticating);

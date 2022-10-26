@@ -8,11 +8,12 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 
-import AuthContext from "../context/AuthContext";
+import AuthContext from "../context/AuthContext.tsx";
 import { Button } from "@rneui/base";
 import { GlobalStyles } from "../constants/styles";
+import { Holder } from "../models/Holder";
 import HolderContext from "../context/HolderContext";
 import Purchase from "../components/Purchase";
 import PurchaseContext from "../context/PurchaseContext";
@@ -26,7 +27,7 @@ let HeaderHeight = 100;
 const AccountScreen = () => {
   const { user } = useContext(AuthContext);
   const { holders, GET: getHolders, PUT } = useContext(HolderContext);
-  const holder = holders?.find((holder) => holder.id === user?.user_id);
+  const holder: Holder = holders?.find((holder) => holder.id === user?.user_id);
   const { GET, purchases } = useContext(PurchaseContext);
   const [refreshing, setRefreshing] = useState(false);
   async function refresh() {
@@ -53,7 +54,7 @@ const AccountScreen = () => {
     )
   );
 
-  async function ChangeStand(mutation) {
+  async function ChangeStand(mutation: number) {
     await PUT({ ...holder, stand: holder?.stand + mutation });
   }
   return (

@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
 
 import { ApiProvider } from "./ApiContext";
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider } from "./AuthContext.tsx";
 import { CartProvider } from "./CartContext";
 import { HolderProvider } from "./HolderContext";
 import { ProductProvider } from "./ProductContext";

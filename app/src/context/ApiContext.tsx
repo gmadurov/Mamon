@@ -1,8 +1,10 @@
 import AuthContext, { baseUrl } from "./AuthContext";
-import { createContext, useContext } from "react";
+import React, { createContext, useContext } from "react";
 
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthToken } from "../models/AuthToken";
+import User from "../models/Users";
 import dayjs from "dayjs";
 import jwt_decode from "jwt-decode";
 import { showMessage } from "react-native-flash-message";
@@ -21,37 +23,48 @@ import { showMessage } from "react-native-flash-message";
  * ### use this instead of fetch for files
  * @params {url: string , config : object}
  * @returns \{ res, data \}
- * 
+ *
  * refreshToken: refreshToken
  * use this to refresh tockens
  * */
-const ApiContext = createContext({
-  ApiRequest: async (url = "", config = {}) => {
-    return { res: [], data: [] };
-  },
-  ApiFileRequest: async (url = "", config = {}) => {
-    return { res: [], data: [] };
-  },
-  refreshToken: async (authTokens = {}) => {},
-  user: {
-    token_type: "",
-    exp: "",
-    iat: "",
-    jti: "",
-    user_id: 0,
-    name: "",
-    role: [],
-    lid_id: 0,
-  },
-});
+
+// recreate file in typscript
+
+export type ApiContextType = {
+  user: User;
+  ApiRequest: (
+    url: string,
+    config: {
+      headers?: { [key: string]: any };
+      "Content-Type": "application/json";
+      [key: string]: any;
+    }
+  ) => Promise<{ res: Response; data: any } | undefined>;
+  ApiFileRequest: (
+    url: string,
+    config: {
+      headers?: { [key: string]: any };
+      "Content-Type": "application/json";
+      [key: string]: any;
+    }
+  ) => Promise<{ res: Response; data: any }>;
+  refreshToken: (authTokens: AuthToken) => Promise<User | undefined>;
+};
+
+const ApiContext = createContext<ApiContextType>({} as ApiContextType);
+
 export default ApiContext;
 
-export const ApiProvider = ({ children }) => {
+export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   // will work from AuthProvider downwards,
   const { user, setAuthTokens, setUser, authTokens, logoutFunc } =
     useContext(AuthContext);
+
   /** makes the original request called but with the Bearer set and to the correct location */
-  async function originalRequest(url, config) {
+  async function originalRequest<TResponse>(
+    url: string,
+    config: object
+  ): Promise<{ res: Response; data: Promise<TResponse> }> {
     let urlFetch = `${baseUrl()}${url}`;
     // console.log(urlFetch, config);
 
@@ -69,12 +82,11 @@ export const ApiProvider = ({ children }) => {
         duration: 1500,
       });
     }
-    // console.log([res, data]);
-    return [res, data];
+    return { res, data };
   }
 
   /** gets the refresh token and update the local state and local storage */
-  async function refreshToken(authToken) {
+  async function refreshToken(authToken: AuthToken): Promise<User > {
     const controller = new AbortController();
     const { signal } = controller;
     const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
@@ -85,9 +97,10 @@ export const ApiProvider = ({ children }) => {
         refresh: authToken?.refresh,
       }),
     });
+    setTimeout(() => controller.abort(), 2000);
     if (res?.status === 200) {
-      let data = await res.json();
-      setAuthTokens(() => data); // if cycling refresh tokens
+      let data: AuthToken = await res.json();
+      setAuthTokens(data); // if cycling refresh tokens
       setUser(jwt_decode(data?.access));
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
@@ -105,18 +118,32 @@ export const ApiProvider = ({ children }) => {
         duration: 1500,
       });
       await logoutFunc();
+      return {} as User;
     }
     // cancels the request if it taking too long
-    setTimeout(() => controller.abort(), 2000);
   }
 
   /** ## use this instead of fetch
    * @params {url: string , config : object}
    * @returns \{ res, data \}*/
-  const ApiRequest = async (url, config = {}) => {
+  async function ApiRequest<TResponse>(
+    url: string,
+    config: {
+      headers?: { [key: string]: any };
+      "Content-Type": "application/json";
+      [key: string]: any;
+    } = {
+      headers: {
+        Authorization: `Bearer ${authTokens?.access}`,
+      },
+      "Content-Type": "application/json",
+    }
+  ): Promise<{ res: Response; data: Promise<TResponse> }> {
     const isExpiredRefresh =
       dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
-    const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
+    const isExpired = user
+      ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
+      : false;
     if (isExpiredRefresh) {
       Alert.alert("refresh token has expired, you were logged out");
       await logoutFunc();
@@ -126,38 +153,39 @@ export const ApiProvider = ({ children }) => {
       await refreshToken(authTokens);
       // console.log("isExpired 2");
     }
-    config["headers"] = {
-      Authorization: `Bearer ${authTokens?.access}`,
-    };
-    if (!config["headers"]["Content-type"]) {
-      config["headers"]["Content-type"] = "application/json";
-    }
     if (user) {
-      const [res, data] = await originalRequest(url, config);
+      const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 200) {
         // console.warn("request Failed", res?.status);
         return { res: res, data: data };
       }
-    } else {
-      // console.log("no user", url, config);
-      return { res: { status: 503 }, data: [] };
     }
-    // const [res, data] = await originalRequest(url, config);
-    // return { res, data };
-  };
-  /** ## ust this instead of fetch for Files
-   * @params {url: string , config : object}
-   * @returns \{ res, data \}*/
-  const ApiFileRequest = async (url, config = {}) => {
-    const isExpired = dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1;
-    if (isExpired) {
+    return { res: {} as Response, data: {} as Promise<TResponse> };
+  }
+  // /** ## ust this instead of fetch for Files
+  //  * @params {url: string , config : object}
+  //  * @returns \{ res, data \}*/
+  async function ApiFileRequest<TResponse>(
+    url: string,
+    config: {
+      headers?: { [key: string]: any };
+      "Content-Type": "application/json";
+      [key: string]: any;
+    } = {
+      headers: {
+        Authorization: `Bearer ${authTokens?.access}`,
+      },
+      "Content-Type": "application/json",
+    }
+  ): Promise<{ res: Response; data: Promise<TResponse> }> {
+    const isExpired = user
+      ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
+      : false;
+    if (authTokens && isExpired) {
       await refreshToken(authTokens);
     }
-    config["headers"] = {
-      Authorization: `Authentication ${authTokens?.access}`,
-    };
     if (user) {
-      const [res, data] = await originalRequest(url, config);
+      const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 401) {
         // Alert.alert("", url, config);
         showMessage({
@@ -184,9 +212,10 @@ export const ApiProvider = ({ children }) => {
       }
       return { res, data };
     }
+    return { res: {} as Response, data: {} as Promise<TResponse> };
 
     // console.log("input", url);
-  };
+  }
 
   const value_dic = {
     user: user,

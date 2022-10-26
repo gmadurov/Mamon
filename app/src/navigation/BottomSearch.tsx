@@ -20,10 +20,26 @@ import {
 import CartContext from "../context/CartContext";
 import FullContext from "../context/FullContext";
 import { GlobalStyles } from "../constants/styles";
+import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
-import { baseUrl } from "../context/AuthContext";
+import { baseUrl } from "../context/AuthContext.tsx";
 
-const BottomSearch = ({ invalid, style, textInputConfig, placeholder }) => {
+type HolderChoice = {
+  value: number;
+  label: string;
+  searchHelp: string;
+  image_ledenbase: string | null;
+  image: string | null;
+};
+
+export type BottomSearchProps = {
+  style?: object | undefined;
+  invalid?: boolean;
+  textInputConfig?: { multiline: boolean | undefined; numberOfLines: number };
+  placeholder: string | undefined;
+};
+
+const BottomSearch = ({ style, invalid, textInputConfig, placeholder }: BottomSearchProps ) => {
   const { BottomSearch, setBottomSearch } = useContext(FullContext);
   const { buyer, setBuyer } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
@@ -39,6 +55,7 @@ const BottomSearch = ({ invalid, style, textInputConfig, placeholder }) => {
   if (invalid) {
     inputStyles.push(styles.invalidInput);
   }
+
   let optionsHolders = holders?.map((holder) => ({
     value: holder.id,
     label: holder?.name,
@@ -48,7 +65,7 @@ const BottomSearch = ({ invalid, style, textInputConfig, placeholder }) => {
   }));
   optionsHolders = optionsHolders?.filter((option) => {
     if (
-      option.searchHelp?.toLowerCase().includes(search.toLowerCase()) |
+      option.searchHelp?.toLowerCase().includes(search.toLowerCase()) ||
       option?.label?.toLowerCase().includes(search.toLowerCase())
     ) {
       return true;
@@ -63,14 +80,14 @@ const BottomSearch = ({ invalid, style, textInputConfig, placeholder }) => {
   }
   const sheetRef = useRef(null);
   const snapPoints = useMemo(() => ["25%", "50%", "90%"], ["50%"]);
-  const handleSheetChange = useCallback((index) => {
+  const handleSheetChange = useCallback((index: number) => {
     if (index === -1) {
       setBottomSearch(false);
       setSearch("");
     }
   }, []);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: { item: HolderChoice }) => {
     let option = item;
     let avatarSize = 50;
     return (
@@ -106,45 +123,42 @@ const BottomSearch = ({ invalid, style, textInputConfig, placeholder }) => {
       </>
     );
   };
-  if (BottomSearch) {
-    return (
-      <BottomSheet
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        ref={sheetRef}
-        index={0}
-        onChange={handleSheetChange}
-        keyboardDismissMode="on-drag"
-      >
-        <View style={styles.contentContainer}>
-          <BottomSheetTextInput
-            value={search}
-            placeholder={placeholder}
-            onChangeText={(text) => setSearch(text)}
-            style={styles.textInput}
-          />
-          <BottomSheetFlatList
-            // style={styles.ScrollView}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => getHolders()}
-              />
-            }
-            style={{ flex: 1, blackgroundColor: "red" }}
-            data={optionsHolders}
-            keyExtractor={(item) => item.value}
-            ItemSeparatorComponent={Divider}
-            renderItem={renderItem}
-            // renderItem={({ item }) => showHolder(item)}
-            showsVerticalScrollIndicator={false}
-          />
-
-          {/* </Card> */}
-        </View>
-      </BottomSheet>
-    );
-  }
+  // if (BottomSearch) {
+  return (
+    <BottomSheet
+      snapPoints={snapPoints}
+      enablePanDownToClose
+      ref={sheetRef}
+      index={0}
+      onChange={handleSheetChange}
+      // keyboardDismissMode="on-drag"
+    >
+      <View style={styles.contentContainer}>
+        <BottomSheetTextInput
+          value={search}
+          placeholder={placeholder}
+          onChangeText={(text) => setSearch(text)}
+          style={styles.textInput}
+        />
+        <BottomSheetFlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => getHolders()}
+            />
+          }
+          style={{ flex: 1 }}
+          data={optionsHolders}
+          keyExtractor={(item) => item.value.toString() as string}
+          ItemSeparatorComponent={Divider}
+          renderItem={renderItem}
+          // renderItem={({ item }) => showHolder(item)}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </BottomSheet>
+  );
+  // }
 };
 
 export default BottomSearch;

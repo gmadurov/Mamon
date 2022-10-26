@@ -13,25 +13,17 @@ import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
 import ProductContext from "../context/ProductContext";
 import { Surface } from "react-native-paper";
-import { baseUrl } from "../context/AuthContext";
+import { baseUrl } from "../context/AuthContext.tsx";
 
-const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
+const ProductTile = ({ selected, setSelected, quantity, product }) => {
   const { add_to_cart, remove_from_cart } = useContext(CartContext);
   const { DELETE } = useContext(ProductContext);
   const [deleted, setDeleted] = useState(false);
   const onAdd = () => {
-    if (edit) {
-      setSelected(product.id);
-    } else {
-      add_to_cart(product);
-    }
+    add_to_cart(product);
   };
   const onRemove = async () => {
-    if (edit) {
-      await DELETE(product);
-    } else {
-      remove_from_cart(product);
-    }
+    remove_from_cart(product);
   };
   let [BGC, iBGC] = deleted
     ? [GlobalStyles.colors.primary4, product?.color]
@@ -69,77 +61,12 @@ const ProductTile = ({ selected, setSelected, quantity, product, edit }) => {
               style={styles.avatar}
             />
           )}
-          <Text style={styles.title}>
-            {edit === true && !quantity && deleted && "Delete"}
-            {quantity && quantity} {product?.name}
-            {edit === true && !quantity && deleted && " from database "}
-          </Text>
+          <Text style={styles.title}>{product?.name}</Text>
 
-          {!(edit === true && !quantity && deleted) && (
-            <Text style={styles.title}>€ {product?.price}</Text>
-          )}
+          <Text style={styles.title}>€ {product?.price}</Text>
         </View>
       </Pressable>
     </Surface>
-  );
-  return (
-    <View
-      style={[
-        styles.gridItem,
-        {
-          backgroundColor: BGC,
-        },
-      ]}
-    >
-      <Pressable
-        android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-        style={({ pressed }) => [
-          styles.button,
-          pressed ? styles.buttonPressed : { flex: 1 },
-        ]}
-        onPress={deleted ? onRemove : onAdd}
-      >
-        <IconButton
-          name="trash-outline"
-          onPress={() => setDeleted(!deleted)}
-          color={iBGC}
-          style={{
-            flex: 1,
-            textAlign: "right",
-            color: iBGC,
-          }}
-        />
-        <View
-          style={[
-            styles.innerContainer,
-            {
-              backgroundColor: BGC,
-            },
-          ]}
-        >
-          {product?.image_url ? (
-            <Image source={{ uri: product?.image_url }} style={styles.avatar} />
-          ) : (
-            <Image
-              source={require("../assets/default-product.png")}
-              style={styles.avatar}
-            />
-          )}
-          <Text style={styles.title}>
-            {edit === true && !quantity && deleted && "Delete"}
-            {quantity && quantity} {product?.name}
-            {edit === true && !quantity && deleted && " from database "}
-          </Text>
-
-          {!(edit === true && !quantity && deleted) && (
-            <Text style={styles.title}>€ {product?.price}</Text>
-          )}
-        </View>
-        <View>
-          <Text> </Text>
-        </View>
-      </Pressable>
-    </View>
   );
 };
 

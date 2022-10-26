@@ -1,43 +1,34 @@
 import { createContext, useEffect, useState } from "react";
 
 import ApiContext from "./ApiContext";
+import { Purchase } from "../models/Purchase";
 import { showMessage } from "react-native-flash-message";
 import { useContext } from "react";
 
-/**purchases: purchases,
- * 
-    GET: GET,
+export type PurchaseContextType = {
+  purchases: Array<Purchase>;
+  purchase: Purchase;
+  searchHolders: Array<Purchase>;
+  GET: () => Promise<void>;
+  POST: (purchase: Purchase) => Promise<void>;
+  PUT: (purchase: Purchase) => Promise<void>;
+  DELETE: (purchase: Purchase) => Promise<void>;
+  SEARCH: (purchase: Purchase) => Promise<void>;
+};
 
-    POST: POST,
+const PurchaseContext = createContext<PurchaseContextType>(
+  {} as PurchaseContextType
+);
 
-    PUT: PUT,
-
-    DELETE: DELETE */
-const PurchaseContext = createContext({
-  purchases: [
-    {
-      buyer: 0,
-      id: 0,
-      orders: [
-        {
-          id: 0,
-          product: 0,
-          quantity: 0,
-        }, 
-      ],
-      payed: false,
-    },
-  ],
-  GET: async (purchase) => {},
-  POST: async (purchase) => {},
-  PUT: async (purchase) => {},
-  DELETE: async (purchase) => {},
-});
 export default PurchaseContext;
 
-export const PurchaseProvider = ({ children }) => {
+export const PurchaseProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { user, ApiRequest } = useContext(ApiContext);
-  const [purchases, setPurchases] = useState([]);
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   async function GET() {
     setPurchases([]);
@@ -45,11 +36,11 @@ export const PurchaseProvider = ({ children }) => {
     //   .then(({ data }) => setPurchases(data))
     //   .catch(({ res }) => console.warn("Error with the Purchase request", res));
 
-    const { data } = await ApiRequest("/api/purchase/");
+    const { data }: { data: Purchase[] } = await ApiRequest("/api/purchase/");
     setPurchases(data);
   }
-  async function POST(purchase) {
-    const { data } = await ApiRequest("/api/purchase/", {
+  async function POST(purchase: Purchase) {
+    const { data }: { data: Purchase[] } = await ApiRequest("/api/purchase/", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(purchase),
@@ -57,14 +48,14 @@ export const PurchaseProvider = ({ children }) => {
     showMessage({
       message: `Purchase was successful`,
       description: ``,
-      type: "succes",
+      type: "success",
       floating: true,
       hideStatusBar: true,
       autoHide: true,
       duration: 500,
       position: "bottom",
     });
-    setPurchases([...purchases, data]);
+    setPurchases(() => [...purchases, data]);
   }
   async function PUT(purchase) {
     const { data } = await ApiRequest(`/api/purchase/${purchase.id}`, {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-import AuthContext from "./AuthContext";
+import AuthContext from "./AuthContext.tsx";
 import PurchaseContext from "./PurchaseContext";
 import { number } from "prop-types";
 

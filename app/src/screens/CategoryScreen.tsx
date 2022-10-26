@@ -3,11 +3,11 @@ import { useContext, useState } from "react";
 
 import CategoryItem from "../components/CategoryItem";
 import { Divider } from "react-native-paper";
+import React from "react";
 import SettingsContext from "../context/SettingsContext";
 
 const CategoryScreen = () => {
-  const { categories,   GET_categories } =
-    useContext(SettingsContext);
+  const { categories, GET_categories } = useContext(SettingsContext);
   const [refreshing, setRefreshing] = useState(false);
   async function refresh() {
     await GET_categories();
@@ -17,7 +17,7 @@ const CategoryScreen = () => {
     <View style={styles.container}>
       <FlatList
         data={categories}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString() as string}
         renderItem={(item) => <CategoryItem item={item} />}
         ItemSeparatorComponent={Divider}
         refreshControl={

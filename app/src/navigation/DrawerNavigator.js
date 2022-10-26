@@ -1,5 +1,5 @@
 import AccountScreen from "../screens/AccountScreen";
-import AuthContext from "../context/AuthContext";
+import AuthContext from "../context/AuthContext.tsx";
 import CategoryScreen from "../screens/CategoryScreen";
 import { GlobalStyles } from "../constants/styles";
 import LogOutScreen from "../screens/LogOutScreen";

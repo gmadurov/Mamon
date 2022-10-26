@@ -1,38 +1,35 @@
 import {
   Dimensions,
   FlatList,
-  KeyboardAvoidingView,
   Platform,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import BottomSearch from "../navigation/BottomSearch";
 import Cart from "../components/Cart";
 import { GlobalStyles } from "../constants/styles";
 import HolderContext from "../context/HolderContext";
 import ProductContext from "../context/ProductContext";
-import ProductForm from "../components/ProductForm";
 import ProductTile from "../components/ProductTile";
 
 const { width } = Dimensions.get("screen");
 
-const ProductScreen = ({ edit, sell }) => {
+const ProductScreen = ({ sell }: { sell: boolean }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState(0);
-  function renderProducts(itemData) {
+  function renderProducts(itemData: { item: any }) {
     return (
       <ProductTile
         product={itemData.item}
-        edit={edit}
         selected={selected}
         setSelected={setSelected}
+        quantity={undefined}
       />
     );
   }
@@ -60,7 +57,7 @@ const ProductScreen = ({ edit, sell }) => {
           <Text style={styles.text}>Producten</Text>
           <FlatList
             data={selectedProducts}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString() as string}
             renderItem={renderProducts}
             numColumns={Math.floor(width / 196)}
             refreshControl={
@@ -72,7 +69,9 @@ const ProductScreen = ({ edit, sell }) => {
           />
         </View>
       </View>
-      <BottomSearch label="Kies Lid Hier" placeholder="Kies Lid Hier" />
+      <BottomSearch
+        placeholder="Kies Lid Hier"
+      />
     </>
   );
 };
@@ -81,7 +80,7 @@ export default ProductScreen;
 const styles = StyleSheet.create({
   text: {
     fontSize: 22,
-    color: GlobalStyles.colors.textColor,
+    color: GlobalStyles.colors.textColorDark,
     textAlign: "right",
   },
   cartView: { flex: 1 },

@@ -1,13 +1,16 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 import { hideMessage, showMessage } from "react-native-flash-message";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthToken } from "../models/AuthToken";
+import User from "../models/Users";
 import jwt_decode from "jwt-decode";
 import { useNavigation } from "@react-navigation/native";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
 export const baseUrl = () => {
+  let url: string;
   if (process.env.NODE_ENV === "development") {
     url = "https://mamon.esrtheta.nl";
   } else if (process.env.NODE_ENV === "production") {
@@ -18,61 +21,38 @@ export const baseUrl = () => {
   return url;
 };
 
-/** loginFunc: loginFunc,
- *
- * logoutFunc: logOutUser,
- *
- * setAuthTokens: setAuthTokens,
- *
- * setUser: setUser,
- *
- * user: user,
- * {
-  "token_type": "access",
-  "exp": unixdata,
-  "iat": unix date, 
-  "jti": "",
-  "user_id": Int,
-  "name": "",
-  "role": [],
-  "lid_id": Int
-} 
- *
- * authTokens: authTokens,
- */
-
-const AuthContext = createContext({
-  loginFunc: async (username, password) => {},
-  logoutFunc: async () => {},
-  setAuthTokens: () => {},
-  setUser: () => {},
-  user: {
-    token_type: "",
-    exp: "",
-    iat: "",
-    jti: "",
-    name: "",
-    role: [],
-    lid_id: 0,
-  },
-  authTokens: { access: "", refresh: "" },
-  start: async () => {},
-});
+export type AuthContextType = {
+  user: User | undefined;
+  authTokens: AuthToken | undefined;
+  setAuthTokens: (authTokens: AuthToken) => void;
+  setUser: (user: User) => void;
+  loginFunc: (
+    username: string,
+    password: string,
+    setIsAuthenticating: any
+  ) => Promise<void>;
+  logoutFunc: () => Promise<void>;
+};
+const AuthContext = createContext({} as AuthContextType);
 
 export default AuthContext;
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // dont use useFetch here because it will not work
 
-  const [authTokens, setAuthTokens] = useState();
-  const [user, setUser] = useState();
+  const [authTokens, setAuthTokens] = useState<AuthToken>();
+  const [user, setUser] = useState<User>();
   /**this function is simply to wake up the backend when working with heroku */
   const start = async () => {
     await fetch(`${baseUrl()}`);
   };
   const navigation = useNavigation();
 
-  async function loginFunc(username, password, setIsAuthenticating) {
-    let res = await fetch(`${baseUrl()}/api/login/`, {
+  async function loginFunc(
+    username: string,
+    password: string,
+    setIsAuthenticating: any
+  ) {
+    let res: Response = await fetch(`${baseUrl()}/api/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -80,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         password: password,
       }),
     });
-    let data = await res.json();
+    let data: AuthToken = await res.json();
     if (res?.status === 200) {
       setAuthTokens(() => data);
       setUser(() => jwt_decode(data.access));
@@ -109,8 +89,8 @@ export const AuthProvider = ({ children }) => {
   async function logoutFunc() {
     // console.log("loged Out", AsyncStorage.getAllKeys());"user"
     await AsyncStorage.multiRemove(["authTokens"]);
-    setAuthTokens();
-    setUser();
+    setAuthTokens(undefined);
+    setUser(undefined);
     // navigation.replace("LoginPage");
   }
   const data = {
@@ -119,10 +99,7 @@ export const AuthProvider = ({ children }) => {
     setAuthTokens: setAuthTokens,
     setUser: setUser,
     user: user,
-    authTokens: authTokens,
-    setAuthTokens: setAuthTokens,
-    setUser: setUser,
-    start: start,
+    authTokens: authTokens
   };
   // user && navigate("../login", { replace: true });
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;
