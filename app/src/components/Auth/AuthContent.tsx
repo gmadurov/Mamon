@@ -93,7 +93,7 @@ function AuthContent({
           />
         )} */}
           <View style={styles.buttons}>
-            <Button onPress={submitHandler}>
+            <Button onPressFunction={submitHandler}>
               {isLogin || true ? "Log In" : "Sign Up"}
               {/* for if we ever want to expand*/}
             </Button>

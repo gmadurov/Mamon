@@ -17,6 +17,7 @@ import { SafeAreaView, StyleSheet } from "react-native";
 import ApiContext from "./src/context/ApiContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthContext from "./src/context/AuthContext";
+import { AuthToken } from "./src/models/AuthToken";
 import DrawerNavigator from "./src/navigation/DrawerNavigator";
 import { FullProvider } from "./src/context/FullContext";
 import { GlobalStyles } from "./src/constants/styles";
@@ -47,7 +48,23 @@ function AuthStack() {
   );
 }
 
-function AuthenticatedStack() {
+function AuthenticatedStack({ isTryingLogin }: { isTryingLogin: boolean }) {
+  const Holder = useContext(HolderContext);
+  const Purchase = useContext(PurchaseContext);
+  const Product = useContext(ProductContext);
+  const Settings = useContext(SettingsContext);
+  useEffect(() => {
+    async function fetchToken() {
+      if (!isTryingLogin) {
+        // await Purchase.GET();
+        await Settings.GET_categories();
+        await Product.GET();
+        await Holder.GET();
+      }
+    }
+    fetchToken();
+    // eslint-disable-next-line
+  }, [isTryingLogin]);
   return (
     <>
       <Stack.Navigator
@@ -81,11 +98,7 @@ function AuthenticatedStack() {
 function Root() {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
 
-  const { user, refreshToken } = useContext(ApiContext);
-  const Holder = useContext(HolderContext);
-  const Purchase = useContext(PurchaseContext);
-  const Product = useContext(ProductContext);
-  const Settings = useContext(SettingsContext);
+  const { refreshToken } = useContext(ApiContext);
 
   useLayoutEffect(() => {
     async function fetchToken() {
@@ -100,7 +113,9 @@ function Root() {
           autoHide: true,
           duration: 1500,
         });
-        const logedIn = await refreshToken(JSON.parse(storedTokens));
+        const logedIn = await refreshToken(
+          JSON.parse(storedTokens) as AuthToken
+        );
         if (logedIn) {
           showMessage({
             message: `Authentication is refreshed`,
@@ -118,18 +133,6 @@ function Root() {
     fetchToken();
     // eslint-disable-next-line
   }, []);
-  useEffect(() => {
-    async function fetchToken() {
-      if (!isTryingLogin) {
-        await Purchase.GET();
-        await Settings.GET_categories();
-        await Product.GET();
-        await Holder.GET();
-      }
-    }
-    fetchToken();
-    // eslint-disable-next-line
-  }, [isTryingLogin]);
 
   const onLayoutRootView = useCallback(async () => {
     if (!isTryingLogin) {
@@ -145,32 +148,28 @@ function Root() {
   if (isTryingLogin) {
     return null;
   }
-  return <Navigation onLayout={onLayoutRootView} />;
+  return (
+    <Navigation onLayout={onLayoutRootView} isTryingLogin={isTryingLogin} />
+  );
 }
 
-function Navigation({ onLayout }: { onLayout: () => Promise<void> }) {
+function Navigation({
+  onLayout,
+  isTryingLogin,
+}: {
+  onLayout: () => Promise<void>;
+  isTryingLogin: boolean;
+}) {
   const { user } = useContext(AuthContext);
+  // console.log(user.token_type ? "Authenticated" + user.token_type : "Not Authenticated");
+
   return (
     <>
-      {!user && <AuthStack />}
-      {user && (
-        <>
-          <AuthenticatedStack />
-        </>
-      )}
+      {!user.token_type && <AuthStack />}
+      {user.token_type && <AuthenticatedStack isTryingLogin={isTryingLogin} />}
     </>
   );
 }
-const theme = {
-  2: {
-    light: GlobalStyles.colors.primary1,
-    dark: GlobalStyles.colors.primary2,
-  },
-  3: {
-    light: GlobalStyles.colors.primary3,
-    dark: GlobalStyles.colors.primary4,
-  },
-};
 // messages
 // "success" (green), "warning" (orange), "danger" (red), "info" (blue) and "default" (gray)
 export default function App() {
@@ -190,5 +189,3 @@ export default function App() {
     </>
   );
 }
-
-const styles = StyleSheet.create({});

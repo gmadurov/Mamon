@@ -5,15 +5,15 @@ import React from "react";
 
 function Button({
   children,
-  onPressFuntion,
+  onPressFunction,
 }: {
   children: React.ReactNode;
-  onPressFuntion: Function;
+  onPressFunction: Function;
 }): JSX.Element {
   return (
     <Pressable
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
-      onPress={(e) => onPressFuntion(e)}
+      onPress={(e) => onPressFunction(e)}
     >
       <View>
         <Text style={styles.buttonText}>{children}</Text>

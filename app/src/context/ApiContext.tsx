@@ -63,11 +63,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     config: object
   ): Promise<{ res: Response; data: TResponse }> {
     let urlFetch = `${baseUrl()}${url}`;
-    // console.log(urlFetch, config);
-
     const res = await fetch(urlFetch, config);
     const data = await res.json();
-    if (res?.status !== 200) {
+    // console.log("originalRequest", data, res?.status);
+    if (res?.status === 401) {
+      await logoutFunc();
+    } else if (res?.status !== 200) {
       // Alert.alert(`Error ${res?.status} fetching ${url}`);
       showMessage({
         message: `Error ${res?.status}`,
@@ -79,7 +80,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         duration: 1500,
       });
     }
-    return { res, data };
+
+    return { res, data } as { res: Response; data: TResponse };
   }
 
   /** gets the refresh token and update the local state and local storage */
@@ -98,7 +100,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     if (res?.status === 200) {
       let data: AuthToken = await res.json();
       setAuthTokens(data); // if cycling refresh tokens
-      setUser(jwt_decode(data?.access));
+      setUser(jwt_decode(data?.access as string) as User);
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
       await AsyncStorage.setItem("user", JSON.stringify(data.access));
       return true;
@@ -155,7 +157,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     if (isExpired && authTokens) {
       await refreshToken(authTokens);
     }
-    if (user) {
+    if (user.token_type) {
       const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 200) {
         // console.warn("request Failed", res?.status);
@@ -188,7 +190,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     if (authTokens && isExpired) {
       await refreshToken(authTokens);
     }
-    if (user) {
+    if (user.token_type) {
       const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 401) {
         // Alert.alert("", url, config);

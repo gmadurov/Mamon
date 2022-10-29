@@ -1,10 +1,10 @@
-import { createContext } from "react";
-import { AuthProvider } from "./AuthContext";
 import { ApiProvider } from "./ApiContext";
-import { PurchaseProvider } from "./PurchaseContext";
+import { AuthProvider } from "./AuthContext";
 import { CartProvider } from "./CartContext";
-import { ProductProvider } from "./ProductContext";
 import { HolderProvider } from "./HolderContext";
+import { ProductProvider } from "./ProductContext";
+import { PurchaseProvider } from "./PurchaseContext";
+import { createContext }  from "react";
 
 const FullContext = createContext();
 export default FullContext;

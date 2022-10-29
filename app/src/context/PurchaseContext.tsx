@@ -84,7 +84,9 @@ export const PurchaseProvider = ({
     async function get() {
       await GET();
     }
-    if (user) {
+    // console.log("PurchaseContext useEffect", user);
+    
+    if (user?.token_type) {
       get();
     }
 

@@ -18,7 +18,7 @@ function FlatButton({
 }) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      // style={({ pressed }) => [styles.button, pressed && styles.pressed]}
       onPress={(e) => onPressFunction(e)}
     >
       <View>

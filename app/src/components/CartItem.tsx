@@ -14,20 +14,18 @@ const CartItem = ({
   quantity: number;
   product: CartItems;
 }) => {
-  const { products } = useContext(ProductContext);
   const { remove_from_cart } = useContext(CartContext);
   const onRemove = (amount: number) => {
     remove_from_cart(product, amount);
   };
+  
   return (
     <View style={styles.modalView}>
       <Pressable onPress={() => onRemove(1)}>
         <Text style={styles.input}>
           {quantity}{" "}
           {
-            products?.find(
-              (product_from_find) => product_from_find?.id === product?.id
-            )?.name
+            product?.name
           }
           {quantity > 1 && "s"}
         </Text>

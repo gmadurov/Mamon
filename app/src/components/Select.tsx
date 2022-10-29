@@ -70,6 +70,7 @@ function Select({
     await refreshFunction();
     setRefreshing(false);
   }
+
   return (
     <Pressable // was View
       style={[styles.inputContainer, style]}
@@ -77,11 +78,11 @@ function Select({
     >
       <Button
         // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
+        onPress={() => setBottomSearch((nu) => !nu)}
         activeOpacity={0.6}
-        onPress={() => setBottomSearch(!BottomSearch)}
         title={
-          defaultValue
-            ? options?.find((option) => option?.value === defaultValue)?.label
+          defaultValue?.label 
+            ? defaultValue.label
             : label
         }
       />

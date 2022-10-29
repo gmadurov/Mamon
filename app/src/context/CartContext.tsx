@@ -1,11 +1,10 @@
-import Purchase, { Order } from "../models/Purchase";
 import React, { createContext, useContext, useState } from "react";
 
 import AuthContext from "./AuthContext";
 import Holder from "../models/Holder";
+import { Order } from "../models/Purchase";
 import ProductContext from "./ProductContext";
 import PurchaseContext from "./PurchaseContext";
-import User from "../models/Users";
 
 // createcontext
 export type CartContextType = {

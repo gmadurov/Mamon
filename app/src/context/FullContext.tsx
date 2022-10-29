@@ -22,8 +22,8 @@ export const FullProvider = ({ children }: { children: React.ReactNode }) => {
   const [BottomSearch, setBottomSearch] = useState<boolean>(false);
 
   const data = {
-    BottomSearch: BottomSearch,
-    setBottomSearch: setBottomSearch,
+    BottomSearch,
+    setBottomSearch,
   };
   return (
     <FullContext.Provider value={data}>

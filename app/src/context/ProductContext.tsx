@@ -69,30 +69,27 @@ export const ProductProvider = ({
       )
     );
   }
+  let selectedProducts: Product[] = products;
   useEffect(() => {
     async function get() {
       await GET();
     }
-    if (user) {
+    if (user?.token_type) {
       get();
+      if (categories) {
+        selectedProducts = products.filter((product) =>
+          selectedCategory.some((category) =>
+            categories
+              .find((cat) => cat.id === category.id)
+              ?.products.includes(product)
+          )
+        );
+      }
     }
 
     // eslint-disable-next-line
   }, [user]);
-  let selectedProducts = products.filter((product) =>
-    selectedCategory.some((category) => category.id === product.id)
-  );
-  // selectedCategory.length > 0
-  //   ? categories
-  //       .filter((cat) => selectedCategory.includes(cat.id))
-  //       .map((cat) =>
-  //         cat.products.map((product) =>
-  //           products?.find((prod) => prod.id === product.id)
-  //         )
-  //       )
-  //       .flat()
-  // : products;
-  // make selectedProducts a list of all the products  which are in the selected categories
+
   const data = {
     selectedProducts: selectedProducts,
     products: products,

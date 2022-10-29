@@ -1,11 +1,12 @@
 import React, { createContext, useState } from "react";
-import { hideMessage, showMessage } from "react-native-flash-message";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthToken } from "../models/AuthToken";
 import User from "../models/Users";
 import jwt_decode from "jwt-decode";
-import { useNavigation } from "@react-navigation/native";
+import {
+  showMessage
+} from "react-native-flash-message";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
@@ -13,6 +14,7 @@ export const baseUrl = () => {
   let url: string;
   if (process.env.NODE_ENV === "development") {
     url = "https://mamon.esrtheta.nl";
+    url = "http://10.0.2.2:8000";
   } else if (process.env.NODE_ENV === "production") {
     url = "https://mamon.esrtheta.nl";
   } else {
@@ -47,10 +49,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [authTokens, setAuthTokens] = useState<AuthToken>({} as AuthToken);
   const [user, setUser] = useState<User>({} as User);
   /**this function is simply to wake up the backend when working with heroku */
-  const start = async () => {
-    await fetch(`${baseUrl()}`);
-  };
-  const navigation = useNavigation();
 
   async function loginFunc(
     username: string,
@@ -92,8 +90,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   async function logoutFunc() {
-    // console.log("loged Out", AsyncStorage.getAllKeys());"user"
-    await AsyncStorage.multiRemove(["authTokens"]);
+    // console.log("loged Out", AsyncStorage.getAllKeys()); //"user"
+    await AsyncStorage.multiRemove(["authTokens", "user"]);
     setAuthTokens(() => ({} as AuthToken));
     setUser(() => ({} as User));
     // navigation.replace("LoginPage");

@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useContext, useState }  from "react";
+import React, { useContext, useState } from "react";
 
 import BottomSearch from "../navigation/BottomSearch";
 import Cart from "../components/Cart";
@@ -44,14 +44,14 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
       <View
         style={[
           { flex: 1 },
-          Platform.OS === "android" && {
+          width >= 200 && {
             paddingBottom: 50,
-            flexDirection: "row-reverse",
+            // flexDirection: "row-reverse",
           },
         ]}
       >
         <View style={styles.cartView}>
-          <Cart sell={sell} />
+          <Cart sell={sell ? true : false} />
         </View>
         <View style={styles.productView}>
           <Text style={styles.text}>Producten</Text>
@@ -69,9 +69,7 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
           />
         </View>
       </View>
-      <BottomSearch
-        placeholder="Kies Lid Hier"
-      />
+      <BottomSearch placeholder="Kies Lid Hier" />
     </>
   );
 };

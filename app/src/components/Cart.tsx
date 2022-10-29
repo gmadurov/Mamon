@@ -3,7 +3,6 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 
 import { Button } from "@rneui/themed";
-// import { FlatList } from "react-native-gesture-handler";
 import CartItem from "./CartItem";
 import { Divider } from "react-native-paper";
 import { FlatList } from "react-native";
@@ -12,27 +11,23 @@ import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
 import ProductContext from "../context/ProductContext";
 import Select from "./Select";
-import User from "../models/Users";
 
 export const Cart = ({ sell }: { sell: boolean }) => {
   const { cart, setCart, buy_cart, buyer, setBuyer } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
-  const { products } = useContext(ProductContext);
   const [disabled, setDisabled] = useState<boolean>(true);
-
   // let total equal the sum of the products in the cart multiplied by the quantity
   let total = cart?.reduce(
-    (partialSum, a) =>
-      partialSum +
-      (products?.find((product) => product.id === a.product)?.price || 0) *
-        a.quantity,
+    (partialSum, a) => partialSum + a.price * a.quantity,
     0
   );
-  let optionsHolders = holders?.map((holder) => ({
-    value: holder.id,
-    label: holder?.name,
-    searchHelp: holder?.ledenbase_id.toString(),
-  }));
+  let optionsHolders =
+    holders &&
+    holders.map((holder) => ({
+      value: holder.id,
+      label: holder.name,
+      searchHelp: holder.ledenbase_id.toString(),
+    }));
   async function loadOptions(input: string = "") {
     let searchHolders = await SEARCH(input);
     optionsHolders = searchHolders?.map((holder) => ({
@@ -45,7 +40,14 @@ export const Cart = ({ sell }: { sell: boolean }) => {
     return (
       <CartItem
         quantity={cartItem.quantity}
-        product={products?.find((product) => product.id === cartItem.product)}
+        product={
+          ({
+            price: cartItem.price,
+            name: cartItem.name,
+            quantity: cartItem.quantity,
+            product: cartItem,
+          } as unknown as CartItems) || ({} as CartItems)
+        }
       />
     );
   }
@@ -56,10 +58,10 @@ export const Cart = ({ sell }: { sell: boolean }) => {
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
-      let holder =
-        holders?.find((holder) => holder.id === buyer.id) || ({} as Holder);
       if (sell) {
-        if (holder.stand > total && total > 0.5) {
+        console.log(buyer?.stand, total);
+
+        if (buyer?.stand > total && total > 0.5) {
           setDisabled(!true);
         } else {
           setDisabled(!false);
@@ -85,7 +87,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
         ) : (
           <FlatList
             data={cart}
-            keyExtractor={(item) => "cart product" + item.product}
+            keyExtractor={(item) => "cart product" + item.id}
             renderItem={({ item }) => renderProducts(item)}
             ItemSeparatorComponent={Divider}
             numColumns={1}
