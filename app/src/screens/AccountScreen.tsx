@@ -8,7 +8,7 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState }  from "react";
 
 import AuthContext from "../context/AuthContext.tsx";
 import { Button } from "@rneui/base";

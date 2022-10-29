@@ -1,20 +1,18 @@
+import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import Category from "../models/Category";
 import { GlobalStyles } from "../constants/styles";
 import SettingsContext from "../context/SettingsContext";
 import { Switch } from "react-native-paper";
-import { useContext } from "react";
 
-const CategoryItem = ({ item }) => {
+const CategoryItem = ({ category }: { category: Category }) => {
   const { selectedCategory, setSelectedCategory } = useContext(SettingsContext);
-  let category = item.item;
-  function change(base) {
-    if (selectedCategory.includes(category.id)) {
-      setSelectedCategory((list) =>
-        list.filter((pr) => pr !== category.id && pr)
-      );
+  function change() {
+    if (selectedCategory.includes(category)) {
+      setSelectedCategory((list) => list.filter((pr) => pr !== category && pr));
     } else {
-      setSelectedCategory(() => [...selectedCategory, category.id]);
+      setSelectedCategory(() => [...selectedCategory, category]);
     }
   }
 
@@ -23,7 +21,7 @@ const CategoryItem = ({ item }) => {
       <Text>{category.name}</Text>
       <Switch
         color={GlobalStyles.colors.primary1}
-        value={selectedCategory.includes(category.id)}
+        value={selectedCategory.includes(category)}
         onValueChange={change}
       />
     </View>

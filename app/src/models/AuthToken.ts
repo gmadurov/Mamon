@@ -1,6 +1,8 @@
-import { UserToken } from "./Users";
+import { User } from "./Users";
 
 export interface AuthToken {
-  refresh: string | UserToken;
+  non_field_errors: string;
+  message: string;
+  refresh: string | User;
   access: string;
 }

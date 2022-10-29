@@ -1,4 +1,9 @@
-export const GlobalStyles = {
+// create GlobalStyles type
+export type GlobalColors = {
+  colors: { [key: string]: string };
+};
+
+export const GlobalStyles: GlobalColors = {
   colors: {
     primary1: "#FFDD00", // backgorund
     primary2: "#92B4A7",
@@ -6,11 +11,9 @@ export const GlobalStyles = {
     primary4: "#F2542D",
     primary5: "#1E2EDE",
 
-
-
-    primary1: "#FFDD00", // backgorund
-    primary2: "#92B4A7",
-    primary3: "#364652",
+    // primary1: "#FFDD00", // backgorund
+    // primary2: "#92B4A7",
+    // primary3: "#364652",
     offwhite: "#FAFAFA",
     white: "#FFFFFF",
 
@@ -23,9 +26,9 @@ export const GlobalStyles = {
 
     androidRippleColor: "#ccc",
     shadowColor: "black",
-    textColorLight: "white", 
+    textColorLight: "white",
     textColorDark: "black",
-    iconColor: 'grey',
+    iconColor: "grey",
   },
 };
 

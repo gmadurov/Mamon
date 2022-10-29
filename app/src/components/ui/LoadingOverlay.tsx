@@ -1,16 +1,31 @@
-import { Button } from "@rneui/themed";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { GlobalStyles } from "../../constants/styles";
-function LoadingOverlay({ message, show, onCancel }) {
 
+import { Button } from "@rneui/themed";
+import { GlobalStyles } from "../../constants/styles";
+import React from "react";
+
+function LoadingOverlay({
+  message,
+  show,
+  onCancel,
+}: {
+  message: string;
+  show: boolean;
+  onCancel: Function;
+}) {
   return (
     <View style={styles.rootContainer}>
       <Text style={styles.message}>{message}</Text>
       <ActivityIndicator size="large" />
       <Button
-        style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        // style={({ pressed }: { pressed: boolean }) => [
+        //   styles.button,
+        //   pressed && {
+        //     opacity: 0.7,
+        //   },
+        // ]}
         onPress={() => {
-          onCancel(!show)
+          onCancel(!show);
         }}
       >
         Cancel
@@ -35,9 +50,6 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 6,
     paddingHorizontal: 12,
-  },
-  pressed: {
-    opacity: 0.7,
   },
   // buttonText: {
   //   textAlign: "center",

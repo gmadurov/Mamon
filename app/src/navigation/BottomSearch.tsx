@@ -9,7 +9,7 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
+}  from "react";
 import {
   RefreshControl,
   StyleSheet,

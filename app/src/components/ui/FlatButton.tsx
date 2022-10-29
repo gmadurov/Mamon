@@ -1,12 +1,25 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  GestureResponderEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { GlobalStyles } from "../../constants/styles";
+import React from "react";
 
-function FlatButton({ children, onPress }) {
+function FlatButton({
+  children,
+  onPressFunction,
+}: {
+  children: React.ReactNode;
+  onPressFunction: Function;
+}) {
   return (
     <Pressable
-    style={({ pressed }) => [styles.button, pressed && styles.pressed]}
-    onPress={onPress}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      onPress={(e) => onPressFunction(e)}
     >
       <View>
         <Text style={styles.buttonText}>{children}</Text>

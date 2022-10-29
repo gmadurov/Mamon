@@ -1,21 +1,25 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 
 import { ApiProvider } from "./ApiContext";
-import { AuthProvider } from "./AuthContext.tsx";
+import { AuthProvider } from "./AuthContext";
 import { CartProvider } from "./CartContext";
 import { HolderProvider } from "./HolderContext";
 import { ProductProvider } from "./ProductContext";
 import { PurchaseProvider } from "./PurchaseContext";
 import { SettingsProvider } from "./SettingsContext";
 
+// create type context
+
+type FullContextType = {
+  BottomSearch: boolean;
+  setBottomSearch: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 /** provides Settings */
-const FullContext = createContext({
-  BottomSearch: false,
-  setBottomSearch: (value = true) => {},
-});
+const FullContext = createContext<FullContextType>({} as FullContextType);
 export default FullContext;
-export const FullProvider = ({ children }) => {
-  const [BottomSearch, setBottomSearch] = useState(false);
+export const FullProvider = ({ children }: { children: React.ReactNode }) => {
+  const [BottomSearch, setBottomSearch] = useState<boolean>(false);
 
   const data = {
     BottomSearch: BottomSearch,
@@ -24,7 +28,7 @@ export const FullProvider = ({ children }) => {
   return (
     <FullContext.Provider value={data}>
       <AuthProvider>
-        <ApiProvider> 
+        <ApiProvider>
           <SettingsProvider>
             <HolderProvider>
               <ProductProvider>

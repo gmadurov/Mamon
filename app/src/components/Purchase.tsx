@@ -1,26 +1,28 @@
+import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { Card } from "@rneui/themed";
 import ProductContext from "../context/ProductContext";
-import { useContext } from "react";
+import Purchase from "../models/Purchase";
 
-const Purchase = ({ purchase }) => {
+const Purchase = ({ purchase }: { purchase: Purchase }) => {
   const { products } = useContext(ProductContext);
   let total = 0;
-  purchase?.orders?.map(
-    (order) =>
-      (total +=
-        products?.find((productM) => productM.id === order.product)?.price *
-        order.quantity)
+  purchase?.orders?.reduce(
+    (partialSum, a) =>
+      partialSum +
+      (products?.find((product) => product.id === a.product)?.price || 0) *
+        a.quantity,
+    0
   );
-  const created = new Date(purchase?.created);
+  const created = new Date(purchase?.created || 0);
   return (
-    <Card style={styles.container}>
+    <Card>
       <Text>
         {/* {holders?.find((holder) => holder.id === purchase?.buyer).name}  */}
         For a {purchase?.payed ? "payed" : "loged"} total of €
-        {parseFloat(total).toPrecision(total <= 10 ? 3 : total <= 100 ? 4 : 5)}{" "}
-        on {created.toDateString()} {created.toLocaleTimeString("nl-NL")}:
+        {total?.toFixed(2).toString()} on {created.toDateString()}{" "}
+        {created.toLocaleTimeString("nl-NL")}:
       </Text>
       {purchase?.orders?.map((order) => (
         <View key={"cart product" + order.product}>

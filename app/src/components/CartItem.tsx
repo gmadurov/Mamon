@@ -1,15 +1,22 @@
+import CartContext, { CartItems } from "../context/CartContext";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useContext } from "react";
 
-import CartContext from "../context/CartContext";
 import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
+import Product from "../models/Product";
 import ProductContext from "../context/ProductContext";
-import { useContext } from "react";
 
-const CartItem = ({ quantity, product }) => {
+const CartItem = ({
+  quantity,
+  product,
+}: {
+  quantity: number;
+  product: CartItems;
+}) => {
   const { products } = useContext(ProductContext);
   const { remove_from_cart } = useContext(CartContext);
-  const onRemove = (amount) => {
+  const onRemove = (amount: number) => {
     remove_from_cart(product, amount);
   };
   return (
@@ -27,10 +34,9 @@ const CartItem = ({ quantity, product }) => {
       </Pressable>
       <IconButton
         name={"close-circle-outline"}
-        size={24}
         style={styles.input}
         color={GlobalStyles.colors.textColorDark}
-        onPress={() => onRemove(quantity)}
+        onPressFunction={() => onRemove(quantity)}
       />
     </View>
   );

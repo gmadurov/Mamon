@@ -1,27 +1,31 @@
+import CartContext, { CartItems } from "../context/CartContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { Button } from "@rneui/themed";
-import CartContext from "../context/CartContext";
 // import { FlatList } from "react-native-gesture-handler";
 import CartItem from "./CartItem";
 import { Divider } from "react-native-paper";
 import { FlatList } from "react-native";
 import { GlobalStyles } from "../constants/styles";
+import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
 import ProductContext from "../context/ProductContext";
 import Select from "./Select";
+import User from "../models/Users";
 
-export const Cart = ({ sell }) => {
+export const Cart = ({ sell }: { sell: boolean }) => {
   const { cart, setCart, buy_cart, buyer, setBuyer } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
   const { products } = useContext(ProductContext);
-  const [disabled, setDisabled] = useState(true);
-  let total = 0;
-  total = cart?.reduce(
+  const [disabled, setDisabled] = useState<boolean>(true);
+
+  // let total equal the sum of the products in the cart multiplied by the quantity
+  let total = cart?.reduce(
     (partialSum, a) =>
       partialSum +
-      products?.find((product) => product.id === a.product)?.price * a.quantity,
+      (products?.find((product) => product.id === a.product)?.price || 0) *
+        a.quantity,
     0
   );
   let optionsHolders = holders?.map((holder) => ({
@@ -29,34 +33,33 @@ export const Cart = ({ sell }) => {
     label: holder?.name,
     searchHelp: holder?.ledenbase_id.toString(),
   }));
-  async function loadOptions(input = "") {
-    let searchHolders = await SEARCH({ search: input });
+  async function loadOptions(input: string = "") {
+    let searchHolders = await SEARCH(input);
     optionsHolders = searchHolders?.map((holder) => ({
       value: holder?.id,
       label: holder?.name,
       searchHelp: holder?.ledenbase_id.toString(),
     }));
   }
-  function renderProducts(itemData) {
+  function renderProducts(cartItem: CartItems) {
     return (
       <CartItem
-        quantity={itemData.item.quantity}
-        product={products?.find(
-          (product) => product.id === itemData.item.product
-        )}
+        quantity={cartItem.quantity}
+        product={products?.find((product) => product.id === cartItem.product)}
       />
     );
   }
   async function buy() {
     await buy_cart(buyer, sell);
-    setBuyer();
+    setBuyer({} as Holder);
   }
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
-      let holder = holders?.find((holder) => holder.id === buyer);
+      let holder =
+        holders?.find((holder) => holder.id === buyer.id) || ({} as Holder);
       if (sell) {
-        if (holder?.stand > total && total > 0.5) {
+        if (holder.stand > total && total > 0.5) {
           setDisabled(!true);
         } else {
           setDisabled(!false);
@@ -74,16 +77,16 @@ export const Cart = ({ sell }) => {
       <View
         style={[
           styles.innerContainer,
-          !cart.length > 0 && { alignItems: "center" },
+          !(cart.length > 0) && { alignItems: "center" },
         ]}
       >
-        {!cart.length > 0 ? (
+        {!(cart.length > 0) ? (
           <Text>Cart is empty</Text>
         ) : (
           <FlatList
             data={cart}
             keyExtractor={(item) => "cart product" + item.product}
-            renderItem={renderProducts}
+            renderItem={({ item }) => renderProducts(item)}
             ItemSeparatorComponent={Divider}
             numColumns={1}
           />
@@ -94,31 +97,30 @@ export const Cart = ({ sell }) => {
           defaultValue={buyer}
           refreshFunction={GET}
           options={optionsHolders}
-          optionFunction={loadOptions}
-          onSelect={(e) => setBuyer(e)}
+          // optionFunction={loadOptions}
+          // onSelect={(e) => setBuyer(e)}
           label="Kies Lid Hier"
-          placeholder="         Kies Lid Hier         "
         />
         <View style={styles.view}>
           <Button
-            android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-            style={({ pressed }) => [
-              styles.button,
-              pressed ? styles.buttonPressed : styles.button,
-            ]}
+            // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
+            // style={({ pressed }) => [
+            //   styles.button,
+            //   pressed ? styles.buttonPressed : styles.button,
+            // ]}
             color={"red"}
             onPress={() => {
-              setCart([]);
-              setBuyer(null);
+              setCart([] as CartItems[]);
+              setBuyer({} as Holder);
             }}
             title={"Empty Cart"}
           />
           <Button
-            android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-            style={({ pressed }) => [
-              styles.button,
-              pressed ? styles.buttonPressed : styles.button,
-            ]}
+            // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
+            // style={({ pressed }) => [
+            //   styles.button,
+            //   pressed ? styles.buttonPressed : styles.button,
+            // ]}
             color="green"
             disabled={disabled}
             onPress={buy}
@@ -126,9 +128,8 @@ export const Cart = ({ sell }) => {
               disabled
                 ? "Geen Saldo"
                 : "Buy €" +
-                  parseFloat(total).toPrecision(
-                    total <= 10 ? 3 : total <= 100 ? 4 : 5
-                  ) +
+                  // convert total to string and add 2 decimals
+                  total?.toFixed(2).toString() +
                   " "
             }
           />

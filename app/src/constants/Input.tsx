@@ -1,15 +1,29 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  KeyboardTypeOptions,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { GlobalStyles } from "./styles";
+import React from "react";
 
 function Input({
   label,
-  keyboardType, 
+  keyboardType,
   secure,
   onUpdateValue,
   value,
   isInvalid,
-}) {
+}: {
+  label: string;
+  keyboardType: KeyboardTypeOptions;
+  secure: boolean;
+  onUpdateValue: Function;
+  value: string | undefined;
+  isInvalid: boolean;
+}): JSX.Element {
   return (
     <View style={styles.inputContainer}>
       <Text style={[styles.label, isInvalid && styles.labelInvalid]}>
@@ -20,7 +34,7 @@ function Input({
         autoCapitalize={"none"}
         keyboardType={keyboardType}
         secureTextEntry={secure}
-        onChangeText={onUpdateValue}
+        onChangeText={(e) => onUpdateValue(e)}
         value={value}
       />
     </View>

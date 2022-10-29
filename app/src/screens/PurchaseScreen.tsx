@@ -1,5 +1,5 @@
 import { FlatList, RefreshControl, StyleSheet } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState }  from "react";
 
 import Purchase from "../components/Purchase";
 import PurchaseContext from "../context/PurchaseContext";

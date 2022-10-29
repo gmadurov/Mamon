@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState }  from "react";
 
 import BottomSearch from "../navigation/BottomSearch";
 import Cart from "../components/Cart";
@@ -18,7 +18,7 @@ import ProductTile from "../components/ProductTile";
 
 const { width } = Dimensions.get("screen");
 
-const ProductScreen = ({ sell }: { sell: boolean }) => {
+const ProductScreen = ({ sell }: { sell?: boolean }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
   const [refreshing, setRefreshing] = useState(false);

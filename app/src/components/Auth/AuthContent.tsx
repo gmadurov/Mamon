@@ -1,22 +1,26 @@
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import Button from "../../constants/Button";
 import { GlobalStyles } from "../../constants/styles";
 import Input from "../../constants/Input";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 
-function AuthContent({ isLogin, onAuthenticate }) {
-  const navigation = useNavigation();
-  const [username, setUsername] = useState("GMaduro");
+function AuthContent({
+  isLogin,
+  onAuthenticate,
+}: {
+  isLogin: boolean;
+  onAuthenticate: Function;
+}) {
+  const [username, setUsername] = useState<string>("GMaduro");
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState<string>("");
   // const [enteredConfirmPassword, setEnteredConfirmPassword] = useState("");
 
   // const { email: emailIsInvalid, password: passwordIsInvalid } =
   //   credentialsInvalid;
 
-  function updateInputValueHandler(enteredValue, inputType) {
+  function updateInputValueHandler(enteredValue: string, inputType: string) {
     switch (inputType) {
       case "username":
         setUsername(enteredValue);
@@ -34,39 +38,15 @@ function AuthContent({ isLogin, onAuthenticate }) {
   //   confirmPassword: false,
   // });
 
-  function switchAuthModeHandler() {
+  // function switchAuthModeHandler() {
     // if (isLogin) {
     //   navigation.replace("Signup");
     // } else {
     //   navigation.replace("Login");
     // }
-  }
+  // }
 
-  function submitHandler(credentials) {
-    // let { email, confirmEmail, password, confirmPassword } = credentials;
-
-    // email = email.trim();
-    // password = password.trim();
-
-    // const emailIsValid = email.includes("@");
-    // const passwordIsValid = password.length > 6;
-    // const emailsAreEqual = email === confirmEmail;
-    // const passwordsAreEqual = password === confirmPassword;
-
-    // if (
-    //   !emailIsValid ||
-    //   !passwordIsValid ||
-    //   (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
-    // ) {
-    //   Alert.alert("Invalid input", "Please check your entered credentials.");
-    //   setCredentialsInvalid({
-    //     email: !emailIsValid,
-    //     confirmEmail: !emailIsValid || !emailsAreEqual,
-    //     password: !passwordIsValid,
-    //     confirmPassword: !passwordIsValid || !passwordsAreEqual,
-    //   });
-    //   return;
-    // }
+  function submitHandler() {
     onAuthenticate(username, password);
   }
 
@@ -76,9 +56,13 @@ function AuthContent({ isLogin, onAuthenticate }) {
         <View>
           <Input
             label="Username"
-            onUpdateValue={(text) => updateInputValueHandler(text, "username")}
+            onUpdateValue={(text: string) =>
+              updateInputValueHandler(text, "username")
+            }
             value={username}
-            // isInvalid={emailIsInvalid}
+            keyboardType={undefined}
+            secure={undefined}
+            isInvalid={undefined} // isInvalid={emailIsInvalid}
           />
           {/* {!isLogin && (
           <Input
@@ -91,10 +75,13 @@ function AuthContent({ isLogin, onAuthenticate }) {
         )} */}
           <Input
             label="Password"
-            onUpdateValue={(text) => updateInputValueHandler(text, "password")}
+            onUpdateValue={(text: string) =>
+              updateInputValueHandler(text, "password")
+            }
             secure
             value={password}
-            // isInvalid={passwordIsInvalid}
+            keyboardType={undefined}
+            isInvalid={undefined} // isInvalid={passwordIsInvalid}
           />
           {/* {!isLogin && (
           <Input
@@ -107,7 +94,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
         )} */}
           <View style={styles.buttons}>
             <Button onPress={submitHandler}>
-              {isLogin | true ? "Log In" : "Sign Up"}
+              {isLogin || true ? "Log In" : "Sign Up"}
               {/* for if we ever want to expand*/}
             </Button>
           </View>
@@ -140,4 +127,5 @@ const styles = StyleSheet.create({
   buttons: {
     marginTop: 8,
   },
+  form: { marginBottom: 16 },
 });

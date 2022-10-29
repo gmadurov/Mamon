@@ -1,16 +1,23 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { GlobalStyles } from "./styles";
+import React from "react";
 
-function Button({ children, onPress }) {
+function Button({
+  children,
+  onPressFuntion,
+}: {
+  children: React.ReactNode;
+  onPressFuntion: Function;
+}): JSX.Element {
   return (
     <Pressable
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
-      onPress={onPress}
+      onPress={(e) => onPressFuntion(e)}
     >
       <View>
         <Text style={styles.buttonText}>{children}</Text>
-      </View> 
+      </View>
     </Pressable>
   );
 }

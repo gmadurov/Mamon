@@ -1,11 +1,12 @@
-import AccountScreen from "../screens/AccountScreen";
-import AuthContext from "../context/AuthContext.tsx";
+import React, { useContext } from "react";
+
+import AuthContext from "../context/AuthContext";
 import CategoryScreen from "../screens/CategoryScreen";
 import { GlobalStyles } from "../constants/styles";
 import LogOutScreen from "../screens/LogOutScreen";
 import ProductScreen from "../screens/ProductScreen";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { useContext } from "react";
+
 const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
@@ -21,7 +22,7 @@ const DrawerNavigator = () => {
         children={() => <ProductScreen sell />}
         options={{
           title: "Mamon",
-          backgroundColor: GlobalStyles.colors.primary1,
+          // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
 
@@ -30,7 +31,7 @@ const DrawerNavigator = () => {
         children={() => <ProductScreen />}
         options={{
           title: "Mamon Log",
-          backgroundColor: GlobalStyles.colors.primary1,
+          // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
       {/* <Drawer.Screen
@@ -62,7 +63,7 @@ const DrawerNavigator = () => {
         children={() => <CategoryScreen />}
         options={{
           title: "Categories",
-          backgroundColor: GlobalStyles.colors.primary1,
+          // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
       <Drawer.Screen name="LogOut" component={LogOutScreen} />

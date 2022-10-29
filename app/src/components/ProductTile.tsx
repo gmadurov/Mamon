@@ -6,31 +6,34 @@ import {
   Text,
   View,
 } from "react-native";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import CartContext from "../context/CartContext";
 import { GlobalStyles } from "../constants/styles";
-import IconButton from "./IconButton";
 import ProductContext from "../context/ProductContext";
 import { Surface } from "react-native-paper";
-import { baseUrl } from "../context/AuthContext.tsx";
+import { baseUrl } from "../context/AuthContext";
 
-const ProductTile = ({ selected, setSelected, quantity, product }) => {
+const ProductTile = ({
+  selected,
+  product,
+}: {
+  selected: number[];
+  setSelected: any;
+  quantity: number;
+  product: any;
+}) => {
   const { add_to_cart, remove_from_cart } = useContext(CartContext);
-  const { DELETE } = useContext(ProductContext);
-  const [deleted, setDeleted] = useState(false);
   const onAdd = () => {
     add_to_cart(product);
   };
-  const onRemove = async () => {
-    remove_from_cart(product);
-  };
-  let [BGC, iBGC] = deleted
-    ? [GlobalStyles.colors.primary4, product?.color]
-    : ([product?.color, GlobalStyles.colors.primary4][(BGC, iBGC)] =
-        product.id === selected
-          ? [GlobalStyles.colors.primary2, GlobalStyles.colors.primary4]
-          : [product?.color, GlobalStyles.colors.primary4]);
+  let BGC: string;
+  let iBGC: string;
+
+  [BGC, iBGC] =
+    product.id === selected
+      ? [GlobalStyles.colors.primary2, GlobalStyles.colors.primary4]
+      : [product?.color, GlobalStyles.colors.primary4];
 
   return (
     <Surface style={[styles.gridItem, { elevation: 2 }]}>
@@ -40,7 +43,7 @@ const ProductTile = ({ selected, setSelected, quantity, product }) => {
           styles.button,
           pressed ? styles.buttonPressed : { flex: 1 },
         ]}
-        onPress={deleted ? onRemove : onAdd}
+        onPress={onAdd}
       >
         <View
           style={[

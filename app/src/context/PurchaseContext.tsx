@@ -1,19 +1,16 @@
-import { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 import ApiContext from "./ApiContext";
-import { Purchase } from "../models/Purchase";
+import Purchase from "../models/Purchase";
 import { showMessage } from "react-native-flash-message";
 import { useContext } from "react";
 
 export type PurchaseContextType = {
   purchases: Array<Purchase>;
-  purchase: Purchase;
-  searchHolders: Array<Purchase>;
   GET: () => Promise<void>;
   POST: (purchase: Purchase) => Promise<void>;
   PUT: (purchase: Purchase) => Promise<void>;
   DELETE: (purchase: Purchase) => Promise<void>;
-  SEARCH: (purchase: Purchase) => Promise<void>;
 };
 
 const PurchaseContext = createContext<PurchaseContextType>(
@@ -36,15 +33,20 @@ export const PurchaseProvider = ({
     //   .then(({ data }) => setPurchases(data))
     //   .catch(({ res }) => console.warn("Error with the Purchase request", res));
 
-    const { data }: { data: Purchase[] } = await ApiRequest("/api/purchase/");
+    const { data }: { data: Purchase[] } = await ApiRequest<Purchase[]>(
+      "/api/purchase/"
+    );
     setPurchases(data);
   }
   async function POST(purchase: Purchase) {
-    const { data }: { data: Purchase[] } = await ApiRequest("/api/purchase/", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(purchase),
-    });
+    const { data }: { data: Purchase } = await ApiRequest<Purchase>(
+      "/api/purchase/",
+      {
+        method: "POST",
+        body: JSON.stringify(purchase),
+        "Content-Type": "application/json",
+      }
+    );
     showMessage({
       message: `Purchase was successful`,
       description: ``,
@@ -57,26 +59,24 @@ export const PurchaseProvider = ({
     });
     setPurchases(() => [...purchases, data]);
   }
-  async function PUT(purchase) {
-    const { data } = await ApiRequest(`/api/purchase/${purchase.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(purchase),
-    });
+  async function PUT(purchase: Purchase) {
+    const { data } = await ApiRequest<Purchase>(
+      `/api/purchase/${purchase.id}`,
+      {
+        method: "PUT",
+        "Content-Type": "application/json",
+        body: JSON.stringify(purchase),
+      }
+    );
     setPurchases(
       purchases.map((purchase_from_map) =>
         purchase.id === purchase_from_map.id ? data : purchase_from_map
       )
     );
   }
-  async function DELETE(purchase) {
-    await ApiRequest(`/api/purchase/${purchase.id}`, {
+  async function DELETE(purchase: Purchase) {
+    await ApiRequest<Purchase>(`/api/purchase/${purchase.id}`, {
       method: "DELETE",
-      headers: {
-        "Content-type": "application/json",
-      },
     });
   }
 
@@ -91,11 +91,11 @@ export const PurchaseProvider = ({
     // eslint-disable-next-line
   }, [user]);
   const data = {
-    purchases: purchases,
-    GET: GET,
-    POST: POST,
-    PUT: PUT,
-    DELETE: DELETE,
+    purchases,
+    GET,
+    POST,
+    PUT,
+    DELETE,
   };
   return (
     <PurchaseContext.Provider value={data}>{children}</PurchaseContext.Provider>

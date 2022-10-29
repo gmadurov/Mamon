@@ -5,7 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { NavigationContainer, ParamListBase } from "@react-navigation/native";
-import React,{
+import React, {
   useCallback,
   useContext,
   useEffect,
@@ -69,7 +69,7 @@ function AuthenticatedStack() {
           component={ProductScreen}
           options={{
             title: "Mamon",
-            backgroundColor: GlobalStyles.colors.primary1,
+            // backgroundColor: GlobalStyles.colors.primary1,
           }}
         />
         <Stack.Screen name="LoginPage" component={LoginScreen} />
@@ -100,8 +100,8 @@ function Root() {
           autoHide: true,
           duration: 1500,
         });
-        const user = await refreshToken(JSON.parse(storedTokens), true);
-        if (user) {
+        const logedIn = await refreshToken(JSON.parse(storedTokens));
+        if (logedIn) {
           showMessage({
             message: `Authentication is refreshed`,
             description: ``,
@@ -148,7 +148,7 @@ function Root() {
   return <Navigation onLayout={onLayoutRootView} />;
 }
 
-function Navigation() {
+function Navigation({ onLayout }: { onLayout: () => Promise<void> }) {
   const { user } = useContext(AuthContext);
   return (
     <>

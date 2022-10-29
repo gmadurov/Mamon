@@ -21,11 +21,16 @@ export const baseUrl = () => {
   return url;
 };
 
+interface FailedData extends AuthToken {
+  message: string;
+  data: string;
+}
+
 export type AuthContextType = {
-  user: User | undefined;
-  authTokens: AuthToken | undefined;
-  setAuthTokens: (authTokens: AuthToken) => void;
-  setUser: (user: User) => void;
+  user: User;
+  authTokens: AuthToken;
+  setAuthTokens: React.Dispatch<React.SetStateAction<AuthToken>>;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
   loginFunc: (
     username: string,
     password: string,
@@ -39,8 +44,8 @@ export default AuthContext;
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // dont use useFetch here because it will not work
 
-  const [authTokens, setAuthTokens] = useState<AuthToken>();
-  const [user, setUser] = useState<User>();
+  const [authTokens, setAuthTokens] = useState<AuthToken>({} as AuthToken);
+  const [user, setUser] = useState<User>({} as User);
   /**this function is simply to wake up the backend when working with heroku */
   const start = async () => {
     await fetch(`${baseUrl()}`);
@@ -89,8 +94,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   async function logoutFunc() {
     // console.log("loged Out", AsyncStorage.getAllKeys());"user"
     await AsyncStorage.multiRemove(["authTokens"]);
-    setAuthTokens(undefined);
-    setUser(undefined);
+    setAuthTokens(() => ({} as AuthToken));
+    setUser(() => ({} as User));
     // navigation.replace("LoginPage");
   }
   const data = {
@@ -99,7 +104,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthTokens: setAuthTokens,
     setUser: setUser,
     user: user,
-    authTokens: authTokens
+    authTokens: authTokens,
   };
   // user && navigate("../login", { replace: true });
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;
