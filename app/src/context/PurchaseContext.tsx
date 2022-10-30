@@ -29,10 +29,6 @@ export const PurchaseProvider = ({
 
   async function GET() {
     setPurchases([]);
-    // ApiRequest("/api/purchase/")
-    //   .then(({ data }) => setPurchases(data))
-    //   .catch(({ res }) => console.warn("Error with the Purchase request", res));
-
     const { data }: { data: Purchase[] } = await ApiRequest<Purchase[]>(
       "/api/purchase/"
     );
@@ -43,9 +39,8 @@ export const PurchaseProvider = ({
       await ApiRequest<Purchase>("/api/purchase/", {
         method: "POST",
         body: JSON.stringify(purchase),
-        "Content-Type": "application/json",
       });
-    if (res?.status === 201) {
+    if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Purchase was successful`,
         description: ``,
@@ -56,8 +51,19 @@ export const PurchaseProvider = ({
         duration: 500,
         position: "bottom",
       });
+      setPurchases(() => [...purchases, data]);
+    } else {
+      showMessage({
+        message: `Purchase was Unsuccessful`,
+        description: ``,
+        type: "danger",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 500,
+        position: "bottom",
+      });
     }
-    setPurchases(() => [...purchases, data]);
   }
   async function PUT(purchase: Purchase) {
     const { data } = await ApiRequest<Purchase>(
@@ -84,8 +90,6 @@ export const PurchaseProvider = ({
     async function get() {
       await GET();
     }
-    // console.log("PurchaseContext useEffect", user);
-
     if (user?.token_type) {
       get();
     }

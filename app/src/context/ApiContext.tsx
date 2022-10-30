@@ -63,11 +63,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     config: object
   ): Promise<{ res: Response; data: TResponse }> {
     let urlFetch = `${baseUrl()}${url}`;
+    console.log(urlFetch, config);
     const res = await fetch(urlFetch, config);
     const data = await res.json();
     // console.log("originalRequest", data, res?.status);
     if (res?.status === 401) {
-      // await logoutFunc();
+      await logoutFunc();
     } else if (res?.status !== 200) {
       // Alert.alert(`Error ${res?.status} fetching ${url}`);
       showMessage({
@@ -157,6 +158,20 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     if (isExpired && authTokens) {
       await refreshToken(authTokens);
     }
+
+    if (!config.headers?.["Content-Type"]) {
+      config.headers = {
+        ...config.headers,
+        "Content-Type": "application/json",
+      };
+    }
+    if (config.headers?.Authorization === undefined) {
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${authTokens?.access}`,
+      };
+    }
+
     if (user.token_type) {
       const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 200) {
