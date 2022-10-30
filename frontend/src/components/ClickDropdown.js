@@ -1,7 +1,8 @@
-import PropTypes from "prop-types";
-import Dropdown from "react-bootstrap/Dropdown";
 import "bootstrap/dist/css/bootstrap.min.css";
-import React from "react";
+
+import Dropdown from "react-bootstrap/Dropdown";
+import PropTypes from "prop-types";
+import React  from "react";
 
 const ClickDropdown = ({ dropText, items }) => {
   return (

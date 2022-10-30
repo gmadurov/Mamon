@@ -3,13 +3,13 @@ from django.urls import path
 from . import views
 from api.tokens import MyTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
-
+# from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path("", views.getRoutes),
     path("product/", views.showProducts),
     path("product/<str:pk>", views.showProduct),
-    path("purchase/", views.showPurchases),
+    path("purchase/", (views.showPurchases)),
     path("category/", views.cateories),
     path("purchase/<str:pk>", views.showPurchase),
     path("holder/", views.showHolders),

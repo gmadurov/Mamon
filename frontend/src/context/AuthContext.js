@@ -1,7 +1,9 @@
-import { createContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+import { createContext, useState }  from "react";
+
 import { baseUrl } from "./ApiContext";
+import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+
 /** loginFunc: loginFunc,
  *
  * logoutFunc: logOutUser,

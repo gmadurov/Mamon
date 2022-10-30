@@ -90,6 +90,7 @@ def showProducts(request):
 @api_view(["GET", "PUT", "DELETE"])
 @permission_classes([IsAuthenticated])
 def showProduct(request, pk):
+    print(request.HTTP_HOST + request.path, 'hello')
     data = request.data
     product = Product.objects.get(id=pk)
     if request.method == "GET":
@@ -109,22 +110,21 @@ def showProduct(request, pk):
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def showPurchases(request):
-    data = request.data
     if request.method == "GET":
-        try:
-            holder = request.user.holder
-            purschases = holder.purchase_set.all()  # Purchase.objects.all()
-            serializer = PurchaseSerializer(purschases, many=True)
-            return Response(serializer.data)
-        except:
-            return Response("No purchases")
+        holder = request.user.holder
+        purchases = holder.purchases.all()  # Purchase.objects.all()
+        # user = Holder.objects.get(user=request.user)
+        # purchases = user.purchases.all()
+        serializer = PurchaseSerializer(purchases, many=True)
+        return Response(serializer.data)
     if request.method == "POST":
+        data = request.data
+        # print("hello", data)
         purchase = Purchase.objects.create(
             buyer=Holder.objects.get(id=data["buyer"]),
             payed=data["payed"] or False,
         )
         if data["orders"]:
-
             orders = [
                 Order.objects.get_or_create(
                     quantity=order["quantity"],

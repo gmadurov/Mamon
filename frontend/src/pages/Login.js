@@ -1,6 +1,7 @@
-import { useContext, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useContext, useEffect, useState }  from "react";
+
 import AuthContext from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 import Page from "../utils/Page";
 
 export const LoginPage = () => {
@@ -18,7 +19,7 @@ export const LoginPage = () => {
     e.preventDefault();
     loginFunc(username, password);
   };
-  if (user) return <Navigate to="/" replace />;
+  if (user.name) return <Navigate to="/" replace />;
   return (
     <Page>
       <div>

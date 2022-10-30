@@ -1,6 +1,6 @@
-import { useContext } from "react";
 import Button from "../components/Button";
 import CartContext from "../context/CartContext";
+import { useContext }  from "react";
 export const Product = ({ product }) => {
   const {add_to_cart, remove_from_cart} = useContext(CartContext)
   const onAdd = () => {
