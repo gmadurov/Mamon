@@ -1,9 +1,9 @@
-import CartContext, { CartItems } from "../context/CartContext";
+import CartContext, { CartItems } from "../../context/CartContext";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 
-import { GlobalStyles } from "../constants/styles";
-import IconButton from "./IconButton";
+import { GlobalStyles } from "../../constants/styles";
+import IconButton from "../ui/IconButton";
 
 const CartItem = ({
   quantity,

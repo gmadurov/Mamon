@@ -2,8 +2,8 @@ import { Button, Card } from "@rneui/themed";
 import { Pressable, StyleSheet, View } from "react-native";
 import React, { useContext, useState } from "react";
 
-import FullContext from "../context/FullContext";
-import { GlobalStyles } from "../constants/styles";
+import FullContext from "../../context/FullContext";
+import { GlobalStyles } from "../../constants/styles";
 
 // import IconButton from "./IconButton";
 // import { Ionicons } from "@expo/vector-icons";

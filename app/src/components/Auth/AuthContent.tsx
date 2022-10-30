@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import Button from "../../constants/Button";
+import Button from "../ui/Button";
 import { GlobalStyles } from "../../constants/styles";
-import Input from "../../constants/Input";
+import Input from "../ui/Input";
 
 function AuthContent({
   isLogin,

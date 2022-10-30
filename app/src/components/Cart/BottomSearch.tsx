@@ -17,12 +17,12 @@ import {
   View,
 } from "react-native";
 
-import CartContext from "../context/CartContext";
-import FullContext from "../context/FullContext";
-import { GlobalStyles } from "../constants/styles";
-import Holder from "../models/Holder";
-import HolderContext from "../context/HolderContext";
-import { baseUrl } from "../context/AuthContext";
+import CartContext from "../../context/CartContext";
+import FullContext from "../../context/FullContext";
+import { GlobalStyles } from "../../constants/styles";
+import Holder from "../../models/Holder";
+import HolderContext from "../../context/HolderContext";
+import { baseUrl } from "../../context/AuthContext";
 
 export interface HolderChoice extends Holder {
   value: number;

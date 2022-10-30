@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import React, { useContext, useState } from "react";
 
-import BottomSearch from "../navigation/BottomSearch";
-import Cart from "../components/Cart";
+import BottomSearch from "../components/Cart/BottomSearch";
+import Cart from "../components/Cart/Cart";
 import { GlobalStyles } from "../constants/styles";
 import HolderContext from "../context/HolderContext";
 import ProductContext from "../context/ProductContext";
-import ProductTile from "../components/ProductTile";
+import ProductTile from "../components/Product/ProductTile";
 
 const { width } = Dimensions.get("screen");
 

@@ -6,13 +6,12 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 
-import CartContext from "../context/CartContext";
-import { GlobalStyles } from "../constants/styles";
-import ProductContext from "../context/ProductContext";
+import CartContext from "../../context/CartContext";
+import { GlobalStyles } from "../../constants/styles";
 import { Surface } from "react-native-paper";
-import { baseUrl } from "../context/AuthContext";
+import { baseUrl } from "../../context/AuthContext";
 
 const ProductTile = ({
   selected,
@@ -60,7 +59,7 @@ const ProductTile = ({
             />
           ) : (
             <Image
-              source={require("../assets/default-product.png")}
+              source={require("../../assets/default-product.png")}
               style={styles.avatar}
             />
           )}

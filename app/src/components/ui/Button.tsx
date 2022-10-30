@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { GlobalStyles } from "./styles";
+import { GlobalStyles } from "../../constants/styles";
 import React from "react";
 
 function Button({

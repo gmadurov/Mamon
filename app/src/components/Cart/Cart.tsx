@@ -1,4 +1,4 @@
-import CartContext, { CartItems } from "../context/CartContext";
+import CartContext, { CartItems } from "../../context/CartContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 
@@ -6,10 +6,10 @@ import { Button } from "@rneui/themed";
 import CartItem from "./CartItem";
 import { Divider } from "react-native-paper";
 import { FlatList } from "react-native";
-import { GlobalStyles } from "../constants/styles";
-import Holder from "../models/Holder";
-import HolderContext from "../context/HolderContext";
-import ProductContext from "../context/ProductContext";
+import { GlobalStyles } from "../../constants/styles";
+import Holder from "../../models/Holder";
+import HolderContext from "../../context/HolderContext";
+import ProductContext from "../../context/ProductContext";
 import Select from "./Select";
 
 export const Cart = ({ sell }: { sell: boolean }) => {
