@@ -46,6 +46,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
             name: cartItem.name,
             quantity: cartItem.quantity,
             product: cartItem,
+            id: cartItem.id,
           } as unknown as CartItems) || ({} as CartItems)
         }
       />
@@ -59,8 +60,6 @@ export const Cart = ({ sell }: { sell: boolean }) => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
       if (sell) {
-        console.log(buyer?.stand, total);
-
         if (buyer?.stand > total && total > 0.5) {
           setDisabled(!true);
         } else {

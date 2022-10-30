@@ -19,7 +19,7 @@ export const LoginPage = () => {
     e.preventDefault();
     loginFunc(username, password);
   };
-  if (user) return <Navigate to="/" replace />;
+  if (user.name) return <Navigate to="/" replace />;
   return (
     <Page>
       <div>

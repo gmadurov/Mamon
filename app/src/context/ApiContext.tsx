@@ -67,7 +67,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     const data = await res.json();
     // console.log("originalRequest", data, res?.status);
     if (res?.status === 401) {
-      await logoutFunc();
+      // await logoutFunc();
     } else if (res?.status !== 200) {
       // Alert.alert(`Error ${res?.status} fetching ${url}`);
       showMessage({

@@ -90,7 +90,7 @@ export const ApiProvider = ({ children }) => {
     if (!config["headers"]["Content-type"]) {
       config["headers"]["Content-type"] = "application/json";
     }
-    if (user) {
+    if (user.name) {
       const [res, data] = await originalRequest(url, config);
       return { res, data };
     }
@@ -108,7 +108,7 @@ export const ApiProvider = ({ children }) => {
     config["headers"] = {
       Authorization: `Authentication ${authTokens?.access}`,
     };
-    if (user) {
+    if (user.name) {
       const [res, data] = await originalRequest(url, config);
       if (res.status === 401) {
         console.log("Unauthorized", url, config);

@@ -1,8 +1,8 @@
+import Purchase, { Order } from "../models/Purchase";
 import React, { createContext, useContext, useState } from "react";
 
 import AuthContext from "./AuthContext";
 import Holder from "../models/Holder";
-import { Order } from "../models/Purchase";
 import ProductContext from "./ProductContext";
 import PurchaseContext from "./PurchaseContext";
 
@@ -21,6 +21,7 @@ export interface CartItems extends Order {
   name: string;
   price: number;
   image: null | string;
+  id: number;
 }
 
 const CartContext = createContext<CartContextType>({} as CartContextType);
@@ -70,31 +71,32 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     if (cart) {
       if (cart.some((order) => order.id === product.id)) {
         if (
-          cart.find((order) => order.product === product.id)?.quantity ===
-          quantity
+          cart.find((order) => order.id === product.id)?.quantity === quantity
         ) {
-          setCart(() => cart.filter((order) => order.product !== product.id));
+          setCart(() => cart.filter((order) => order.id !== product.id));
         } else if (
-          cart.find((order) => order.product === product.id)?.quantity !==
-          quantity
+          cart.find((order) => order.id === product.id)?.quantity !== quantity
         ) {
           setCart(() =>
             cart.map((order) =>
-              order.product === product.id
+              order.id === product.id
                 ? { ...order, quantity: order.quantity - quantity }
                 : order
             )
           );
         } else {
-          setCart(() => cart.filter((order) => order.product !== product.id));
+          setCart(() => cart.filter((order) => order.id !== product.id));
         }
       }
     }
   }
   async function buy_cart(buyer: Holder, sell: boolean) {
-    await POST({
-      orders: cart,
-      seller: user?.lid_id,
+    let purchase = {
+      orders: cart?.map((order) => ({
+        quantity: order.quantity,
+        product: order.id,
+      })),
+      // seller: user?.lid_id,
       payed: sell === true ? true : false,
       buyer: buyer.id,
       remaining_after_purchase:
@@ -107,7 +109,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
               a.quantity,
           0
         ),
-    });
+    } as Purchase
+
+    console.log(purchase);
+    
+    await POST(purchase);
     setCart([]);
   }
 

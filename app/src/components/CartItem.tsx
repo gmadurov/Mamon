@@ -1,11 +1,9 @@
 import CartContext, { CartItems } from "../context/CartContext";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 
 import { GlobalStyles } from "../constants/styles";
 import IconButton from "./IconButton";
-import Product from "../models/Product";
-import ProductContext from "../context/ProductContext";
 
 const CartItem = ({
   quantity,
@@ -16,17 +14,15 @@ const CartItem = ({
 }) => {
   const { remove_from_cart } = useContext(CartContext);
   const onRemove = (amount: number) => {
+    console.log("removing");
     remove_from_cart(product, amount);
   };
-  
+
   return (
     <View style={styles.modalView}>
       <Pressable onPress={() => onRemove(1)}>
         <Text style={styles.input}>
-          {quantity}{" "}
-          {
-            product?.name
-          }
+          {quantity} {product?.name}
           {quantity > 1 && "s"}
         </Text>
       </Pressable>

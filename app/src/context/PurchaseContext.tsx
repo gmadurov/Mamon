@@ -39,24 +39,24 @@ export const PurchaseProvider = ({
     setPurchases(data);
   }
   async function POST(purchase: Purchase) {
-    const { data }: { data: Purchase } = await ApiRequest<Purchase>(
-      "/api/purchase/",
-      {
+    const { res, data }: { res: Response; data: Purchase } =
+      await ApiRequest<Purchase>("/api/purchase/", {
         method: "POST",
         body: JSON.stringify(purchase),
         "Content-Type": "application/json",
-      }
-    );
-    showMessage({
-      message: `Purchase was successful`,
-      description: ``,
-      type: "success",
-      floating: true,
-      hideStatusBar: true,
-      autoHide: true,
-      duration: 500,
-      position: "bottom",
-    });
+      });
+    if (res?.status === 201) {
+      showMessage({
+        message: `Purchase was successful`,
+        description: ``,
+        type: "success",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 500,
+        position: "bottom",
+      });
+    }
     setPurchases(() => [...purchases, data]);
   }
   async function PUT(purchase: Purchase) {
@@ -85,7 +85,7 @@ export const PurchaseProvider = ({
       await GET();
     }
     // console.log("PurchaseContext useEffect", user);
-    
+
     if (user?.token_type) {
       get();
     }
