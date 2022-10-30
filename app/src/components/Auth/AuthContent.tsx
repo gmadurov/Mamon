@@ -60,9 +60,7 @@ function AuthContent({
               updateInputValueHandler(text, "username")
             }
             value={username}
-            keyboardType={undefined}
-            secure={undefined}
-            isInvalid={undefined} // isInvalid={emailIsInvalid}
+            // isInvalid={emailIsInvalid}
           />
           {/* {!isLogin && (
           <Input

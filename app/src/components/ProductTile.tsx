@@ -18,9 +18,9 @@ const ProductTile = ({
   selected,
   product,
 }: {
-  selected: number[];
+  selected: number;
   setSelected: any;
-  quantity: number;
+  quantity?: number;
   product: any;
 }) => {
   const { add_to_cart, remove_from_cart } = useContext(CartContext);

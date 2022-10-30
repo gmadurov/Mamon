@@ -109,10 +109,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
               a.quantity,
           0
         ),
-    } as Purchase
+    } as Purchase;
 
-    console.log(purchase);
-    
     await POST(purchase);
     setCart([]);
   }

@@ -6,6 +6,6 @@ export default interface Holder {
   name: string;
   stand: number;
   ledenbase_id: number;
-  image: null | string;
-  image_ledenbase: null | string;
+  image: string;
+  image_ledenbase: string;
 }

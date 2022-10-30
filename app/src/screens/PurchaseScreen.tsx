@@ -1,16 +1,16 @@
 import { FlatList, RefreshControl, StyleSheet } from "react-native";
-import React, { useContext, useState }  from "react";
+import React, { useContext, useState } from "react";
 
-import Purchase from "../components/Purchase";
+import Purchase from "../models/Purchase";
+import PurchaseComponent from "../components/Purchase";
 import PurchaseContext from "../context/PurchaseContext";
-import { Purchase as PurchaseModel } from "../models/Purchase";
 
 const PurchaseScreen = () => {
   const { GET, purchases } = useContext(PurchaseContext);
   const [refreshing, setRefreshing] = useState(false);
 
-  function renderPurchase({ item }: { item: PurchaseModel }) {
-    return <Purchase purchase={item} />;
+  function renderPurchase({ item }: { item: Purchase }) {
+    return <PurchaseComponent purchase={item} />;
   }
   async function refresh() {
     setRefreshing(true);
@@ -20,7 +20,7 @@ const PurchaseScreen = () => {
   return (
     <FlatList
       data={purchases}
-      keyExtractor={(item) => item.id.toString() as string}
+      keyExtractor={(item) => (item.id?.toString() as string) || "0"}
       renderItem={renderPurchase}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={() => refresh()} />

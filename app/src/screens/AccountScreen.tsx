@@ -8,16 +8,15 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useContext, useState }  from "react";
+import React, { useContext, useState } from "react";
 
-import AuthContext from "../context/AuthContext.tsx";
+import AuthContext from "../context/AuthContext";
 import { Button } from "@rneui/base";
 import { GlobalStyles } from "../constants/styles";
-import { Holder } from "../models/Holder";
+import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
-import Purchase from "../components/Purchase";
+import PurchaseComponent from "../components/Purchase";
 import PurchaseContext from "../context/PurchaseContext";
-import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -27,7 +26,8 @@ let HeaderHeight = 100;
 const AccountScreen = () => {
   const { user } = useContext(AuthContext);
   const { holders, GET: getHolders, PUT } = useContext(HolderContext);
-  const holder: Holder = holders?.find((holder) => holder.id === user?.user_id);
+  const holder: Holder =
+    holders?.find((holder) => holder.id === user?.lid_id) || ({} as Holder);
   const { GET, purchases } = useContext(PurchaseContext);
   const [refreshing, setRefreshing] = useState(false);
   async function refresh() {
@@ -77,11 +77,13 @@ const AccountScreen = () => {
           >
             <Block flex style={styles.profileCard}>
               <Block middle style={styles.avatarContainer}>
-                {holder?.image !== "/mediafiles/holder/user-default.jpg" ? (
-                  <Image
-                    source={{ uri: holder?.image }}
-                    style={styles.avatar}
-                  />
+                {holder?.image !== "/mediafiles/holder/user-default.jpg" && holder?.image.length > 3? (
+                  <>
+                    <Image
+                      source={{ uri: holder?.image }}
+                      style={styles.avatar}
+                    />
+                  </>
                 ) : holder?.image_ledenbase ? (
                   <Image
                     source={{ uri: holder?.image_ledenbase }}
@@ -102,14 +104,14 @@ const AccountScreen = () => {
                   style={{ marginTop: 20, paddingBottom: 24 }}
                 >
                   <Button
-                    small
+                    // small
                     style={{ backgroundColor: GlobalStyles.colors.primary1 }}
                     onPress={() => ChangeStand(10)}
                   >
                     add €10
                   </Button>
                   <Button
-                    small
+                    // small
                     style={{ backgroundColor: GlobalStyles.colors.primary1 }}
                     onPress={() => ChangeStand(-10)}
                   >
@@ -180,13 +182,13 @@ const AccountScreen = () => {
                     Purchases
                   </Text>
                   <Button
-                    small
+                    // small
                     color="transparent"
-                    textStyle={{
-                      color: "#5E72E4",
-                      fontSize: 12,
-                      marginLeft: 24,
-                    }}
+                    // textStyle={{
+                    //   color: "#5E72E4",
+                    //   fontSize: 12,
+                    //   marginLeft: 24,
+                    // }}
                   >
                     View all
                   </Button>
@@ -204,7 +206,7 @@ const AccountScreen = () => {
               /> */}
 
                 {purchases.map((purchase) => (
-                  <Purchase key={purchase.id} purchase={purchase} />
+                  <PurchaseComponent key={purchase.id} purchase={purchase} />
                 ))}
               </Block>
             </Block>
@@ -331,6 +333,7 @@ const AccountScreen = () => {
   );
 };
 
+
 export default AccountScreen;
 
 const styles = StyleSheet.create({
@@ -352,12 +355,12 @@ const styles = StyleSheet.create({
   },
   profileCard: {
     // position: "relative",
-    padding: theme.SIZES.BASE,
-    marginHorizontal: theme.SIZES.BASE,
+    // padding: theme.SIZES.BASE,
+    // marginHorizontal: theme.SIZES.BASE,
     marginTop: 65,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
-    backgroundColor: theme.COLORS.WHITE,
+    // backgroundColor: theme.COLORS.WHITE,
     shadowColor: "black",
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 8,

@@ -1,7 +1,7 @@
-import React, { useContext, useState }  from "react";
+import React, { useContext, useState } from "react";
 
 import AuthContent from "../components/Auth/AuthContent";
-import AuthContext from "../context/AuthContext.tsx";
+import AuthContext from "../context/AuthContext";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 
 function LoginScreen() {

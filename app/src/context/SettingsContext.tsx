@@ -31,7 +31,7 @@ export const SettingsProvider = ({
     async function get() {
       await GET_categories();
     }
-    if (user.token_type) {
+    if (user?.token_type) {
       get();
     }
     // eslint-disable-next-line

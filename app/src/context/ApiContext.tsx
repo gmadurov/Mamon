@@ -63,7 +63,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     config: object
   ): Promise<{ res: Response; data: TResponse }> {
     let urlFetch = `${baseUrl()}${url}`;
-    console.log(urlFetch, config);
+    // console.log(urlFetch, config);
     const res = await fetch(urlFetch, config);
     const data = await res.json();
     // console.log("originalRequest", data, res?.status);
@@ -139,7 +139,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   ) {
     const isExpiredRefresh =
-      dayjs.unix(authTokens?.refresh?.exp).diff(dayjs(), "minute") < 1;
+      dayjs.unix((authTokens?.refresh as User).exp).diff(dayjs(), "minute") < 1;
     const isExpired = user
       ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
       : false;

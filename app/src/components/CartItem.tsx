@@ -14,7 +14,7 @@ const CartItem = ({
 }) => {
   const { remove_from_cart } = useContext(CartContext);
   const onRemove = (amount: number) => {
-    console.log("removing");
+    // console.log("removing");
     remove_from_cart(product, amount);
   };
 

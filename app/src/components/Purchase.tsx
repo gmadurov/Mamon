@@ -3,9 +3,9 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Card } from "@rneui/themed";
 import ProductContext from "../context/ProductContext";
-import Purchase from "../models/Purchase";
+import PurchaseComponent from "../models/Purchase";
 
-const Purchase = ({ purchase }: { purchase: Purchase }) => {
+const PurchaseComponent = ({ purchase }: { purchase: PurchaseComponent }) => {
   const { products } = useContext(ProductContext);
   let total = 0;
   purchase?.orders?.reduce(
@@ -37,6 +37,6 @@ const Purchase = ({ purchase }: { purchase: Purchase }) => {
   );
 };
 
-export default Purchase;
+export default PurchaseComponent;
 
 const styles = StyleSheet.create({ container: {} });

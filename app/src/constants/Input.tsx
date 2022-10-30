@@ -17,12 +17,12 @@ function Input({
   value,
   isInvalid,
 }: {
-  label: string;
-  keyboardType: KeyboardTypeOptions;
-  secure: boolean;
+  label?: string;
+  keyboardType?: KeyboardTypeOptions;
+  secure?: boolean;
   onUpdateValue: Function;
-  value: string | undefined;
-  isInvalid: boolean;
+  value?: string | undefined;
+  isInvalid?: boolean;
 }): JSX.Element {
   return (
     <View style={styles.inputContainer}>

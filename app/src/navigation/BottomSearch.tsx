@@ -163,6 +163,8 @@ const BottomSearch = ({
         </View>
       </BottomSheet>
     );
+  } else {
+    return <></>;
   }
 };
 

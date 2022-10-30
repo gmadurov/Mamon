@@ -1,7 +1,6 @@
 import {
   Dimensions,
   FlatList,
-  Platform,
   RefreshControl,
   StyleSheet,
   Text,
@@ -29,7 +28,6 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
         product={itemData.item}
         selected={selected}
         setSelected={setSelected}
-        quantity={undefined}
       />
     );
   }

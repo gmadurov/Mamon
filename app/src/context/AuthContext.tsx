@@ -4,9 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthToken } from "../models/AuthToken";
 import User from "../models/Users";
 import jwt_decode from "jwt-decode";
-import {
-  showMessage
-} from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
@@ -66,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let data: AuthToken = await res.json();
     if (res?.status === 200) {
       setAuthTokens(() => data);
-      setUser(() => jwt_decode(data.access));
+      setUser(() => jwt_decode(data?.access as string || "") as User);
       await AsyncStorage.setItem("authTokens", JSON.stringify(data));
       // await AsyncStorage.setItem("user", JSON.stringify(data.access));
       // navigation.replace("ProductsPage");

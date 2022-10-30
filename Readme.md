@@ -134,3 +134,8 @@ dokku builder-dockerfile:set mamon dockerfile-path
 
 dokku run mamon python backend/manage.py migrate --noinput
 ```
+
+
+# TypeScript
+
+run ```npm tsc``` to test the types of the whole app
