@@ -18,7 +18,7 @@ export const SettingsProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user, ApiRequest } = useContext(ApiContext);
+  const { users, ApiRequest } = useContext(ApiContext);
 
   const [categories, setCategories] = useState<Category[]>([] as Category[]);
   const [selectedCategory, setSelectedCategory] = useState([] as Category[]);
@@ -31,11 +31,11 @@ export const SettingsProvider = ({
     async function get() {
       await GET_categories();
     }
-    if (user?.token_type) {
+    if (users.length > 0) {
       get();
     }
     // eslint-disable-next-line
-  }, [user]);
+  }, [users]);
 
   const data = {
     categories: categories,

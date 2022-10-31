@@ -5,5 +5,5 @@ export default interface User {
   jti: string;
   name: string;
   role: string[];
-  lid_id: number;
+  user_id: number;
 }

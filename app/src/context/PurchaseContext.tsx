@@ -24,7 +24,7 @@ export const PurchaseProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user, ApiRequest } = useContext(ApiContext);
+  const { users, ApiRequest } = useContext(ApiContext);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   async function GET() {
@@ -90,12 +90,12 @@ export const PurchaseProvider = ({
     async function get() {
       await GET();
     }
-    if (user?.token_type) {
+    if (users.length > 0) {
       get();
     }
 
     // eslint-disable-next-line
-  }, [user]);
+  }, [users]);
   const data = {
     purchases,
     GET,

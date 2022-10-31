@@ -96,7 +96,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         quantity: order.quantity,
         product: order.id,
       })),
-      // seller: user?.lid_id,
+      seller: user?.user_id,
       payed: sell === true ? true : false,
       buyer: buyer.id,
       remaining_after_purchase:

@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState } from "react";
 import ApiContext from "./ApiContext";
 import Product from "../models/Product";
 import SettingsContext from "./SettingsContext";
+import { log } from "react-native-reanimated";
 import { showMessage } from "react-native-flash-message";
 import { useContext } from "react";
 
@@ -22,7 +23,7 @@ export const ProductProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user, ApiRequest } = useContext(ApiContext);
+  const { users, ApiRequest } = useContext(ApiContext);
   const { categories, selectedCategory } = useContext(SettingsContext);
   const [products, setProducts] = useState<Product[]>([] as Product[]);
 
@@ -74,7 +75,7 @@ export const ProductProvider = ({
     async function get() {
       await GET();
     }
-    if (user?.token_type) {
+    if (users.length > 0) {
       get();
       if (categories) {
         selectedProducts = products.filter((product) =>
@@ -86,9 +87,10 @@ export const ProductProvider = ({
         );
       }
     }
-
+    console.log(users);
+    
     // eslint-disable-next-line
-  }, [user]);
+  }, [users]);
 
   const data = {
     selectedProducts: selectedProducts,
