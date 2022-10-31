@@ -101,7 +101,20 @@ function Root() {
 
   useLayoutEffect(() => {
     async function fetchToken() {
-      const storedTokensUsers = await AsyncStorage.getItem("authTokenUsers");
+      const storedTokensUsers = (
+        await AsyncStorage.multiGet(
+          (
+            await AsyncStorage.getAllKeys()
+          ).filter((key) => key.includes("authToken"))
+        )
+      )
+        .map((key: any) => JSON.parse(key[1]) as AuthToken)
+        .flat();
+      console.log({storage:await AsyncStorage.getAllKeys()});
+      // await AsyncStorage.clear()
+      // get all the keys that include authToken from AsycnStorage
+      // const storedTokensUsers = await AsyncStorage.getItem("authTokenUsers");
+      console.log("data App.tsx", typeof storedTokensUsers, storedTokensUsers);
       if (storedTokensUsers) {
         showMessage({
           message: `Authentication woord refreshed`,
@@ -112,7 +125,7 @@ function Root() {
           autoHide: true,
           duration: 1500,
         });
-        await refreshTokenUsers(JSON.parse(storedTokensUsers) as AuthToken[]);
+        await refreshTokenUsers(storedTokensUsers as AuthToken[]);
         // if (logedIn) {
         //   showMessage({
         //     message: `Authentication is refreshed`,

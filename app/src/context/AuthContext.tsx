@@ -44,6 +44,7 @@ export type AuthContextType = {
   logoutFunc(user?: User): Promise<void>;
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setAuthTokenUsers: React.Dispatch<React.SetStateAction<AuthToken[]>>;
+  storeUsers(data: AuthToken): Promise<void>;
 };
 const AuthContext = createContext({} as AuthContextType);
 
@@ -59,6 +60,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [users, setUsers] = useState<User[]>([] as User[]);
   /**this function is simply to wake up the backend when working with heroku */
 
+  async function storeUsers(data: AuthToken) {
+    let localUser = jwt_decode((data?.access as string) || "") as User;
+    if (users.length < 1) {
+      setAuthTokens(() => data);
+      setUser(() => localUser);
+    }
+    setAuthTokenUsers(() => [...authTokenUsers, data]);
+    setUsers(() => [...users, localUser]);
+    await AsyncStorage.setItem(
+      "authToken" + localUser.user_id,
+      JSON.stringify([...authTokenUsers, data])
+    );
+  }
+  console.log({users})
+  
   async function loginFunc(
     username: string,
     password: string,
@@ -74,20 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     let data: AuthToken = await res.json();
     if (res?.status === 200) {
-      if (users.length < 1) {
-        setAuthTokens(() => data);
-        setUser(() => jwt_decode((data?.access as string) || "") as User);
-        await AsyncStorage.setItem("authTokens", JSON.stringify(data));
-      }
-      setAuthTokenUsers(() => [...authTokenUsers, data]);
-      setUsers(() => [
-        ...users,
-        jwt_decode((data?.access as string) || "") as User,
-      ]);
-      await AsyncStorage.setItem(
-        "authTokenUsers",
-        JSON.stringify([...authTokenUsers, data])
-      );
+      storeUsers(data);
       // console.log(users);
       // await AsyncStorage.setItem("user", JSON.stringify(data.access));
       // navigation.replace("ProductsPage");
@@ -111,14 +114,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   async function logoutFunc(user?: User) {
-    // console.log("loged Out", AsyncStorage.getAllKeys()); //"user"
+    console.log("loged Out", user); //"user"
     if (user) {
       setAuthTokens(() => ({} as AuthToken));
-      setUser(() => ({} as User));
+      // remove user from users
+      setUsers(() => users.filter((u) => u.user_id !== user.user_id));
+      setAuthTokenUsers(() =>
+        authTokenUsers.filter(
+          (u) =>
+            (jwt_decode((u?.access as string) || "") as User).user_id !==
+            user.user_id
+        )
+      );
+      await AsyncStorage.removeItem("authToken" + user.user_id);
     } else {
-      await AsyncStorage.multiRemove(["authTokenUsers"]);
-      setAuthTokens(() => ({} as AuthToken));
       setUser(() => ({} as User));
+      setUsers(() => [] as User[]);
+      await AsyncStorage.multiRemove(
+        (
+          await AsyncStorage.getAllKeys()
+        ).filter((key) => key.includes("authToken"))
+      );
+      setAuthTokens(() => ({} as AuthToken));
+      setAuthTokenUsers(() => [] as AuthToken[]);
     }
     // navigation.replace("LoginPage");
   }
@@ -133,6 +151,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUsers,
     setAuthTokenUsers,
     authTokenUsers,
+    storeUsers,
   };
   // user && navigate("../login", { replace: true });
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;

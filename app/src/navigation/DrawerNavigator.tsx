@@ -27,20 +27,21 @@ const DrawerNavigator = () => {
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      <Drawer.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: "Login extra Personel" }}
-      />
+        <Drawer.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ title: "Login extra Personel" }}
+        />
 
-      <Drawer.Screen
-        name="Log"
-        children={() => <ProductScreen />}
-        options={{
-          title: "Mamon Log",
-          // backgroundColor: GlobalStyles.colors.primary1,
-        }}
-      />
+        <Drawer.Screen
+          name="Log"
+          children={() => <ProductScreen />}
+          options={{
+            title: "Mamon Logging",
+            // backgroundColor: GlobalStyles.colors.primary1,
+          }}
+        />
+
       {/* <Drawer.Screen
         name="PurchaseScreen"
         children={() => <PurchaseScreen />}
@@ -66,14 +67,14 @@ const DrawerNavigator = () => {
         }}
       /> */}
       <Drawer.Screen
-        name="Categorien"
+        name="Categorieën"
         children={() => <CategoryScreen />}
         options={{
-          title: "Categories",
+          title: "Categorieën",
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      <Drawer.Screen name="LogOut" component={LogOutScreen} />
+      <Drawer.Screen name="Log Out Iedereen" component={LogOutScreen} />
     </Drawer.Navigator>
   );
 };

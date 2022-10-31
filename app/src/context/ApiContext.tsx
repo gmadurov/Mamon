@@ -134,10 +134,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     // cancels the request if it taking too long
   }
   async function refreshTokenUsers(authTokens: AuthToken[]) {
-    console.log(authTokens);
+    // console.log({ type1: typeof authTokens, authTokens });
     let usersLocal = [] as User[];
     let tokens = [] as AuthToken[];
     authTokens.map(async (authToken, index) => {
+      const currentUser = jwt_decode(authToken?.access as string) as User;
+      console.log({ index, currentUser, type: typeof authToken });
       const controller = new AbortController();
       const { signal } = controller;
       const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
@@ -149,18 +151,30 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       });
       setTimeout(() => controller.abort(), 2000);
+      let data: AuthToken = await res.json();
+      let localUser = jwt_decode((data?.access as string) || "") as User;
       if (res?.status === 200) {
-        let data: AuthToken = await res.json();
-        console.log(index);
         if (index === 0) {
           setAuthTokens(() => data);
-          setUser(() => jwt_decode((data?.access as string) || "") as User);
-          await AsyncStorage.setItem("authTokens", JSON.stringify(data));
+          setUser(() => localUser);
         }
-        tokens.push(data);
-        usersLocal.push(jwt_decode(data?.access as string) as User);
+        await AsyncStorage.removeItem("authToken" + localUser.user_id);
+        await AsyncStorage.setItem(
+          "authToken" + localUser.user_id,
+          JSON.stringify(data)
+        );
+        !usersLocal.some((u) => u.user_id === localUser.user_id) &&
+          tokens.push(data);
+        !usersLocal.some((u) => u.user_id === localUser.user_id) &&
+          usersLocal.push(localUser);
         // console.log(usersLocal, tokens);
-        await AsyncStorage.setItem("authTokenUsers", JSON.stringify(tokens));
+        // await AsyncStorage.setItem(
+        //   "authToken" + localUser.user_id,
+        //   JSON.stringify([...authTokenUsers, data])
+        // );
+        // await AsyncStorage.setItem("authToken", JSON.stringify(tokens));
+        setAuthTokenUsers(() => [...tokens]);
+        setUsers(() => [...usersLocal]);
       } else {
         // console.log(`Problem met de refresh token: ${res?.status}`);
         showMessage({
@@ -173,12 +187,10 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
           autoHide: true,
           duration: 1500,
         });
-        await logoutFunc({} as User);
-        return {} as User;
+        await logoutFunc(currentUser);
       }
     });
-    setAuthTokenUsers(() => tokens);
-    setUsers(() => usersLocal);
+
     // cancels the request if it taking too long
   }
 

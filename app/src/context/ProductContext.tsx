@@ -87,7 +87,6 @@ export const ProductProvider = ({
         );
       }
     }
-    console.log(users);
     
     // eslint-disable-next-line
   }, [users]);
