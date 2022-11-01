@@ -53,10 +53,7 @@ const ProductTile = ({
           ]}
         >
           {product?.image ? (
-            <Image
-              source={{ uri: baseUrl() + product?.image }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: product?.image }} style={styles.avatar} />
           ) : (
             <Image
               source={require("../../assets/default-product.png")}

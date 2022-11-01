@@ -110,11 +110,10 @@ function Root() {
       )
         .map((key: any) => JSON.parse(key[1]) as AuthToken)
         .flat();
-      console.log({storage:await AsyncStorage.getAllKeys()});
       // await AsyncStorage.clear()
       // get all the keys that include authToken from AsycnStorage
       // const storedTokensUsers = await AsyncStorage.getItem("authTokenUsers");
-      console.log("data App.tsx", typeof storedTokensUsers, storedTokensUsers);
+      // console.log("data App.tsx", typeof storedTokensUsers, storedTokensUsers);
       if (storedTokensUsers) {
         showMessage({
           message: `Authentication woord refreshed`,
@@ -126,27 +125,6 @@ function Root() {
           duration: 1500,
         });
         await refreshTokenUsers(storedTokensUsers as AuthToken[]);
-        // if (logedIn) {
-        //   showMessage({
-        //     message: `Authentication is refreshed`,
-        //     description: ``,
-        //     type: "info",
-        //     floating: true,
-        //     hideStatusBar: true,
-        //     autoHide: true,
-        //     duration: 1500,
-        //   });
-        // } else {
-        //   showMessage({
-        //     message: `Authentication failed`,
-        //     description: ``,
-        //     type: "danger",
-        //     floating: true,
-        //     hideStatusBar: true,
-        //     autoHide: true,
-        //     duration: 1500,
-        //   });
-        // }
       }
       setIsTryingLogin(false);
     }

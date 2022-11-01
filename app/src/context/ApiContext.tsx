@@ -139,7 +139,10 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     let tokens = [] as AuthToken[];
     authTokens.map(async (authToken, index) => {
       const currentUser = jwt_decode(authToken?.access as string) as User;
-      console.log({ index, currentUser, type: typeof authToken });
+      if (currentUser.user_id in usersLocal.map((u) => u.user_id)) {
+        return;
+      }
+      // console.log({ index, currentUser, type: typeof authToken });
       const controller = new AbortController();
       const { signal } = controller;
       const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
@@ -175,6 +178,15 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         // await AsyncStorage.setItem("authToken", JSON.stringify(tokens));
         setAuthTokenUsers(() => [...tokens]);
         setUsers(() => [...usersLocal]);
+        showMessage({
+          message: `Authentication is refreshed`,
+          description: ``,
+          type: "info",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+        });
       } else {
         // console.log(`Problem met de refresh token: ${res?.status}`);
         showMessage({

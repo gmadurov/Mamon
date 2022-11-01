@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Q
+from api.tokens import MyTokenObtainPairSerializer
 from purchase.models import Category, Order, Product, Purchase
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -78,10 +79,14 @@ def showProducts(request):
     data = request.data
     if request.method == "GET":
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
+        serializer = ProductSerializer(
+            products, many=True, context={"request": request}
+        )
         return Response(serializer.data)
     if request.method == "POST":
-        serializer = ProductSerializer(data=data, many=False)
+        serializer = ProductSerializer(
+            data=data, many=False, context={"request": request}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -90,12 +95,11 @@ def showProducts(request):
 @api_view(["GET", "PUT", "DELETE"])
 @permission_classes([IsAuthenticated])
 def showProduct(request, pk):
-    print(request.HTTP_HOST + request.path, 'hello')
     data = request.data
     product = Product.objects.get(id=pk)
-    if request.method == "GET":
-        serializer = ProductSerializer(product, many=False)
-        return Response(serializer.data)
+    # if request.method == "GET": # redundant
+    #     serializer = ProductSerializer(product, many=False)
+    #     return Response(serializer.data)
     if request.method == "PUT":
         product.price = data["price"] or None
         product.name = data["name"] or None
@@ -103,7 +107,7 @@ def showProduct(request, pk):
     if request.method == "DELETE":
         product.delete()
         return Response()
-    serializer = ProductSerializer(product, many=False)
+    serializer = ProductSerializer(product, many=False, context={"request": request})
     return Response(serializer.data)
 
 
@@ -146,9 +150,9 @@ def showPurchases(request):
 def showPurchase(request, pk):
     data = request.data
     purschase = Purchase.objects.get(id=pk)
-    if request.method == "GET":
-        serializer = PurchaseSerializer(purschase, many=False)
-        return Response(serializer.data)
+    # if request.method == "GET": # redundant
+    #     serializer = PurchaseSerializer(purschase, many=False)
+    #     return Response(serializer.data)
     if request.method == "PUT":
         purschase.buyer = data["buyer"] or None
         purschase.products = data["products"] or None
@@ -156,7 +160,7 @@ def showPurchase(request, pk):
     if request.method == "DELETE":
         purschase.delete()
         return Response()
-    serializer = PurchaseSerializer(purschase, many=False)
+    serializer = PurchaseSerializer(purschase, many=False, context={"request": request})
     return Response(serializer.data)
 
 
@@ -173,7 +177,7 @@ def showHolders(request):
             holders = [user.holder for user in users]
         else:
             holders = Holder.objects.all()
-        serializer = HolderSerializer(holders, many=True)
+        serializer = HolderSerializer(holders, many=True, context={"request": request})
         return Response(serializer.data)
 
     if request.method == "POST":
@@ -187,10 +191,14 @@ def showHolders(request):
                 else User.objects.all()
             )
             holders = [user.holder for user in users]
-            serializer = HolderSerializer(holders, many=True)
+            serializer = HolderSerializer(
+                holders, many=True, context={"request": request}
+            )
         else:
             holder = Holder.objects.create()
-            serializer = HolderSerializer(holder, many=False)
+            serializer = HolderSerializer(
+                holder, many=False, context={"request": request}
+            )
         return Response(serializer.data)
 
 
@@ -199,16 +207,16 @@ def showHolders(request):
 def showHolder(request, pk):
     data = request.data
     holder = Holder.objects.get(id=pk)
-    if request.method == "GET":
-        serializer = HolderSerializer(holder, many=False)
-        return Response(serializer.data)
+    # if request.method == "GET": # redundant
+    #     serializer = HolderSerializer(holder, many=False, context={"request": request})
+    #     return Response(serializer.data)
     if request.method == "PUT":
         holder.stand = data["stand"] or None
         holder.save()
     if request.method == "DELETE":
         holder.delete()
         return Response()
-    serializer = HolderSerializer(holder, many=False)
+    serializer = HolderSerializer(holder, many=False, context={"request": request})
     return Response(serializer.data)
 
 
@@ -243,13 +251,16 @@ def loginLedenbase(request):
 
     user, created = User.objects.get_or_create(
         username=request.data["username"],
-        first_name=ledenbaseUser["user"]["first_name"],
-        last_name=ledenbaseUser["user"]["last_name"],
         # user purposely doesnt have a password set here to make sure it
     )
-    holder, created = Holder.objects.get_or_create(
-        user=user,
-    )
+    user.first_name = ledenbaseUser["user"]["first_name"]
+    user.last_name = ledenbaseUser["user"]["last_name"]
+    user.save()
+    if created:
+        holder = Holder.objects.create(user=user)
+        holder.save()
+    else:
+        holder = user.holderwww
     holder.ledenbase_id = ledenbaseUser["user"]["id"]
     holder.image_ledenbase = (
         os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
@@ -262,15 +273,18 @@ def loginLedenbase(request):
 def LoginAllUsers(request):
     user1 = User.objects.filter(username=request.data["username"])
     if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
-        # print("user exists and doesnt have ledenbase id")
         user = authenticate(
+            # request,
             password=request.data["password"],
             username=request.data["username"],
         )
+        print("authenticaded users", user)
     else:
         user = loginLedenbase(request)
-
-    refresh = RefreshToken.for_user(user)
+    # try:
+    refresh = MyTokenObtainPairSerializer.get_token(user)
+    # except:
+    #     refresh = RefreshToken.for_user(user)
     response = {"refresh": str(refresh), "access": str(refresh.access_token)}
 
     return Response(response)

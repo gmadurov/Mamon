@@ -34,8 +34,14 @@ class Holder(models.Model):
             )
         except:
             return "Holder"
-
-
+    @property
+    def image_url(self):
+        try:
+            return self.image.url
+        except:
+            if self.image_ledenbase:
+                return self.image_ledenbase
+            return ''
 class Personel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=15)
@@ -45,6 +51,13 @@ class Personel(models.Model):
         blank=True,
         default="personel/user-default.jpg",
     )
+
+    @property
+    def image_url(self):
+        try:
+            return self.image.url
+        except:
+            return ""
 
     @property
     def name(self):

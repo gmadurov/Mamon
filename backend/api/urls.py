@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
-from api.tokens import MyTokenObtainPairView
+from api.tokens import MyTokenObtainPairView, MyRefreshPairView
 from rest_framework_simplejwt.views import TokenRefreshView
+
 # from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
@@ -15,6 +16,6 @@ urlpatterns = [
     path("holder/", views.showHolders),
     path("holder/<str:pk>", views.showHolder),
     path("users/token/", MyTokenObtainPairView.as_view()),
-    path("users/token/refresh/", TokenRefreshView.as_view()),
+    path("users/token/refresh/", MyRefreshPairView.as_view()),
     path(r"login/", views.LoginAllUsers),
 ]

@@ -95,6 +95,8 @@ def loginUser(request):
             return redirect(
                 request.GET["next"] if "next" in request.GET else "userHome"
             )
+        else:
+            messages.error(request, "Username or password is incorrect")
 
     return render(request, "users/login.html")
 

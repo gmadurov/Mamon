@@ -106,16 +106,8 @@ const BottomSearch = ({
             setSearch("");
           }}
         >
-          {option?.image !== "/mediafiles/holder/user-default.jpg" ? (
-            <Avatar.Image
-              source={{ uri: baseUrl() + option?.image }}
-              size={avatarSize}
-            />
-          ) : option?.image_ledenbase ? (
-            <Avatar.Image
-              source={{ uri: option?.image_ledenbase }}
-              size={avatarSize}
-            />
+          {!option?.image.includes("default") ? (
+            <Avatar.Image source={{ uri: option?.image }} size={avatarSize} />
           ) : (
             <Avatar.Text size={avatarSize} label={option?.label.charAt(0)} />
           )}

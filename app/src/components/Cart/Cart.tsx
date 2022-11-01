@@ -1,20 +1,23 @@
+import AuthContext, { baseUrl } from "../../context/AuthContext";
+import { Avatar, Divider } from "react-native-paper";
 import CartContext, { CartItems } from "../../context/CartContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 
 import { Button } from "@rneui/themed";
 import CartItem from "./CartItem";
-import { Divider } from "react-native-paper";
 import { FlatList } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 import Holder from "../../models/Holder";
 import HolderContext from "../../context/HolderContext";
+import PersonelView from "./PersonelView";
 import ProductContext from "../../context/ProductContext";
 import Select from "./Select";
 
 export const Cart = ({ sell }: { sell: boolean }) => {
   const { cart, setCart, buy_cart, buyer, setBuyer } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
+  const { users } = useContext(AuthContext);
   const [disabled, setDisabled] = useState<boolean>(true);
   // let total equal the sum of the products in the cart multiplied by the quantity
   let total = cart?.reduce(
@@ -36,6 +39,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
       searchHelp: holder?.ledenbase_id.toString(),
     }));
   }
+  console.log(users);
   function renderProducts(cartItem: CartItems) {
     return (
       <CartItem
@@ -72,7 +76,6 @@ export const Cart = ({ sell }: { sell: boolean }) => {
     checkStand();
     // eslint-disable-next-line
   }, [buyer, total]);
-
   return (
     <View style={styles.gridItem}>
       <View
@@ -92,6 +95,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
             numColumns={1}
           />
         )}
+        <PersonelView />
       </View>
       <View style={styles.view}>
         <Select

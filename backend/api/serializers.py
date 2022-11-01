@@ -19,6 +19,12 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    # image_url = serializers.SerializerMethodField()
+
+    # def get_image_url(self, obj):
+    #     request = self.context.get("request")
+    #     return request.build_absolute_uri(obj.image.url)
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -27,7 +33,13 @@ class ProductSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "email"]
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+        ]
 
 
 class HolderSerializer(serializers.ModelSerializer):
@@ -39,7 +51,10 @@ class HolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Holder
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = [
+            "image_ledenbase",
+        ]
 
 
 class CategorySerializer(serializers.ModelSerializer):

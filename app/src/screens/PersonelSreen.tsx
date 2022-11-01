@@ -15,6 +15,6 @@ export default function PersonelSreen() {
 }
 
 const styles = StyleSheet.create({
-  first: { color: "red" },
+  first: {},
   second: { color: "blue" },
 });
