@@ -1,4 +1,3 @@
-import "./src/polyfills";
 import "react-native-gesture-handler";
 
 import * as SplashScreen from "expo-splash-screen";
@@ -14,20 +13,19 @@ import React, {
 } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 
-import ApiContext from "./src/context/ApiContext";
+import ApiContext from "./context/ApiContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AuthContext from "./src/context/AuthContext";
-import { AuthToken } from "./src/models/AuthToken";
-import DrawerNavigator from "./src/navigation/DrawerNavigator";
-import { FullProvider } from "./src/context/FullContext";
-import { GlobalStyles } from "./src/constants/styles";
-import HolderContext from "./src/context/HolderContext";
-import LoginScreen from "./src/screens/LoginScreen";
+import AuthContext from "./context/AuthContext";
+import { AuthToken } from "./models/AuthToken";
+import DrawerNavigator from "./navigation/DrawerNavigator";
+import { FullProvider } from "./context/FullContext";
+import { GlobalStyles } from "./constants/styles";
+import HolderContext from "./context/HolderContext";
+import LoginScreen from "./screens/LoginScreen";
 import { Provider as PaperProvider } from "react-native-paper";
-import ProductContext from "./src/context/ProductContext";
-import ProductScreen from "./src/screens/ProductScreen";
-import PurchaseContext from "./src/context/PurchaseContext";
-import SettingsContext from "./src/context/SettingsContext";
+import ProductContext from "./context/ProductContext";
+import ProductScreen from "./screens/ProductScreen";
+import SettingsContext from "./context/SettingsContext";
 import { StatusBar } from "expo-status-bar";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -113,7 +111,7 @@ function Root() {
       // await AsyncStorage.clear()
       // get all the keys that include authToken from AsycnStorage
       // const storedTokensUsers = await AsyncStorage.getItem("authTokenUsers");
-      // console.log("data App.tsx", typeof storedTokensUsers, storedTokensUsers);
+      // console.log("data App", typeof storedTokensUsers, storedTokensUsers);
       if (storedTokensUsers) {
         showMessage({
           message: `Authentication woord refreshed`,

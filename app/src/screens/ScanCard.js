@@ -1,6 +1,4 @@
-import { Text, View } from "react-native";
-
-import { Button } from "galio-framework";
+import { Button, Text, View } from "react-native";
 
 // import NfcManager, {NfcTech} from 'react-native-nfc-manager';
 

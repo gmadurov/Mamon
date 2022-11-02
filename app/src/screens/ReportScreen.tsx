@@ -1,5 +1,6 @@
 import {
   Button,
+  Divider,
   RadioButton,
   TextInput,
   TouchableRipple,
@@ -104,6 +105,7 @@ const ReportScreen = () => {
           />
         </View>
       </TouchableRipple>
+      <Divider />
       <TouchableRipple
         onPress={() => setReport({ ...report, action: Action.Middle })}
       >
@@ -116,6 +118,7 @@ const ReportScreen = () => {
           />
         </View>
       </TouchableRipple>
+      <Divider />
       <TouchableRipple
         onPress={() => setReport({ ...report, action: Action.Close })}
       >
@@ -128,6 +131,7 @@ const ReportScreen = () => {
           />
         </View>
       </TouchableRipple>
+      <Divider />
       <PersonelView />
       <TextInput
         label="Total Cash"

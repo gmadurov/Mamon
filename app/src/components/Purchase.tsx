@@ -3,9 +3,9 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Card } from "@rneui/themed";
 import ProductContext from "../context/ProductContext";
-import PurchaseComponent from "../models/Purchase";
+import Purchase from "../models/Purchase";
 
-const PurchaseComponent = ({ purchase }: { purchase: PurchaseComponent }) => {
+const PurchaseComponent = ({ purchase }: { purchase: Purchase }) => {
   const { products } = useContext(ProductContext);
   let total = 0;
   purchase?.orders?.reduce(
