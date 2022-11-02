@@ -210,7 +210,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     const isExpired = user
       ? dayjs.unix(user.exp).diff(dayjs(), "minute") < 1
       : false;
-    console.log({authTokens});
     const isExpiredRefresh = authTokens
       ? dayjs
           .unix((jwt_decode(authTokens.refresh as string) as User).exp)

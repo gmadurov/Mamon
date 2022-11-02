@@ -10,17 +10,23 @@ import React, { useContext, useState } from "react";
 
 import BottomSearch from "../components/Cart/BottomSearch";
 import Cart from "../components/Cart/Cart";
+import CartContext from "../context/CartContext";
 import { GlobalStyles } from "../constants/styles";
+import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
 import PersonelView from "../components/Cart/PersonelView";
 import ProductContext from "../context/ProductContext";
 import ProductTile from "../components/Product/ProductTile";
+import SettingsContext from "../context/SettingsContext";
+import User from "../models/Users";
 
 const { width } = Dimensions.get("screen");
 
 const ProductScreen = ({ sell }: { sell?: boolean }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
+  const { GET_categories } = useContext(SettingsContext);
+  const { setBuyer, setSeller } = useContext(CartContext);
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState(0);
   function renderProducts(itemData: { item: any }) {
@@ -36,6 +42,9 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
     setRefreshing(true);
     await GET();
     await GET_HOLDER();
+    await GET_categories();
+    setBuyer({} as Holder);
+    setSeller({} as User);
     setRefreshing(false);
   }
   return (

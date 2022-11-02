@@ -18,7 +18,7 @@ const CategoryItem = ({ category }: { category: Category }) => {
   const { selectedCategory, setSelectedCategory } = useContext(SettingsContext);
   function change() {
     if (selectedCategory.includes(category)) {
-      setSelectedCategory((list) => list.filter((pr) => pr !== category && pr));
+      setSelectedCategory((list) => list.filter((pr) => pr.id !== category.id));
     } else {
       setSelectedCategory(() => [...selectedCategory, category]);
     }
@@ -50,13 +50,10 @@ const CategoryScreen = () => {
         }
       >
         {categories.map((category) => (
-          <>
-            <CategoryItem
-              category={category}
-              key={category.id.toString() as string}
-            />
+          <View key={category.id.toString() as string}>
+            <CategoryItem category={category} />
             <Divider />
-          </>
+          </View>
         ))}
       </ScrollView>
     </View>

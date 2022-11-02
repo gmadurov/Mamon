@@ -1,7 +1,6 @@
 import Purchase, { Order } from "../models/Purchase";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-import AuthContext from "./AuthContext";
 import Holder from "../models/Holder";
 import ProductContext from "./ProductContext";
 import PurchaseContext from "./PurchaseContext";
@@ -32,7 +31,6 @@ export default CartContext;
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const { POST } = useContext(PurchaseContext);
-  const { user } = useContext(AuthContext);
   const { products } = useContext(ProductContext);
 
   /**withing a cart there are orders
@@ -94,6 +92,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
   async function buy_cart(buyer: Holder, sell: boolean) {
+    console.log({ buyer });
+
     let purchase = {
       orders: cart?.map((order) => ({
         quantity: order.quantity,
@@ -115,7 +115,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     } as Purchase;
 
     await POST(purchase);
-    setCart([]);
+    setCart([] as CartItems[]);
     setSeller({} as User);
   }
 

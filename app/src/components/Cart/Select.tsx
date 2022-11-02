@@ -2,8 +2,10 @@ import { Button, Card } from "@rneui/themed";
 import { Pressable, StyleSheet, View } from "react-native";
 import React, { useContext, useState } from "react";
 
+import CartContext from "../../context/CartContext";
 import FullContext from "../../context/FullContext";
 import { GlobalStyles } from "../../constants/styles";
+import Holder from "../../models/Holder";
 
 // import IconButton from "./IconButton";
 // import { Ionicons } from "@expo/vector-icons";
@@ -30,6 +32,7 @@ function Select({
   defaultValue?: any;
 }): JSX.Element {
   const { BottomSearch, setBottomSearch } = useContext(FullContext);
+  const { setBuyer } = useContext(CartContext);
   const inputStyles = [styles.input, style];
   const [search, setSearch] = useState<string>("");
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -79,12 +82,9 @@ function Select({
       <Button
         // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         onPress={() => setBottomSearch((nu) => !nu)}
+        onLongPress={() => setBuyer({} as Holder)}
         activeOpacity={0.6}
-        title={
-          defaultValue?.label 
-            ? defaultValue.label
-            : label
-        }
+        title={defaultValue?.label ? defaultValue.label : label}
       />
     </Pressable>
   );

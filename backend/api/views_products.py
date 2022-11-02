@@ -49,9 +49,13 @@ def cateories(request):
     data = request.data
     if request.method == "GET":
         categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategorySerializer(
+            categories, many=True, context={"request": request}
+        )
         return Response(serializer.data)
     if request.method == "POST":
         categorie = Category.objects.create()
-        serializer = CategorySerializer(categorie, many=False)
+        serializer = CategorySerializer(
+            categorie, many=False, context={"request": request}
+        )
         return Response(serializer.data)

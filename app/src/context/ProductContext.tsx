@@ -26,9 +26,11 @@ export const ProductProvider = ({
   const { users, ApiRequest } = useContext(ApiContext);
   const { categories, selectedCategory } = useContext(SettingsContext);
   const [products, setProducts] = useState<Product[]>([] as Product[]);
-
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>(
+    [] as Product[]
+  );
   async function GET() {
-    setProducts([]);
+    setProducts([] as Product[]);
     const { data } = await ApiRequest<Product[]>("/api/product/");
     setProducts(data);
   }
@@ -70,27 +72,25 @@ export const ProductProvider = ({
       )
     );
   }
-  let selectedProducts: Product[] = products;
+  useEffect(() => {
+    if (selectedCategory.length > 0) {
+      setSelectedProducts(
+        selectedCategory.map((category) => category.products).flat()
+      );
+    } else {
+      setSelectedProducts(products);
+    }
+  }, [products, selectedCategory]);
   useEffect(() => {
     async function get() {
       await GET();
     }
     if (users.length > 0) {
       get();
-      if (categories) {
-        selectedProducts = products.filter((product) =>
-          selectedCategory.some((category) =>
-            categories
-              .find((cat) => cat.id === category.id)
-              ?.products.includes(product)
-          )
-        );
-      }
     }
-    
     // eslint-disable-next-line
   }, [users]);
-
+  // console.log({ selectedProducts });
   const data = {
     selectedProducts: selectedProducts,
     products: products,

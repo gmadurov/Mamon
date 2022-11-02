@@ -28,7 +28,7 @@ export const PurchaseProvider = ({
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   async function GET() {
-    setPurchases([]);
+    setPurchases([] as Purchase[]) ;
     const { data }: { data: Purchase[] } = await ApiRequest<Purchase[]>(
       "/api/purchase/"
     );

@@ -30,7 +30,7 @@ export const HolderProvider: FunctionComponent<Props> = ({ children }) => {
   const [holders, setHolders] = useState<Holder[]>([] as Holder[]);
   const [searchHolders, setSearchHolders] = useState<Holder[]>([] as Holder[]);
   async function GET() {
-    setHolders([]);
+    setHolders([] as Holder[]);
     const { data } = await ApiRequest<Holder[]>("/api/holder/");
     setHolders(data);
   }

@@ -18,7 +18,6 @@ const PersonelView = () => {
     setVisible({ ...visible, [name]: !visible[name] });
   }
   const _getVisible = (name: string) => !!visible[name];
-  console.log(seller);
 
   return (
     <ScrollView contentContainerStyle={styles.container} horizontal={true}>
