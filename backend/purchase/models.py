@@ -23,8 +23,6 @@ class Product(models.Model):
 
     def __str__(self):
         return str(self.name) + ", €" + str(self.price)
-    
-    
 
 
 class Category(models.Model):
@@ -45,6 +43,11 @@ class Purchase(models.Model):
         Holder,
         on_delete=models.SET(Holder),
         related_name="purchases",
+    )
+    seller = models.ForeignKey(
+        Personel,
+        on_delete=models.SET(Personel),
+        related_name="sold",
     )
     payed = models.BooleanField(default=False)
     orders = models.ManyToManyField("Order", related_name="ordered")

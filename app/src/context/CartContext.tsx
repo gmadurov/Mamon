@@ -99,7 +99,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         quantity: order.quantity,
         product: order.id,
       })),
-      seller: user?.user_id,
+      seller: seller.user_id,
       payed: sell === true ? true : false,
       buyer: buyer.id,
       remaining_after_purchase:
@@ -116,6 +116,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     await POST(purchase);
     setCart([]);
+    setSeller({} as User);
   }
 
   const data = {

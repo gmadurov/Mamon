@@ -45,6 +45,11 @@ class UserSerializer(serializers.ModelSerializer):
 class HolderSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     name = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.image_url)
 
     def get_name(self, holder):
         return holder.user.first_name + " " + holder.user.last_name

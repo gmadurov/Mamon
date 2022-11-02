@@ -15,6 +15,14 @@ const DrawerNavigator = () => {
     // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
     >
       <Drawer.Screen
+        name="Categorieën"
+        children={() => <CategoryScreen />}
+        options={{
+          title: "Categorieën",
+          // backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
+      <Drawer.Screen
         name="Producten"
         children={() => <ProductScreen sell />}
         options={{
@@ -23,9 +31,9 @@ const DrawerNavigator = () => {
         }}
       />
       <Drawer.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: "Login extra Personel" }}
+        name="Personeel"
+        children={() => <LoginScreen extra />}
+        options={{ title: "Personeel" }}
       />
 
       <Drawer.Screen
@@ -35,11 +43,6 @@ const DrawerNavigator = () => {
           title: "Mamon Logging",
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
-      />
-      <Drawer.Screen
-        name="Personel"
-        component={PersonelSreen}
-        options={{ title: "Personel" }}
       />
       {/* <Drawer.Screen
         name="PurchaseScreen"
@@ -65,14 +68,7 @@ const DrawerNavigator = () => {
           backgroundColor: GlobalStyles.colors.primary1,
         }}
       /> */}
-      <Drawer.Screen
-        name="Categorieën"
-        children={() => <CategoryScreen />}
-        options={{
-          title: "Categorieën",
-          // backgroundColor: GlobalStyles.colors.primary1,
-        }}
-      />
+
       <Drawer.Screen name="Log Out Iedereen" component={LogOutScreen} />
     </Drawer.Navigator>
   );

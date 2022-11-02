@@ -95,6 +95,7 @@ const BottomSearch = ({
   const renderItem = ({ item }: { item: HolderChoice }) => {
     let option = item;
     let avatarSize = 50;
+    // console.log(option?.image, option?.id);
     return (
       <>
         <TouchableOpacity
@@ -106,7 +107,7 @@ const BottomSearch = ({
             setSearch("");
           }}
         >
-          {!option?.image.includes("default") ? (
+          {!option.image.includes("default") ? (
             <Avatar.Image source={{ uri: option?.image }} size={avatarSize} />
           ) : (
             <Avatar.Text size={avatarSize} label={option?.label.charAt(0)} />

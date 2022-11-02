@@ -1,4 +1,11 @@
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useContext, useState } from "react";
 
 import Category from "../models/Category";
@@ -16,10 +23,9 @@ const CategoryItem = ({ category }: { category: Category }) => {
       setSelectedCategory(() => [...selectedCategory, category]);
     }
   }
-
   return (
     <View style={styles.row}>
-      <Text>{category.name} 12</Text>
+      <Text>{category.name}</Text>
       <Switch
         color={GlobalStyles.colors.primary1}
         value={selectedCategory.includes(category)}
@@ -38,15 +44,21 @@ const CategoryScreen = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id.toString() as string}
-        renderItem={({ item }) => <CategoryItem category={item} />}
-        ItemSeparatorComponent={Divider}
+      <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => refresh()} />
         }
-      />
+      >
+        {categories.map((category) => (
+          <>
+            <CategoryItem
+              category={category}
+              key={category.id.toString() as string}
+            />
+            <Divider />
+          </>
+        ))}
+      </ScrollView>
     </View>
   );
 };

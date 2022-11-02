@@ -15,7 +15,7 @@ import ProductContext from "../../context/ProductContext";
 import Select from "./Select";
 
 export const Cart = ({ sell }: { sell: boolean }) => {
-  const { cart, setCart, buy_cart, buyer, setBuyer } = useContext(CartContext);
+  const { cart, setCart, buy_cart, buyer, setBuyer, seller } = useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
   const { users } = useContext(AuthContext);
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -39,7 +39,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
       searchHelp: holder?.ledenbase_id.toString(),
     }));
   }
-  console.log(users);
+  // console.log(users);
   function renderProducts(cartItem: CartItems) {
     return (
       <CartItem
@@ -64,7 +64,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
       if (sell) {
-        if (buyer?.stand > total && total > 0.5) {
+        if (buyer?.stand > total && total > 0.5 && seller.user_id) {
           setDisabled(!true);
         } else {
           setDisabled(!false);
@@ -75,9 +75,9 @@ export const Cart = ({ sell }: { sell: boolean }) => {
     }
     checkStand();
     // eslint-disable-next-line
-  }, [buyer, total]);
+  }, [buyer, total, seller]);
   return (
-    <View style={styles.gridItem}>
+    <View style={[styles.gridItem]}>
       <View
         style={[
           styles.innerContainer,
@@ -95,7 +95,6 @@ export const Cart = ({ sell }: { sell: boolean }) => {
             numColumns={1}
           />
         )}
-        <PersonelView />
       </View>
       <View style={styles.view}>
         <Select

@@ -42,6 +42,7 @@ class PurchaseAdmin(admin.ModelAdmin):
         "total",
         "payed",
         "created",
+        "seller",
     ]
     filter_horizontal = ["orders"]
     list_filter = ["buyer", "payed"]

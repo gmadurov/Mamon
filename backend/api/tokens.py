@@ -12,6 +12,7 @@ def fill_token(token, user):
     # print(user, user.lid, user.lid.name)
     token["roles"] = [group.name for group in user.groups.all()]
     token["image"] = user.personel.image_url
+    token["nickname"] = user.personel.nickname
     # print('RefreshToken', token)
     return token
 
@@ -36,3 +37,4 @@ class MyTokenRefreshPairSerializer(TokenRefreshSerializer):
 
 class MyRefreshPairView(TokenRefreshView):
     serializer_class = MyTokenRefreshPairSerializer
+    

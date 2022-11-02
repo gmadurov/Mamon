@@ -12,6 +12,7 @@ import BottomSearch from "../components/Cart/BottomSearch";
 import Cart from "../components/Cart/Cart";
 import { GlobalStyles } from "../constants/styles";
 import HolderContext from "../context/HolderContext";
+import PersonelView from "../components/Cart/PersonelView";
 import ProductContext from "../context/ProductContext";
 import ProductTile from "../components/Product/ProductTile";
 
@@ -49,7 +50,12 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
         ]}
       >
         <View style={styles.cartView}>
-          <Cart sell={sell ? true : false} />
+          <View style={{ flex: 3 }}>
+            <Cart sell={sell ? true : false} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <PersonelView />
+          </View>
         </View>
         <View style={styles.productView}>
           <Text style={styles.text}>Producten</Text>

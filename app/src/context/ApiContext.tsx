@@ -206,26 +206,16 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     // cancels the request if it taking too long
   }
 
-  /** ## use this instead of fetch
-   * @params {url: string , config : object}
-   * @returns \{ res, data \}*/
-  async function ApiRequest<TResponse>(
-    url: string,
-    config: {
-      headers?: { [key: string]: any; "Content-Type": string };
-      [key: string]: any;
-    } = {
-      headers: {
-        Authorization: `Bearer ${authTokens?.access}`,
-        "Content-Type": "application/json",
-      },
-    }
-  ) {
-    const isExpiredRefresh =
-      dayjs.unix((authTokens?.refresh as User).exp).diff(dayjs(), "minute") < 1;
+  async function checkTokens() {
     const isExpired = user
-      ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
+      ? dayjs.unix(user.exp).diff(dayjs(), "minute") < 1
       : false;
+    console.log({authTokens});
+    const isExpiredRefresh = authTokens
+      ? dayjs
+          .unix((jwt_decode(authTokens.refresh as string) as User).exp)
+          .diff(dayjs(), "minute") < 1
+      : true;
     if (isExpiredRefresh) {
       // Alert.alert("refresh token has expired, you were logged out");
       await logoutFunc();
@@ -241,7 +231,23 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     if (isExpired && authTokens) {
       await refreshToken(authTokens);
     }
-
+  }
+  /** ## use this instead of fetch
+   * @params {url: string , config : object}
+   * @returns \{ res, data \}*/
+  async function ApiRequest<TResponse>(
+    url: string,
+    config: {
+      headers?: { [key: string]: any; "Content-Type": string };
+      [key: string]: any;
+    } = {
+      headers: {
+        Authorization: `Bearer ${authTokens?.access}`,
+        "Content-Type": "application/json",
+      },
+    }
+  ) {
+    await checkTokens();
     if (!config.headers?.["Content-Type"]) {
       config.headers = {
         ...config.headers,
@@ -282,12 +288,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       },
     }
   ): Promise<{ res: Response; data: TResponse }> {
-    const isExpired = user
-      ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
-      : false;
-    if (authTokens && isExpired) {
-      await refreshToken(authTokens);
-    }
+    await checkTokens();
     if (users.length > 0) {
       const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 401) {

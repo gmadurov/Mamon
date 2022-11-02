@@ -1,13 +1,6 @@
 import AuthContext, { baseUrl } from "../../context/AuthContext";
-import { Avatar, Button, Menu, TouchableRipple } from "react-native-paper";
-import React, {
-  GestureResponderEvent,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Avatar, Menu, TouchableRipple } from "react-native-paper";
+import React, { ScrollView, StyleSheet, View } from "react-native";
 import { useContext, useState } from "react";
 
 import CartContext from "../../context/CartContext";
@@ -15,24 +8,30 @@ import CartContext from "../../context/CartContext";
 type MenuVisibility = {
   [key: string]: boolean | undefined;
 };
-type ContextualMenuCoord = { x: number; y: number };
 const PersonelView = () => {
   const { users, logoutFunc } = useContext(AuthContext);
   const { seller, setSeller } = useContext(CartContext);
   let avatarSize = 50;
 
   const [visible, setVisible] = useState<MenuVisibility>({});
-  const [contextualMenuCoord, setContextualMenuCoor] =
-    useState<ContextualMenuCoord>({ x: 0, y: 0 });
   function _toggleMenu(name: string) {
     setVisible({ ...visible, [name]: !visible[name] });
   }
   const _getVisible = (name: string) => !!visible[name];
+  console.log(seller);
 
   return (
-    <ScrollView style={styles.container} horizontal={true}>
+    <ScrollView contentContainerStyle={styles.container} horizontal={true}>
       {users.map((user) => (
-        <View key={user.user_id}>
+        <View
+          key={user.user_id}
+          style={[
+            styles.item,
+            seller.user_id === user.user_id
+              ? { opacity: 1.0 }
+              : { opacity: 0.5 },
+          ]}
+        >
           <Menu
             visible={_getVisible("user" + user.user_id)}
             onDismiss={() => _toggleMenu("user" + user.user_id)}
@@ -40,7 +39,6 @@ const PersonelView = () => {
               <TouchableRipple
                 onLongPress={() => {
                   _toggleMenu("user" + user.user_id);
-                  console.log("long press");
                 }}
                 onPress={() => {
                   setSeller(user);
@@ -75,4 +73,13 @@ const PersonelView = () => {
 
 export default PersonelView;
 
-const styles = StyleSheet.create({ container: {} });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  item: {
+    padding: 10,
+  },
+});

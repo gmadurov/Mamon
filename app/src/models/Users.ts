@@ -7,4 +7,5 @@ export default interface User {
   role: string[];
   user_id: number;
   image: string;
+  nickname: string;
 }

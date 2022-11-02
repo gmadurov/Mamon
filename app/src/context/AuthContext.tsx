@@ -112,20 +112,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuthenticating(false);
   }
 
-  async function logoutFunc(user?: User) {
-    console.log("loged Out", user); //"user"
-    if (user) {
-      setAuthTokens(() => ({} as AuthToken));
+  async function logoutFunc(userOut?: User) {
+    if (userOut) {
       // remove user from users
-      setUsers(() => users.filter((u) => u.user_id !== user.user_id));
+      setUsers(() => users.filter((u) => u.user_id !== userOut.user_id));
       setAuthTokenUsers(() =>
         authTokenUsers.filter(
           (u) =>
             (jwt_decode((u?.access as string) || "") as User).user_id !==
-            user.user_id
+            userOut.user_id
         )
       );
-      await AsyncStorage.removeItem("authToken" + user.user_id);
+      if (user.user_id === userOut?.user_id) {
+        setUser(
+          () => users.filter((u) => u.user_id !== userOut.user_id)[0] as User
+        );
+        setAuthTokens(
+          () =>
+            authTokenUsers.filter(
+              (u) =>
+                (jwt_decode((u?.access as string) || "") as User).user_id !==
+                userOut.user_id
+            )[0] as AuthToken
+        );
+      }
+      await AsyncStorage.removeItem("authToken" + userOut.user_id);
     } else {
       setUser(() => ({} as User));
       setUsers(() => [] as User[]);
