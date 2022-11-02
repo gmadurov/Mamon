@@ -262,10 +262,10 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (users.length > 0) {
       const { res, data } = await originalRequest<TResponse>(url, config);
-      if (res?.status === 200) {
-        // console.warn("request Failed", res?.status);
-        return { res: res, data: data };
-      }
+      // if (res?.status === 200) {
+      // console.warn("request Failed", res?.status);
+      return { res: res, data: data };
+      // }
     }
     return { res: {} as Response, data: {} as TResponse };
   }

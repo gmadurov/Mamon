@@ -60,7 +60,7 @@ export const PurchaseProvider = ({
         floating: true,
         hideStatusBar: true,
         autoHide: true,
-        duration: 500,
+        duration: 2500,
         position: "bottom",
       });
     }
