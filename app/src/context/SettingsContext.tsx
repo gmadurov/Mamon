@@ -18,24 +18,32 @@ export const SettingsProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user, ApiRequest } = useContext(ApiContext);
+  const { users, ApiRequest } = useContext(ApiContext);
 
   const [categories, setCategories] = useState<Category[]>([] as Category[]);
-  const [selectedCategory, setSelectedCategory] = useState([] as Category[]);
+  const [selectedCategory, setSelectedCategory] = useState<Category[]>(
+    [] as Category[]
+  );
   async function GET_categories() {
-    setCategories([]);
+    setCategories([] as Category[]);
     const { data } = await ApiRequest<Category[]>("/api/category/");
-    setCategories(() => data);
+    setCategories(data as Category[]);
+    // update selected categories 
+    setSelectedCategory(
+      selectedCategory.map(
+        (category) => data.find((c) => c.id === category.id) || ({} as Category)
+      )
+    );
   }
   useEffect(() => {
     async function get() {
       await GET_categories();
     }
-    if (user?.token_type) {
+    if (users.length > 0) {
       get();
     }
     // eslint-disable-next-line
-  }, [user]);
+  }, [users]);
 
   const data = {
     categories: categories,

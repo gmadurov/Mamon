@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.contrib.auth.models import User
-
+from django.conf import settings
 
 # Create your models here.
 
@@ -35,6 +35,15 @@ class Holder(models.Model):
         except:
             return "Holder"
 
+    @property
+    def image_url(self):
+        try:
+            return self.image.url
+        except:
+            if self.image_ledenbase:
+                return self.image_ledenbase
+            return settings.MEDIA_URL + "holder/user-default.jpg"
+
 
 class Personel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -45,6 +54,13 @@ class Personel(models.Model):
         blank=True,
         default="personel/user-default.jpg",
     )
+
+    @property
+    def image_url(self):
+        try:
+            return self.image.url
+        except:
+            return settings.MEDIA_URL + "personel/user-default.jpg"
 
     @property
     def name(self):

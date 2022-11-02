@@ -50,7 +50,6 @@ function AuthStack() {
 
 function AuthenticatedStack({ isTryingLogin }: { isTryingLogin: boolean }) {
   const Holder = useContext(HolderContext);
-  const Purchase = useContext(PurchaseContext);
   const Product = useContext(ProductContext);
   const Settings = useContext(SettingsContext);
   useEffect(() => {
@@ -98,12 +97,24 @@ function AuthenticatedStack({ isTryingLogin }: { isTryingLogin: boolean }) {
 function Root() {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
 
-  const { refreshToken } = useContext(ApiContext);
+  const { refreshTokenUsers } = useContext(ApiContext);
 
   useLayoutEffect(() => {
     async function fetchToken() {
-      const storedTokens = await AsyncStorage.getItem("authTokens");
-      if (storedTokens) {
+      const storedTokensUsers = (
+        await AsyncStorage.multiGet(
+          (
+            await AsyncStorage.getAllKeys()
+          ).filter((key) => key.includes("authToken"))
+        )
+      )
+        .map((key: any) => JSON.parse(key[1]) as AuthToken)
+        .flat();
+      // await AsyncStorage.clear()
+      // get all the keys that include authToken from AsycnStorage
+      // const storedTokensUsers = await AsyncStorage.getItem("authTokenUsers");
+      // console.log("data App.tsx", typeof storedTokensUsers, storedTokensUsers);
+      if (storedTokensUsers) {
         showMessage({
           message: `Authentication woord refreshed`,
           description: ``,
@@ -113,20 +124,7 @@ function Root() {
           autoHide: true,
           duration: 1500,
         });
-        const logedIn = await refreshToken(
-          JSON.parse(storedTokens) as AuthToken
-        );
-        if (logedIn) {
-          showMessage({
-            message: `Authentication is refreshed`,
-            description: ``,
-            type: "info",
-            floating: true,
-            hideStatusBar: true,
-            autoHide: true,
-            duration: 1500,
-          });
-        }
+        await refreshTokenUsers(storedTokensUsers as AuthToken[]);
       }
       setIsTryingLogin(false);
     }
@@ -160,13 +158,16 @@ function Navigation({
   onLayout: () => Promise<void>;
   isTryingLogin: boolean;
 }) {
-  const { user } = useContext(AuthContext);
+  const { users } = useContext(AuthContext);
   // console.log(user.token_type ? "Authenticated" + user.token_type : "Not Authenticated");
 
   return (
     <>
-      {!user.token_type && <AuthStack />}
-      {user.token_type && <AuthenticatedStack isTryingLogin={isTryingLogin} />}
+      {users.length < 1 ? (
+        <AuthStack />
+      ) : (
+        <AuthenticatedStack isTryingLogin={isTryingLogin} />
+      )}
     </>
   );
 }

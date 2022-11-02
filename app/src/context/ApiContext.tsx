@@ -11,7 +11,7 @@ import { showMessage } from "react-native-flash-message";
 // ("https://stropdas2.herokuapp.com/");
 /**### use this instead of fetch
  * user: user, type
- * {"token_type": string,"exp": unix date,"iat": unix date,"jti": string,"user_id": Int,"name": string,"roles": [ ],"lid_id": Int}
+ * {"token_type": string,"exp": unix date,"iat": unix date,"jti": string,"user_id": Int,"name": string,"roles": [ ],"user_id": Int}
  *
  * ApiRequest: ApiRequest,
  * ### use this instead of fetch
@@ -31,6 +31,7 @@ import { showMessage } from "react-native-flash-message";
 
 export type ApiContextType = {
   user: User | null;
+  users: User[];
   ApiRequest<TResponse>(
     url: string,
     config?: {
@@ -46,6 +47,7 @@ export type ApiContextType = {
     }
   ): Promise<{ res: Response; data: TResponse }>;
   refreshToken: (authTokens: AuthToken) => Promise<boolean>;
+  refreshTokenUsers(authTokens: AuthToken[]): Promise<void>;
 };
 
 const ApiContext = createContext<ApiContextType>({} as ApiContextType);
@@ -54,8 +56,17 @@ export default ApiContext;
 
 export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   // will work from AuthProvider downwards,
-  const { user, setAuthTokens, setUser, authTokens, logoutFunc } =
-    useContext(AuthContext);
+  const {
+    user,
+    users,
+    setAuthTokens,
+    setUser,
+    setUsers,
+    authTokens,
+    logoutFunc,
+    authTokenUsers,
+    setAuthTokenUsers,
+  } = useContext(AuthContext);
 
   /** makes the original request called but with the Bearer set and to the correct location */
   async function originalRequest<TResponse>(
@@ -122,27 +133,88 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
     // cancels the request if it taking too long
   }
+  async function refreshTokenUsers(authTokens: AuthToken[]) {
+    // console.log({ type1: typeof authTokens, authTokens });
+    let usersLocal = [] as User[];
+    let tokens = [] as AuthToken[];
+    authTokens.map(async (authToken, index) => {
+      const currentUser = jwt_decode(authToken?.access as string) as User;
+      if (currentUser.user_id in usersLocal.map((u) => u.user_id)) {
+        return;
+      }
+      // console.log({ index, currentUser, type: typeof authToken });
+      const controller = new AbortController();
+      const { signal } = controller;
+      const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
+        signal,
+        method: "POST",
+        headers: { Accept: "*/*", "Content-Type": "application/json" },
+        body: JSON.stringify({
+          refresh: authToken?.refresh,
+        }),
+      });
+      setTimeout(() => controller.abort(), 2000);
+      let data: AuthToken = await res.json();
+      let localUser = jwt_decode((data?.access as string) || "") as User;
+      if (res?.status === 200) {
+        if (index === 0) {
+          setAuthTokens(() => data);
+          setUser(() => localUser);
+        }
+        await AsyncStorage.removeItem("authToken" + localUser.user_id);
+        await AsyncStorage.setItem(
+          "authToken" + localUser.user_id,
+          JSON.stringify(data)
+        );
+        !usersLocal.some((u) => u.user_id === localUser.user_id) &&
+          tokens.push(data);
+        !usersLocal.some((u) => u.user_id === localUser.user_id) &&
+          usersLocal.push(localUser);
+        // console.log(usersLocal, tokens);
+        // await AsyncStorage.setItem(
+        //   "authToken" + localUser.user_id,
+        //   JSON.stringify([...authTokenUsers, data])
+        // );
+        // await AsyncStorage.setItem("authToken", JSON.stringify(tokens));
+        setAuthTokenUsers(() => [...tokens]);
+        setUsers(() => [...usersLocal]);
+        showMessage({
+          message: `Authentication is refreshed`,
+          description: ``,
+          type: "info",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+        });
+      } else {
+        // console.log(`Problem met de refresh token: ${res?.status}`);
+        showMessage({
+          message: "Refresh token expired",
+          description:
+            "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
+          type: "info",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+        });
+        await logoutFunc(currentUser);
+      }
+    });
 
-  /** ## use this instead of fetch
-   * @params {url: string , config : object}
-   * @returns \{ res, data \}*/
-  async function ApiRequest<TResponse>(
-    url: string,
-    config: {
-      headers?: { [key: string]: any; "Content-Type": string };
-      [key: string]: any;
-    } = {
-      headers: {
-        Authorization: `Bearer ${authTokens?.access}`,
-        "Content-Type": "application/json",
-      },
-    }
-  ) {
-    const isExpiredRefresh =
-      dayjs.unix((authTokens?.refresh as User).exp).diff(dayjs(), "minute") < 1;
+    // cancels the request if it taking too long
+  }
+
+  async function checkTokens() {
     const isExpired = user
-      ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
+      ? dayjs.unix(user.exp).diff(dayjs(), "minute") < 1
       : false;
+    const isExpiredRefresh = authTokens
+      ? dayjs
+          .unix((jwt_decode(authTokens.refresh as string) as User).exp)
+          .diff(dayjs(), "minute") < 1
+      : true;
     if (isExpiredRefresh) {
       // Alert.alert("refresh token has expired, you were logged out");
       await logoutFunc();
@@ -158,7 +230,23 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     if (isExpired && authTokens) {
       await refreshToken(authTokens);
     }
-
+  }
+  /** ## use this instead of fetch
+   * @params {url: string , config : object}
+   * @returns \{ res, data \}*/
+  async function ApiRequest<TResponse>(
+    url: string,
+    config: {
+      headers?: { [key: string]: any; "Content-Type": string };
+      [key: string]: any;
+    } = {
+      headers: {
+        Authorization: `Bearer ${authTokens?.access}`,
+        "Content-Type": "application/json",
+      },
+    }
+  ) {
+    await checkTokens();
     if (!config.headers?.["Content-Type"]) {
       config.headers = {
         ...config.headers,
@@ -172,12 +260,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       };
     }
 
-    if (user.token_type) {
+    if (users.length > 0) {
       const { res, data } = await originalRequest<TResponse>(url, config);
-      if (res?.status === 200) {
-        // console.warn("request Failed", res?.status);
-        return { res: res, data: data };
-      }
+      // if (res?.status === 200) {
+      // console.warn("request Failed", res?.status);
+      return { res: res, data: data };
+      // }
     }
     return { res: {} as Response, data: {} as TResponse };
   }
@@ -199,13 +287,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       },
     }
   ): Promise<{ res: Response; data: TResponse }> {
-    const isExpired = user
-      ? dayjs.unix(user?.exp).diff(dayjs(), "minute") < 1
-      : false;
-    if (authTokens && isExpired) {
-      await refreshToken(authTokens);
-    }
-    if (user.token_type) {
+    await checkTokens();
+    if (users.length > 0) {
       const { res, data } = await originalRequest<TResponse>(url, config);
       if (res?.status === 401) {
         // Alert.alert("", url, config);
@@ -240,9 +323,11 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
 
   const value_dic = {
     user: user,
+    users: users,
     ApiRequest: ApiRequest,
     ApiFileRequest: ApiFileRequest,
     refreshToken: refreshToken,
+    refreshTokenUsers: refreshTokenUsers,
   };
   return (
     <ApiContext.Provider value={value_dic}>{children}</ApiContext.Provider>

@@ -3,7 +3,7 @@ export default interface Product {
   name: string;
   price: number;
   color: string;
-  image: null | string;
+  image: string;
 }
 
 // export enum Color {

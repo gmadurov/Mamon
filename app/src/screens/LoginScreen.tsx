@@ -3,8 +3,9 @@ import React, { useContext, useState } from "react";
 import AuthContent from "../components/Auth/AuthContent";
 import AuthContext from "../context/AuthContext";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
+import PersonelView from "../components/Cart/PersonelView";
 
-function LoginScreen() {
+function LoginScreen({ extra }: { extra?: boolean }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const { loginFunc } = useContext(AuthContext);
@@ -33,7 +34,16 @@ function LoginScreen() {
     );
   }
 
-  return <AuthContent isLogin onAuthenticate={loginHandler} />;
+  if (extra) {
+    return (
+      <>
+        <AuthContent isLogin onAuthenticate={loginHandler} />
+        <PersonelView />
+      </>
+    );
+  } else {
+    return <AuthContent isLogin onAuthenticate={loginHandler} />;
+  }
 }
 
 export default LoginScreen;

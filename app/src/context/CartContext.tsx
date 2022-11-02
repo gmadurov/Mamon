@@ -1,15 +1,17 @@
 import Purchase, { Order } from "../models/Purchase";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-import AuthContext from "./AuthContext";
 import Holder from "../models/Holder";
 import ProductContext from "./ProductContext";
 import PurchaseContext from "./PurchaseContext";
+import User from "../models/Users";
 
 // createcontext
 export type CartContextType = {
   cart: CartItems[];
   buyer: Holder;
+  seller: User;
+  setSeller: React.Dispatch<React.SetStateAction<User>>;
   buy_cart(buyer: Holder, sell: boolean): Promise<void>;
   setCart: React.Dispatch<React.SetStateAction<CartItems[]>>;
   add_to_cart: (item: CartItems) => void;
@@ -29,7 +31,6 @@ export default CartContext;
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const { POST } = useContext(PurchaseContext);
-  const { user } = useContext(AuthContext);
   const { products } = useContext(ProductContext);
 
   /**withing a cart there are orders
@@ -43,7 +44,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [buyer, setBuyer] = useState<Holder>({} as Holder);
   const [cart, setCart] = useState<CartItems[]>([] as CartItems[]);
-
+  const [seller, setSeller] = useState({} as User);
   // function add_to_cart(product) {
   //   cart.some((order) => order.product === product.id)
   //     ? setCart(() =>
@@ -91,12 +92,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
   async function buy_cart(buyer: Holder, sell: boolean) {
+    console.log({ buyer });
+
     let purchase = {
       orders: cart?.map((order) => ({
         quantity: order.quantity,
         product: order.id,
       })),
-      // seller: user?.lid_id,
+      seller: seller.user_id,
       payed: sell === true ? true : false,
       buyer: buyer.id,
       remaining_after_purchase:
@@ -112,7 +115,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     } as Purchase;
 
     await POST(purchase);
-    setCart([]);
+    setCart([] as CartItems[]);
+    setSeller({} as User);
   }
 
   const data = {
@@ -123,6 +127,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     buy_cart,
     buyer,
     setBuyer,
+    seller,
+    setSeller,
   };
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;
 };

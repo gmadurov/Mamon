@@ -44,6 +44,11 @@ class Purchase(models.Model):
         on_delete=models.SET(Holder),
         related_name="purchases",
     )
+    seller = models.ForeignKey(
+        Personel,
+        on_delete=models.SET(Personel),
+        related_name="sold",
+    )
     payed = models.BooleanField(default=False)
     orders = models.ManyToManyField("Order", related_name="ordered")
 
@@ -81,6 +86,7 @@ class Report(models.Model):
     ACTIONS = (
         ("Open", "Open"),
         ("Close", "Close"),
+        ("Middle", "Middle"),
     )
     date = models.DateTimeField(auto_now_add=True)
     personel = models.ForeignKey(

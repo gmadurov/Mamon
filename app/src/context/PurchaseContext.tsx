@@ -24,11 +24,11 @@ export const PurchaseProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user, ApiRequest } = useContext(ApiContext);
+  const { users, ApiRequest } = useContext(ApiContext);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   async function GET() {
-    setPurchases([]);
+    setPurchases([] as Purchase[]) ;
     const { data }: { data: Purchase[] } = await ApiRequest<Purchase[]>(
       "/api/purchase/"
     );
@@ -60,7 +60,7 @@ export const PurchaseProvider = ({
         floating: true,
         hideStatusBar: true,
         autoHide: true,
-        duration: 500,
+        duration: 2500,
         position: "bottom",
       });
     }
@@ -90,12 +90,12 @@ export const PurchaseProvider = ({
     async function get() {
       await GET();
     }
-    if (user?.token_type) {
+    if (users.length > 0) {
       get();
     }
 
     // eslint-disable-next-line
-  }, [user]);
+  }, [users]);
   const data = {
     purchases,
     GET,

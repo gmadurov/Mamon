@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import Holder
-from purchase.models import Order, Product, Purchase, Category
+from purchase.models import Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
 
@@ -19,6 +19,12 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    # image_url = serializers.SerializerMethodField()
+
+    # def get_image_url(self, obj):
+    #     request = self.context.get("request")
+    #     return request.build_absolute_uri(obj.image.url)
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -27,19 +33,33 @@ class ProductSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "email"]
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+        ]
 
 
 class HolderSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     name = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.image_url)
 
     def get_name(self, holder):
         return holder.user.first_name + " " + holder.user.last_name
 
     class Meta:
         model = Holder
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = [
+            "image_ledenbase",
+        ]
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -47,4 +67,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
+        fields = "__all__"
+
+
+# make serializer for Report
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
         fields = "__all__"
