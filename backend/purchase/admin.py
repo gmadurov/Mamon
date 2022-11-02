@@ -110,11 +110,16 @@ class ReportInlineAdmin(NonrelatedTabularInline):
     extra = 0
 
     def get_form_queryset(self, obj):
-        if obj.closing_report:
-            return self.model.objects.filter(
-                Q(id=obj.opening_report.id) | Q(id=obj.closing_report.id)
-            )
-        return self.model.objects.filter(id=obj.opening_report.id)
+        # if obj.closing_report:
+        #     return self.model.objects.filter(
+        #         Q(id=obj.opening_report.id) | Q(id=obj.closing_report.id)
+        #     )
+        return self.model.objects.filter(
+            date__range=[
+                obj.opening_report.date,
+                obj.closing_report.date if obj.closing_report else datetime.now(),
+            ]
+        )
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -135,6 +140,7 @@ class BarcycleAdmin(admin.ModelAdmin):
         "__str__",
         "opening_personel",
         "closing_personel",
+        "total_dif_cash",
         "get_total_sales",
         "total_dif_flowmeter1",
         "total_dif_flowmeter2",
@@ -174,6 +180,7 @@ class BarcycleAdmin(admin.ModelAdmin):
             return self.readonly_fields + (
                 "opening_report",
                 "closing_report",
+                "total_dif_cash",
                 "get_total_sales",
                 "total_dif_flowmeter1",
                 "total_dif_flowmeter2",
@@ -181,22 +188,29 @@ class BarcycleAdmin(admin.ModelAdmin):
         return self.readonly_fields + (
             "opening_report",
             "get_total_sales",
+            "total_dif_cash",
             "total_dif_flowmeter1",
             "total_dif_flowmeter2",
         )
 
+    def total_dif_cash(self, obj):
+        if not obj.closing_report:
+            return "Available at closing"
+        return obj.closing_report.total_cash - obj.opening_report.total_cash
+
     def total_dif_flowmeter1(self, obj):
         if not obj.closing_report:
             return "Available at closing"
-        return obj.closing_report.flow_meter1 - obj.opening_report.flow_meter1
+        return obj.opening_report.flow_meter1 - obj.closing_report.flow_meter1
 
     def total_dif_flowmeter2(self, obj):
         if not obj.closing_report:
             return "Available at closing"
-        return obj.closing_report.flow_meter2 - obj.opening_report.flow_meter2
+        return obj.opening_report.flow_meter2 - obj.closing_report.flow_meter2
 
     opening_personel.short_description = "Opening Personel"
     closing_personel.short_description = "Closing Personel"
+    total_dif_cash.short_description = "Difference in total cash"
     get_total_sales.short_description = "Total Sales"
     total_dif_flowmeter1.short_description = "Total difference flowmeter 1"
     total_dif_flowmeter2.short_description = "Total difference flowmeter 2"

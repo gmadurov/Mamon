@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import Holder
-from purchase.models import Order, Product, Purchase, Category
+from purchase.models import Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
 
@@ -67,4 +67,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
+        fields = "__all__"
+
+
+# make serializer for Report
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
         fields = "__all__"

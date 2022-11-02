@@ -86,6 +86,7 @@ class Report(models.Model):
     ACTIONS = (
         ("Open", "Open"),
         ("Close", "Close"),
+        ("Middle", "Middle"),
     )
     date = models.DateTimeField(auto_now_add=True)
     personel = models.ForeignKey(
