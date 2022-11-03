@@ -1,9 +1,9 @@
+import "./polyfills";
 import "react-native-gesture-handler";
 
 import * as SplashScreen from "expo-splash-screen";
 
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { NavigationContainer, ParamListBase } from "@react-navigation/native";
 import React, {
   useCallback,
   useContext,
@@ -22,6 +22,7 @@ import { FullProvider } from "./context/FullContext";
 import { GlobalStyles } from "./constants/styles";
 import HolderContext from "./context/HolderContext";
 import LoginScreen from "./screens/LoginScreen";
+import { NavigationContainer } from "@react-navigation/native";
 import { Provider as PaperProvider } from "react-native-paper";
 import ProductContext from "./context/ProductContext";
 import ProductScreen from "./screens/ProductScreen";
@@ -29,7 +30,7 @@ import SettingsContext from "./context/SettingsContext";
 import { StatusBar } from "expo-status-bar";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Stack = createNativeStackNavigator<ParamListBase>();
+const Stack = createNativeStackNavigator();
 
 function AuthStack() {
   return (
@@ -173,18 +174,16 @@ function Navigation({
 // "success" (green), "warning" (orange), "danger" (red), "info" (blue) and "default" (gray)
 export default function App() {
   return (
-    <>
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar style="light" />
-        <NavigationContainer>
+    <PaperProvider>
+      <NavigationContainer>
+        <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar style="light" />
           <FullProvider>
-            <PaperProvider>
-              <Root />
-            </PaperProvider>
+            <Root />
           </FullProvider>
-        </NavigationContainer>
-        <FlashMessage position="top" />
-      </SafeAreaView>
-    </>
+          <FlashMessage position="top" />
+        </SafeAreaView>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
