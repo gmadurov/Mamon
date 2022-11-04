@@ -78,7 +78,7 @@ def showOverview(request):
     holder_stands = Holder.objects.all().aggregate(Sum("stand")).get("stand__sum")
 
     barWinst = sum([pur.total for pur in purchases])
-    print(holder_stands)
+    # print(holder_stands)
     content = {
         "purchases": purchases,
         "quantity": quantity,

@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q
+from .views_holders import check_user
 from purchase.models import Barcycle, Report
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -17,25 +18,29 @@ def without_keys(d, keys):
 def handle_report(request):
     # personel action total_cash flow_meter1 flow_meter2 comment
     data = request.data
-    seller = authenticate(
-        username=data.get("seller").get("username"),
-        password=data.get("password"),
-    )
-    if seller:
-        report = Report.objects.create(
-            personel=Personel.objects.get(id=data.get("personel").get("user_id")),
-            **without_keys(data, ["personel"])
+    if request.method == "POST":
+        data = request.data
+        seller, checked = check_user(
+            username=data.get("personel").get("username"),
+            password=data.get("password"),
         )
-        if data.get("action") in ["create", "open", "Open"]:
-            barcycle = Barcycle.objects.create(opening_report=report)
-        if data.get("action") in ["end", "close", "Close"]:
-            barcycle = (
-                Barcycle.objects.filter(closing_report=None).order_by("-id").first()
+        if seller and checked:
+            report = Report.objects.create(
+                personel=Personel.objects.get(
+                    id=data.get("personel").get("personel_id")
+                ),
+                **without_keys(data, ["personel", "password"])
             )
-            if barcycle:
-                barcycle.closing_report = report
-                barcycle.save()
-            else:
-                return Response({"message": "No barcycle to close"}, status=501)
+            if data.get("action") in ["create", "open", "Open"]:
+                barcycle = Barcycle.objects.create(opening_report=report)
+            if data.get("action") in ["end", "close", "Close"]:
+                barcycle = (
+                    Barcycle.objects.filter(closing_report=None).order_by("-id").first()
+                )
+                if barcycle:
+                    barcycle.closing_report = report
+                    barcycle.save()
+                else:
+                    return Response({"message": "No barcycle to close"}, status=501)
     # fetch the last created Barcycle which doesnt have a closing report
     return Response({"message": "Report created successfully"})
