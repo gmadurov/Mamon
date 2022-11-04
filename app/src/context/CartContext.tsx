@@ -92,8 +92,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
   async function buy_cart(buyer: Holder, sell: boolean) {
-    console.log({ buyer });
-
     let purchase = {
       orders: cart?.map((order) => ({
         quantity: order.quantity,

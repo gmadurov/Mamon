@@ -15,7 +15,8 @@ import ProductContext from "../../context/ProductContext";
 import Select from "./Select";
 
 export const Cart = ({ sell }: { sell: boolean }) => {
-  const { cart, setCart, buy_cart, buyer, setBuyer, seller } = useContext(CartContext);
+  const { cart, setCart, buy_cart, buyer, setBuyer, seller } =
+    useContext(CartContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
   const { users } = useContext(AuthContext);
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -85,7 +86,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
         ]}
       >
         {!(cart.length > 0) ? (
-          <Text>Cart is empty</Text>
+          <Text>Cart is leeg</Text>
         ) : (
           <FlatList
             data={cart}
@@ -104,6 +105,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
           // optionFunction={loadOptions}
           // onSelect={(e) => setBuyer(e)}
           label="Kies Lid Hier"
+          wallet={false}
         />
         <View style={styles.view}>
           <Button
@@ -117,7 +119,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
               setCart([] as CartItems[]);
               setBuyer({} as Holder);
             }}
-            title={"Empty Cart"}
+            title={"Leegmaken"}
           />
           <Button
             // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
@@ -131,7 +133,7 @@ export const Cart = ({ sell }: { sell: boolean }) => {
             title={
               disabled
                 ? "Geen Saldo"
-                : "Buy €" +
+                : "€" +
                   // convert total to string and add 2 decimals
                   total?.toFixed(2).toString() +
                   " "

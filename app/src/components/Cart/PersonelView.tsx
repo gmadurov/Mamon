@@ -59,6 +59,12 @@ const PersonelView = () => {
           >
             <Menu.Item
               onPress={() => {
+                setSeller(user);
+              }}
+              title={"Zet als Verkoper"}
+            />
+            <Menu.Item
+              onPress={() => {
                 logoutFunc(user);
               }}
               title={"Log out " + user.name}

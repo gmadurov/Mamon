@@ -1,4 +1,4 @@
-import { Button, Card } from "@rneui/themed";
+import { Button, TouchableRipple } from "react-native-paper";
 import { Pressable, StyleSheet, View } from "react-native";
 import React, { useContext, useState } from "react";
 
@@ -17,6 +17,7 @@ import Holder from "../../models/Holder";
 function Select({
   defaultValue,
   options,
+  wallet,
   label,
   invalid,
   style,
@@ -25,6 +26,7 @@ function Select({
 }: {
   options: { label: string; value: any; searchHelp: string }[];
   label: string;
+  wallet: boolean;
   refreshFunction: () => Promise<void>;
   textInputConfig?: { multiline?: boolean; numberOfLines?: number };
   invalid?: boolean;
@@ -75,7 +77,7 @@ function Select({
   }
 
   return (
-    <Pressable // was View
+    <TouchableRipple // was View
       style={[styles.inputContainer, style]}
       // onPress={() => {setModalVisible(false)}}
     >
@@ -83,10 +85,11 @@ function Select({
         // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         onPress={() => setBottomSearch((nu) => !nu)}
         onLongPress={() => setBuyer({} as Holder)}
-        activeOpacity={0.6}
-        title={defaultValue?.label ? defaultValue.label : label}
-      />
-    </Pressable>
+        style={{ opacity: 0.6 }}
+      >
+        {defaultValue?.label ? defaultValue.label : label}
+      </Button>
+    </TouchableRipple>
   );
 }
 
@@ -95,6 +98,7 @@ export default Select;
 const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
+    color: GlobalStyles.colors.primary1,
   },
   centeredView: {
     flex: 1,

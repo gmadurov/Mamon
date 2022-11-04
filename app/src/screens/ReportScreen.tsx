@@ -5,7 +5,7 @@ import {
   TextInput,
   TouchableRipple,
 } from "react-native-paper";
-import React, { StyleSheet, Text, View } from "react-native";
+import React, { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 
 import ApiContext from "../context/ApiContext";
@@ -21,6 +21,7 @@ export type Report = {
   flow_meter1?: number;
   flow_meter2?: number;
   comment?: string;
+  password?: string;
 };
 export enum Action {
   Open = "Open",
@@ -92,12 +93,12 @@ const ReportScreen = () => {
     }
   }
   return (
-    <View>
+    <ScrollView>
       <TouchableRipple
         onPress={() => setReport({ ...report, action: Action.Open })}
       >
         <View style={styles.row}>
-          <Text>Open and create a new Barcycle</Text>
+          <Text>Niewe Bar Cycle openen</Text>
           <RadioButton
             value="first"
             status={report.action === Action.Open ? "checked" : "unchecked"}
@@ -110,7 +111,7 @@ const ReportScreen = () => {
         onPress={() => setReport({ ...report, action: Action.Middle })}
       >
         <View style={styles.row}>
-          <Text>Create a middle report(not linked to Barcycle)</Text>
+          <Text>Middle report aanmaken</Text>
           <RadioButton
             value="first"
             status={report.action === Action.Middle ? "checked" : "unchecked"}
@@ -123,9 +124,9 @@ const ReportScreen = () => {
         onPress={() => setReport({ ...report, action: Action.Close })}
       >
         <View style={styles.row}>
-          <Text>Close and close the last Barcycle</Text>
+          <Text>Laaste Bay Cycle sluiten</Text>
           <RadioButton
-            value="second"
+            value="closed"
             status={report.action === Action.Close ? "checked" : "unchecked"}
             onPress={() => setReport({ ...report, action: Action.Close })}
           />
@@ -133,6 +134,12 @@ const ReportScreen = () => {
       </TouchableRipple>
       <Divider />
       <PersonelView />
+      <TextInput
+        label="Tapper Wachtwoord"
+        secureTextEntry
+        value={report.password ? report.password : undefined}
+        onChangeText={(text) => setReport({ ...report, password: text })}
+      />
       <TextInput
         label="Total Cash"
         value={report.total_cash ? report.total_cash.toString() : undefined}
@@ -176,7 +183,7 @@ const ReportScreen = () => {
       >
         Submit
       </Button>
-    </View>
+    </ScrollView>
   );
 };
 
