@@ -15,5 +15,6 @@ urlpatterns = [
     path("holder/<str:pk>", views_holders.showHolder),
     path("users/token/", MyTokenObtainPairView.as_view()),
     path("users/token/refresh/", MyRefreshPairView.as_view()),
+    path("walletupgrade/", views_holders.handle_WalletUpgrades),
     path(r"login/", views.LoginAllUsers),
 ]

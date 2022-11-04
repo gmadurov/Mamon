@@ -40,6 +40,7 @@ def safe_json_decode(response):
             raise Exception("500", "Ledenbase response not readable or empty")
 
 
+
 @api_view(["GET", "POST"])
 def getRoutes(request):
     routes = [
@@ -61,7 +62,7 @@ def getRoutes(request):
         {"DELETE": API_URL + "holders/id"},
     ]
     return Response(routes)
-
+# TODO: make the login use the check_user method from views_holders
 
 @api_view(["POST"])
 def LoginAllUsers(request):
@@ -84,13 +85,13 @@ def LoginAllUsers(request):
     return Response(response)
 
 
-def loginLedenbase(request):
+def loginLedenbase(request, boolean=False):
     res, ledenbaseUser = safe_json_decode(
         requests.post(
             os.environ.get("BACKEND_URL") + "/v2/login/",
             json={
-                "password": request.data["password"],
-                "username": request.data["username"],
+                "password": request.data.get("password"),
+                "username": request.data.get("username"),
             },
         )
     )
@@ -101,9 +102,10 @@ def loginLedenbase(request):
         )
 
     user, created = User.objects.get_or_create(
-        username=request.data["username"],
+        username=request.data.get("username"),
         # user purposely doesnt have a password set here to make sure it
     )
+
     user.first_name = ledenbaseUser["user"]["first_name"]
     user.last_name = ledenbaseUser["user"]["last_name"]
     user.save()

@@ -1,0 +1,98 @@
+{% extends 'main.html' %} {% block content %} {% comment %} create a from with
+date inputs called start_date and end_date {% endcomment %}
+<div class="columns">
+  <div class="column is-half">
+    <form action="" method="GET" class="columns">
+      <div class="column is-half">
+        <label for="start_date">Start Date</label>
+        <input
+          type="datetime-local"
+          name="start_date"
+          id="start_date"
+          class="input"
+          value="{{start_date}}"
+        />
+      </div>
+      <div class="column is-half">
+        <label for="end_date">End Date</label>
+        {% comment %} auto add today date and date a month ago {% endcomment %}
+        <input
+          class="input"
+          type="datetime-local"
+          name="end_date"
+          id="end_date"
+          value="{{end_date}}"
+        />
+        <input
+          class="button is-success"
+          type="submit"
+          value="Submit"
+          style="align: riht"
+        />
+      </div>
+    </form>
+    {% if purchases%}
+    <table class="table">
+      <tr>
+        <th>Order Date</th>
+        <th>Price</th>
+        <th>Customer</th>
+        <th>Products</th>
+      </tr>
+      {% for purchase in purchases %}
+      <tr>
+        <td>{{purchase.created}}</td>
+        <td>{{purchase.total}}</td>
+        <td>{{purchase.buyer.name}}</td>
+        <td>
+          {% for item in purchase.orders.all %} {{item.product.name}}:
+          {{item.quantity}}<br />
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+  </div>
+  <div class="column">
+    <table class="table">
+      <tr>
+        <th>drankafname bezoekerspassen</th>
+        <th>drank/koek/snoep bar</th>
+        <th>refund bar (rectificaties)</th>
+      </tr>
+      <tr>
+        <td>{{'-'}}</td>
+        <td>{{barWinst}}</td>
+        <td>{{'-'}}</td>
+      </tr>
+    </table>
+    <table class="table">
+      <tr>
+        <th>potje 7110 (Pasjessysteem)</th>
+        <td>{{holder_stands}}</td>
+      </tr>
+      <tr>
+        <th>potje 7111 (PIN)</th>
+        <td>{{'-'}}</td>
+      </tr>
+      <tr>
+        <th>potje 7400 (PIN hap)</th>
+        <td>{{'-'}}</td>
+      </tr>
+      <tr>
+        <th>Potje 7400 (Cash hap)</th>
+        <td>{{'-'}}</td>
+      </tr>
+      <tr>
+        <th>Potje 3400 (Handelswaar)*</th>
+        <td>{{'-'}}</td>
+      </tr>
+      <tr>
+        <th>potje 7112 (cash) *</th>
+        <td>{{'-'}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endblock content %}

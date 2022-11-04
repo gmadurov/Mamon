@@ -71,3 +71,14 @@ class Personel(models.Model):
             return str(self.user.first_name + " " + self.user.last_name) + " (Personel)"
         except:
             return "Personel"
+
+
+class WalletUpgrades(models.Model):
+    holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
+    seller = models.ForeignKey(Personel, on_delete=models.CASCADE)
+    amount = models.FloatField()
+    refund = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.holder.name) + " upgraded wallet with €" + str(self.amount)

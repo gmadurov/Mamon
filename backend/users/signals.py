@@ -1,6 +1,6 @@
 from django.db.models.signals import post_delete, post_save
 from django.contrib.auth.models import User
-from .models import Holder
+from .models import Holder, WalletUpgrades
 
 
 def create_stand(sender, instance, created, **kwargs):
@@ -14,4 +14,12 @@ def create_stand(sender, instance, created, **kwargs):
         user.save()
 
 
+def update_wallet(sender, instance, created, **kwargs):
+    if created:
+        holder = instance.holder
+        holder.stand += instance.amount
+        holder.save()
+
+
 # post_save.connect(create_stand, sender=User)
+post_save.connect(update_wallet, sender=WalletUpgrades)

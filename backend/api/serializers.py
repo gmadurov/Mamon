@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import Holder
+from users.models import Holder, WalletUpgrades
 from purchase.models import Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
@@ -74,4 +74,11 @@ class CategorySerializer(serializers.ModelSerializer):
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
+        fields = "__all__"
+
+
+# make walletupdate  serializer
+class WalletUpgradesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WalletUpgrades
         fields = "__all__"
