@@ -25,7 +25,7 @@ const { width } = Dimensions.get("screen");
 const ProductScreen = ({ sell }: { sell?: boolean }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
-  const { GET_categories } = useContext(SettingsContext);
+  const { GET_categories, sideBySide } = useContext(SettingsContext);
   const { setBuyer, setSeller } = useContext(CartContext);
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState(0);
@@ -52,9 +52,9 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
       <View
         style={[
           { flex: 1 },
-          width >= 200 && {
+          sideBySide && {
             paddingBottom: 50,
-            // flexDirection: "row-reverse",
+            flexDirection: "row-reverse",
           },
         ]}
       >

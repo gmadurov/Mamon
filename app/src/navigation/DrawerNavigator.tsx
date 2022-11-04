@@ -1,20 +1,43 @@
+import {
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+  createDrawerNavigator,
+} from "@react-navigation/drawer";
+import React, { useContext } from "react";
+
+import AuthContext from "../context/AuthContext";
 import CategoryScreen from "../screens/CategoryScreen";
-import LogOutScreen from "../screens/LogOutScreen";
 import LoginScreen from "../screens/LoginScreen";
-import PersonelSreen from "../screens/PersonelSreen";
 import ProductScreen from "../screens/ProductScreen";
-import React from "react";
 import ReportScreen from "../screens/ReportScreen";
+import SettingsContext from "../context/SettingsContext";
 import WalletUpgrateScreen from "../screens/WalletUpgrateScreen";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 
 const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
 const DrawerNavigator = () => {
+  const { setSideBySide } = useContext(SettingsContext);
+  const { logoutFunc } = useContext(AuthContext);
   return (
     <Drawer.Navigator
-    // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
+      // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
+      drawerContent={(props) => {
+        return (
+          <DrawerContentScrollView {...props}>
+            <DrawerItemList {...props} />
+            <DrawerItem
+              label="_Set Side by Side view"
+              onPress={() => setSideBySide((nu) => !nu)}
+            />
+            <DrawerItem
+              label="Uitlogen"
+              onPress={async () => await logoutFunc()}
+            />
+          </DrawerContentScrollView>
+        );
+      }}
     >
       <Drawer.Screen
         name="Producten"
@@ -62,8 +85,6 @@ const DrawerNavigator = () => {
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-
-      <Drawer.Screen name="Iedereen Uitloggen" component={LogOutScreen} />
     </Drawer.Navigator>
   );
 };

@@ -9,6 +9,8 @@ interface SettingsContextType {
   GET_categories: () => Promise<void>;
   setSelectedCategory: React.Dispatch<React.SetStateAction<Category[]>>;
   selectedCategory: Category[];
+  sideBySide: boolean;
+  setSideBySide: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const SettingsContext = createContext({} as SettingsContextType);
 export default SettingsContext;
@@ -24,11 +26,12 @@ export const SettingsProvider = ({
   const [selectedCategory, setSelectedCategory] = useState<Category[]>(
     [] as Category[]
   );
+  const [sideBySide, setSideBySide] = useState(true);
   async function GET_categories() {
     setCategories([] as Category[]);
     const { data } = await ApiRequest<Category[]>("/api/category/");
     setCategories(data as Category[]);
-    // update selected categories 
+    // update selected categories
     setSelectedCategory(
       selectedCategory.map(
         (category) => data.find((c) => c.id === category.id) || ({} as Category)
@@ -50,6 +53,8 @@ export const SettingsProvider = ({
     GET_categories: GET_categories,
     setSelectedCategory: setSelectedCategory,
     selectedCategory: selectedCategory,
+    sideBySide: sideBySide,
+    setSideBySide: setSideBySide,
   };
   return (
     <SettingsContext.Provider value={data}>{children}</SettingsContext.Provider>
