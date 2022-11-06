@@ -127,7 +127,7 @@ def handle_WalletUpgrades(request):
         return Response({"message": "Seller not found"}, status=501)
 
 
-@api_view(["GET", "PUT"])
+@api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def showHolderCards(request, pk):
     if request.method == "GET":
@@ -147,7 +147,7 @@ def showHolderCards(request, pk):
 
 
 @api_view(["GET", "POST", "DELETE"])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def handle_Cards(request):
     if request.method == "GET":
         cards = Card.objects.all()
@@ -170,10 +170,10 @@ def handle_Cards(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def handle_Card(request, pk):
     if request.method == "GET":
-        card = Card.objects.get(id=pk)
+        card = Card.objects.get(card_id=pk)
         serializer = CardSerializer(card, many=False, context={"request": request})
         return Response(serializer.data)
     if request.method == "PUT":

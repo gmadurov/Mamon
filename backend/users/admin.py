@@ -4,7 +4,7 @@ from .models import Card, Holder, Personel, WalletUpgrades
 
 
 class HolderAdmin(admin.ModelAdmin):
-    list_display = ("user", "stand", "image")
+    list_display = ("name", "user", "stand", "image")
     search_fields = (
         "user__username",
         "user__first_name",

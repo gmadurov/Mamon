@@ -86,8 +86,8 @@ class WalletUpgrades(models.Model):
 
 class Card(models.Model):
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
-    card_id = models.CharField(max_length=50)
+    card_id = models.CharField(max_length=50, unique=True)
     card_name = models.CharField(max_length=15)
 
     def __str__(self):
-        return str(self.hodler.name) + " has card " + str(self.card_name)
+        return str(self.holder.name) + " has card " + str(self.card_name)
