@@ -43,6 +43,7 @@ def showProduct(request, pk):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
 def cateories(request):
     data = request.data
     if request.method == "GET":

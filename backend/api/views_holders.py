@@ -99,7 +99,7 @@ def showHolder(request, pk):
 
 
 @api_view(["GET", "POST"])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def handle_WalletUpgrades(request):
     if request.method == "GET":
         walletUpgrades = WalletUpgrades.objects.all()
@@ -147,7 +147,7 @@ def showHolderCards(request, pk):
 
 
 @api_view(["GET", "POST", "DELETE"])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def handle_Cards(request):
     if request.method == "GET":
         cards = Card.objects.all()
@@ -170,7 +170,7 @@ def handle_Cards(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def handle_Card(request, pk):
     if request.method == "GET":
         card = Card.objects.get(card_id=pk)
