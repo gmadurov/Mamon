@@ -105,9 +105,17 @@ const BottomSearch = ({
       tag = await NfcProxy.readTag();
     } catch (e) {}
     // const tag = { id: "0410308AC85E80" }; //for testing locally
-    if ([null, {} as TagEventLocal].includes(tag)) {
+    if (![null, {} as TagEventLocal].includes(tag)) {
       // console.log(tag);
-
+      showMessage({
+        message: `card ${tag?.id} scanned`,
+        type: "info",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 500,
+        position: "bottom",
+      });
       const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
       if (res.status === 200) {
         // console.log(data);
