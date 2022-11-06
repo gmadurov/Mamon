@@ -14,7 +14,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gusmadvol.mamongus"
@@ -34,6 +36,8 @@
         "projectId": "0351d157-7e89-41ee-88b4-1f20f506fc77"
       }
     },
-    "plugins": []
+    "plugins": [
+      "react-native-nfc-manager"
+    ]
   }
 }

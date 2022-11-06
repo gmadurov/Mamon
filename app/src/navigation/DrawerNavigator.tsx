@@ -11,7 +11,9 @@ import CategoryScreen from "../screens/CategoryScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ProductScreen from "../screens/ProductScreen";
 import ReportScreen from "../screens/ReportScreen";
+import ScanCard from "../screens/ScanCard";
 import SettingsContext from "../context/SettingsContext";
+import TagDetailScreen from "../screens/ScanCard_tagDetail";
 import WalletUpgrateScreen from "../screens/WalletUpgrateScreen";
 
 const Drawer = createDrawerNavigator();
@@ -39,6 +41,14 @@ const DrawerNavigator = () => {
         );
       }}
     >
+      <Drawer.Screen
+        name="ScanCard"
+        component={ScanCard}
+        options={{
+          title: "Scan Card",
+          // backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
       <Drawer.Screen
         name="Producten"
         children={() => <ProductScreen sell />}
@@ -85,6 +95,16 @@ const DrawerNavigator = () => {
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
+      <Drawer.Screen
+        name="TagDetail"
+        component={TagDetailScreen}
+        options={{
+          title: "Tag Detail",
+          // backgroundColor: GlobalStyles.colors.primary1,
+        }}
+      />
+      
+      
     </Drawer.Navigator>
   );
 };
