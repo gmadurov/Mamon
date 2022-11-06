@@ -4,7 +4,7 @@ export default interface User {
   iat: number;
   jti: string;
   name: string;
-  role: string[];
+  roles: string[];
   user_id: number;
   image: string;
   nickname: string;

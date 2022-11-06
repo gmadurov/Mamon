@@ -130,7 +130,7 @@ def LoginAllUsers(request):
             password=request.data["password"],
             username=request.data["username"],
         )
-        print("authenticaded users", user)
+        # print("authenticaded users", user)
     else:
         user = loginLedenbase(request)
     # try:
