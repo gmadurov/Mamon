@@ -40,29 +40,86 @@ def safe_json_decode(response):
             raise Exception("500", "Ledenbase response not readable or empty")
 
 
-
-@api_view(["GET", "POST"])
+@api_view(["GET"])
 def getRoutes(request):
     routes = [
-        {"POST": API_URL + "login/"},
-        {"GET": API_URL + "purchase/"},
-        {"POST": API_URL + "purchase/"},
-        {"GET": API_URL + "purchase/id"},
-        {"PUT": API_URL + "purchase/id"},
-        {"DELETE": API_URL + "purchase/id"},
-        {"GET": API_URL + "product/"},
-        {"POST": API_URL + "product/"},
-        {"GET": API_URL + "product/id"},
-        {"PUT": API_URL + "product/id"},
-        {"DELETE": API_URL + "product/id"},
-        {"GET": API_URL + "holders/"},
-        {"POST": API_URL + "holders/"},
-        {"GET": API_URL + "holders/id"},
-        {"PUT": API_URL + "holders/id"},
-        {"DELETE": API_URL + "holders/id"},
+        {
+            "POST": API_URL + "",
+        },
+        {
+            "POST": API_URL + "login/",
+            "description": "Login",
+            "body": {"username": "string", "password": "string"},
+        },
+        {
+            "POST": API_URL + "users/token/refresh/",
+            "description": "refresh token",
+            "body": {"refresh": "string"},
+        },
+        {
+            "ALL BELLOW REQUIRE AUTHENTICATION as a header": "Bearer or Authentication: access token"
+        },
+        {
+            "GET": API_URL + "holders/",
+            "description": "Get all holders",
+            "body?": {"search": "string"},
+        },
+        {
+            "GET": API_URL + "holders/<str:pk>/",
+            "description": "Get holder by id",
+            "pk": "Holder id",
+        },
+        {
+            "GET, PUT": API_URL + "holders/<str:pk>/cards/",
+            "description": "Get holder cards by id",
+            "pk": "Holder id",
+        },
+        {
+            "GET, POST": API_URL + "products/",
+            "description": "Get all or create products",
+            "body?": "product to be created (name:string, price: float, color: string)",
+        },
+        {
+            "GET, PUT": API_URL + "products/<str:pk>/",
+            "description": "Get, or update(name and color only) product by id",
+            "pk": "Product id",
+        },
+        {
+            "GET, POST": API_URL + "categories/",
+            "description": "Get all or create categories",
+        },
+        {
+            "POST": API_URL + "reports/",
+            "description": "Create reports",
+        },
+        {
+            "GET, POST": API_URL + "purchase/",
+            "description": "Get all or create purchases",
+        },
+        {
+            "GET": API_URL + "purchase/<str:pk>/",
+            "description": "Get purchase by id",
+            "pk": "Purchase id",
+        },
+        {
+            "GET, POST": API_URL + "walletupgrade/",
+            "description": "Get all wallet upgrades",
+        },
+        {
+            "GET, POST, DELETE": API_URL + "cards/",
+            "description": "Get all, add or delete cards",
+        },
+        {
+            "GET, PUT, DELETE": API_URL + "cards/<str:pk>/",
+            "description": "Get card by id",
+            "pk": "Card id",
+        },
     ]
     return Response(routes)
+
+
 # TODO: make the login use the check_user method from views_holders
+
 
 @api_view(["POST"])
 def LoginAllUsers(request):

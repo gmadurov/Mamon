@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import Holder, WalletUpgrades
+from users.models import Card, Holder, WalletUpgrades
 from purchase.models import Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
@@ -81,4 +81,12 @@ class ReportSerializer(serializers.ModelSerializer):
 class WalletUpgradesSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalletUpgrades
+        fields = "__all__"
+
+
+class CardSerializer(serializers.ModelSerializer):
+    holder = HolderSerializer()
+
+    class Meta:
+        model = Card
         fields = "__all__"

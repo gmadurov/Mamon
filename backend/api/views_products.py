@@ -25,7 +25,7 @@ def showProducts(request):
             return Response(serializer.data)
 
 
-@api_view(["GET", "PUT", "DELETE"])
+@api_view(["GET", "PUT"])
 @permission_classes([IsAuthenticated])
 def showProduct(request, pk):
     data = request.data
@@ -34,12 +34,10 @@ def showProduct(request, pk):
     #     serializer = ProductSerializer(product, many=False)
     #     return Response(serializer.data)
     if request.method == "PUT":
-        product.price = data["price"] or None
-        product.name = data["name"] or None
+        # product.price = data.get("price") or None # price shouldn't be changed
+        product.color = data.get("color") or None
+        product.name = data.get("name") or None
         product.save()
-    if request.method == "DELETE":
-        product.delete()
-        return Response()
     serializer = ProductSerializer(product, many=False, context={"request": request})
     return Response(serializer.data)
 
