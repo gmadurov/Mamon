@@ -36,7 +36,7 @@ function LinkCardScreen(props: { navigation: any }) {
         body: JSON.stringify(card),
       }
     );
-    console.log(res?.status);
+    // console.log(res?.status);
     
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
@@ -167,7 +167,7 @@ function LinkCardScreen(props: { navigation: any }) {
     <>
       {NfcProxy.supported && !NfcProxy.enabled && renderNfcNotEnabled()}
 
-      {!NfcProxy.supported && !NfcProxy.enabled && renderNfcButtons()}
+      {NfcProxy.supported && NfcProxy.enabled && renderNfcButtons()}
 
       {!NfcProxy.supported && (
         <View
