@@ -78,12 +78,13 @@ def loginLedenbase(request):
 
 def loginUser(request):
     if request.user.is_authenticated:
-        return redirect("purchases")
+        return redirect("userHome")
     if request.method == "POST":
         user1 = User.objects.filter(username=request.POST["username"])
-        if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
+        if user1.exists():
+            if user1.filter(holder__ledenbase_id=0).exists():
             # print("user exists and doesnt have ledenbase id")
-            user = authenticate(
+                user = authenticate(
                 password=request.POST["password"],
                 username=request.POST["username"],
             )
