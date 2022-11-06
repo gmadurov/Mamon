@@ -3,9 +3,11 @@ import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
+import NFCContext, { TagEventLocal } from "../../context/NFCContext";
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -17,12 +19,15 @@ import {
   View,
 } from "react-native";
 
+import ApiContext from "../../context/ApiContext";
+import { Card } from "../../models/Card";
 import CartContext from "../../context/CartContext";
 import FullContext from "../../context/FullContext";
 import { GlobalStyles } from "../../constants/styles";
 import Holder from "../../models/Holder";
 import HolderContext from "../../context/HolderContext";
 import { baseUrl } from "../../context/AuthContext";
+import { showMessage } from "react-native-flash-message";
 
 export interface HolderChoice extends Holder {
   value: number;
@@ -45,6 +50,8 @@ const BottomSearch = ({
 }: BottomSearchProps) => {
   const { BottomSearch, setBottomSearch } = useContext(FullContext);
   const { setBuyer } = useContext(CartContext);
+  const NfcProxy = useContext(NFCContext);
+  const { ApiRequest } = useContext(ApiContext);
   const { GET, holders, SEARCH } = useContext(HolderContext);
 
   const inputStyles = [styles.input, style];
@@ -92,6 +99,47 @@ const BottomSearch = ({
     }
   }, []);
 
+  async function startNfc() {
+    let tag: TagEventLocal | null = null;
+    try {
+      tag = await NfcProxy.readTag();
+    } catch (e) {}
+    // const tag = { id: "0410308AC85E80" }; //for testing locally
+    if ([null, {} as TagEventLocal].includes(tag)) {
+      // console.log(tag);
+
+      const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
+      if (res.status === 200) {
+        // console.log(data);
+        setBuyer({
+          ...data.holder,
+          value: data.holder.id,
+          label: data.holder?.name,
+        } as HolderChoice);
+        setBottomSearch(false);
+        setSearch("");
+      } else {
+        showMessage({
+          message: `Card niet gevonden`,
+          description: `is card gekopeld`,
+          type: "danger",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 1500,
+          position: "bottom",
+        });
+      }
+    }
+  }
+  useEffect(() => {
+    async function useNfc() {
+      await startNfc();
+    }
+    if (BottomSearch) {
+      useNfc();
+    }
+  }, [BottomSearch]);
   const renderItem = ({ item }: { item: HolderChoice }) => {
     let option = item;
     let avatarSize = 50;

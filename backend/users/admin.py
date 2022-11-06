@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Holder, Personel, WalletUpgrades
+from .models import Card, Holder, Personel, WalletUpgrades
 
 
 class HolderAdmin(admin.ModelAdmin):
-    list_display = ("user", "stand", "image")
+    list_display = ("name", "user", "stand", "image")
     search_fields = (
         "user__username",
         "user__first_name",
@@ -39,8 +39,25 @@ class WalletUpdateAdmin(admin.ModelAdmin):
         return False
 
 
+class CardAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "card_id")
+    search_fields = (
+        # "holder__user__username",
+        # "holder__user__first_name",
+        # "holder__user__last_name",
+        "card_id",
+        # "holder__ledenbase_id",
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        return [
+            "card_id",
+        ]
+
+
 # Register your models here.
 admin.site.register(Holder, HolderAdmin)
 admin.site.register(Personel, PersonelAdmin)
 
 admin.site.register(WalletUpgrades, WalletUpdateAdmin)
+admin.site.register(Card, CardAdmin)

@@ -41,7 +41,7 @@ def showPurchases(request):
         return Response(serializer.data)
 
 
-@api_view(["GET", "PUT", "DELETE"])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def showPurchase(request, pk):
     data = request.data
@@ -49,12 +49,9 @@ def showPurchase(request, pk):
     # if request.method == "GET": # redundant
     #     serializer = PurchaseSerializer(purschase, many=False)
     #     return Response(serializer.data)
-    if request.method == "PUT":
-        purschase.buyer = data["buyer"] or None
-        purschase.products = data["products"] or None
-        purschase.save()
-    if request.method == "DELETE":
-        purschase.delete()
-        return Response()
+    # if request.method == "PUT":
+    #     purschase.buyer = data["buyer"] or None
+    #     purschase.products = data["products"] or None
+    #     purschase.save()
     serializer = PurchaseSerializer(purschase, many=False, context={"request": request})
     return Response(serializer.data)

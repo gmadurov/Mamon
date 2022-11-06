@@ -10,3 +10,4 @@ DEVELOP
 *.dump
 *.sqlite3
 .expo/
+*data*

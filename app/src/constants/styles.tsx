@@ -29,6 +29,8 @@ export const GlobalStyles: GlobalColors = {
     textColorLight: "white",
     textColorDark: "black",
     iconColor: "grey",
+    thetaBrown: "#573315",
+    thetaGeel: "#FFDD00",
   },
 };
 

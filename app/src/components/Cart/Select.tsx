@@ -85,7 +85,7 @@ function Select({
         // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
         onPress={() => setBottomSearch((nu) => !nu)}
         onLongPress={() => setBuyer({} as Holder)}
-        style={{ opacity: 0.6 }}
+        color={GlobalStyles.colors.thetaBrown}
       >
         {defaultValue?.label ? defaultValue.label : label}
       </Button>
@@ -98,7 +98,7 @@ export default Select;
 const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
-    color: GlobalStyles.colors.primary1,
+    backgroundColor: GlobalStyles.colors.primary1,
   },
   centeredView: {
     flex: 1,

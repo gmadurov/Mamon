@@ -8,7 +8,9 @@ import React, { useContext } from "react";
 
 import AuthContext from "../context/AuthContext";
 import CategoryScreen from "../screens/CategoryScreen";
+import LinkCardScreen from "../screens/LinkCardScreen";
 import LoginScreen from "../screens/LoginScreen";
+import NFCContext from "../context/NFCContext";
 import ProductScreen from "../screens/ProductScreen";
 import ReportScreen from "../screens/ReportScreen";
 import SettingsContext from "../context/SettingsContext";
@@ -19,7 +21,9 @@ const Drawer = createDrawerNavigator();
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
 const DrawerNavigator = () => {
   const { setSideBySide } = useContext(SettingsContext);
-  const { logoutFunc } = useContext(AuthContext);
+  const { logoutFunc, users } = useContext(AuthContext);
+  const { setEnabled, supported } = useContext(NFCContext);
+
   return (
     <Drawer.Navigator
       // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
@@ -27,6 +31,12 @@ const DrawerNavigator = () => {
         return (
           <DrawerContentScrollView {...props}>
             <DrawerItemList {...props} />
+            {supported && (
+              <DrawerItem
+                label="_Disabled NFC"
+                onPress={() => setEnabled((nu) => !nu)}
+              />
+            )}
             <DrawerItem
               label="_Set Side by Side view"
               onPress={() => setSideBySide((nu) => !nu)}
@@ -85,6 +95,20 @@ const DrawerNavigator = () => {
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
+      {users.some(
+        (user) =>
+          user?.roles.includes("Tapper") || user?.roles.includes("Linker")
+      ) &&
+        supported && (
+          <Drawer.Screen
+            name="LinkCardScreen"
+            component={LinkCardScreen}
+            options={{
+              title: "Link cards",
+              // backgroundColor: GlobalStyles.colors.primary1,
+            }}
+          />
+        )}
     </Drawer.Navigator>
   );
 };

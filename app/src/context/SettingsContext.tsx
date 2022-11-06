@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 import ApiContext from "./ApiContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Category from "../models/Category";
 
 /** provides Settings */
@@ -26,7 +33,8 @@ export const SettingsProvider = ({
   const [selectedCategory, setSelectedCategory] = useState<Category[]>(
     [] as Category[]
   );
-  const [sideBySide, setSideBySide] = useState(true);
+  const [sideBySide, setSideBySide] = useState<boolean>(true);
+
   async function GET_categories() {
     setCategories([] as Category[]);
     const { data } = await ApiRequest<Category[]>("/api/category/");
@@ -47,6 +55,46 @@ export const SettingsProvider = ({
     }
     // eslint-disable-next-line
   }, [users]);
+  useLayoutEffect(() => {
+    async function get() {
+      const sideBySideLocal = await AsyncStorage.getItem("sideBySide");
+      if (sideBySideLocal) {
+        setSideBySide(sideBySideLocal === "true");
+      } else {
+        setSideBySide(true);
+      }
+    }
+    get();
+  }, []);
+  useEffect(() => {
+    async function set() {
+      await AsyncStorage.setItem("sideBySide", sideBySide.toString());
+    }
+    set();
+  }, [sideBySide]);
+
+  useEffect(() => {
+    async function set() {
+      await AsyncStorage.setItem(
+        "selectedCategory",
+        JSON.stringify(selectedCategory)
+      );
+    }
+    set();
+  }, [selectedCategory]);
+  useLayoutEffect(() => {
+    async function get() {
+      const selectedCategoryLocal = await AsyncStorage.getItem(
+        "selectedCategory"
+      );
+      if (selectedCategoryLocal) {
+        setSelectedCategory(JSON.parse(selectedCategoryLocal) as Category[]);
+      } else {
+        setSelectedCategory([]);
+      }
+    }
+    get();
+  }, []);
 
   const data = {
     categories: categories,

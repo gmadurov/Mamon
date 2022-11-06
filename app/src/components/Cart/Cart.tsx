@@ -1,24 +1,20 @@
-import AuthContext, { baseUrl } from "../../context/AuthContext";
-import { Avatar, Divider } from "react-native-paper";
+import { Button, Divider, TouchableRipple } from "react-native-paper";
 import CartContext, { CartItems } from "../../context/CartContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 
-import { Button } from "@rneui/themed";
+import AuthContext from "../../context/AuthContext";
 import CartItem from "./CartItem";
 import { FlatList } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 import Holder from "../../models/Holder";
 import HolderContext from "../../context/HolderContext";
-import PersonelView from "./PersonelView";
-import ProductContext from "../../context/ProductContext";
 import Select from "./Select";
 
 export const Cart = ({ sell }: { sell: boolean }) => {
   const { cart, setCart, buy_cart, buyer, setBuyer, seller } =
     useContext(CartContext);
-  const { GET, holders, SEARCH } = useContext(HolderContext);
-  const { users } = useContext(AuthContext);
+  const { GET, holders } = useContext(HolderContext);
   const [disabled, setDisabled] = useState<boolean>(true);
   // let total equal the sum of the products in the cart multiplied by the quantity
   let total = cart?.reduce(
@@ -32,14 +28,6 @@ export const Cart = ({ sell }: { sell: boolean }) => {
       label: holder.name,
       searchHelp: holder.ledenbase_id.toString(),
     }));
-  async function loadOptions(input: string = "") {
-    let searchHolders = await SEARCH(input);
-    optionsHolders = searchHolders?.map((holder) => ({
-      value: holder?.id,
-      label: holder?.name,
-      searchHelp: holder?.ledenbase_id.toString(),
-    }));
-  }
   // console.log(users);
   function renderProducts(cartItem: CartItems) {
     return (
@@ -108,37 +96,43 @@ export const Cart = ({ sell }: { sell: boolean }) => {
           wallet={false}
         />
         <View style={styles.view}>
-          <Button
-            // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-            // style={({ pressed }) => [
-            //   styles.button,
-            //   pressed ? styles.buttonPressed : styles.button,
-            // ]}
-            color={"red"}
+          <TouchableRipple // was View
             onPress={() => {
               setCart([] as CartItems[]);
               setBuyer({} as Holder);
             }}
-            title={"Leegmaken"}
-          />
-          <Button
-            // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-            // style={({ pressed }) => [
-            //   styles.button,
-            //   pressed ? styles.buttonPressed : styles.button,
-            // ]}
-            color="green"
-            disabled={disabled}
+            style={{ backgroundColor: "red" }}
+          >
+            <Button
+              // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
+              // style={styles.EmptyButton}
+              color="white"
+              onPress={() => {
+                setCart([] as CartItems[]);
+                setBuyer({} as Holder);
+              }}
+            >
+              Leegmaken
+            </Button>
+          </TouchableRipple>
+          <TouchableRipple // was View
             onPress={buy}
-            title={
+            disabled={disabled}
+            style={
               disabled
+                ? { backgroundColor: "grey" }
+                : { backgroundColor: "green" }
+            }
+          >
+            <Button color="white" disabled={disabled} onPress={buy}>
+              {disabled
                 ? "Geen Saldo"
                 : "€" +
                   // convert total to string and add 2 decimals
-                  total?.toFixed(2).toString() +
-                  " "
-            }
-          />
+                  total.toFixed(2).toString() +
+                  " "}
+            </Button>
+          </TouchableRipple>
         </View>
       </View>
     </View>
@@ -163,6 +157,11 @@ const styles = StyleSheet.create({
   },
   button: {
     maxWidth: 4,
+  },
+  EmptyButton: {
+    maxWidth: 4,
+    backgroundColor: "red",
+    textColor: "white",
   },
   buttonPressed: {
     opacity: 0.5,
