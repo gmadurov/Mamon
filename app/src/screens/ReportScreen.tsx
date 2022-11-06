@@ -125,7 +125,7 @@ const ReportScreen = () => {
         onPress={() => setReport({ ...report, action: Action.Close })}
       >
         <View style={styles.row}>
-          <Text>Laaste Bay Cycle sluiten</Text>
+          <Text>Laaste Bar Cycle sluiten</Text>
           <RadioButton
             value="closed"
             status={report.action === Action.Close ? "checked" : "unchecked"}

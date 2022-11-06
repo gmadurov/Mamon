@@ -101,17 +101,16 @@ const BottomSearch = ({
       setSearch("");
     }
   }, []);
-  const route = useRoute();
 
   async function startNfc() {
     let tag: TagEventLocal | null = null;
-    if ((await NfcProxy.isEnabled()) && NfcProxy.supported) {
+    if (NfcProxy.enabled && NfcProxy.supported) {
       // console.log("start nfc");
       try {
         tag = await NfcProxy.readTag();
       } catch (e) {}
       // const tag = { id: "0410308AC85E80" }; //for testing locally
-      if (![null, {} as TagEventLocal].includes(tag)) {
+      if (tag?.id) {
         // console.log(tag);
         showMessage({
           message: `card ${tag?.id} scanned`,

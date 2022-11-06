@@ -3,7 +3,6 @@ import CartContext, { CartItems } from "../../context/CartContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 
-import AuthContext from "../../context/AuthContext";
 import CartItem from "./CartItem";
 import { FlatList } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
