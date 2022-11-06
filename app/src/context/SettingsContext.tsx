@@ -72,6 +72,30 @@ export const SettingsProvider = ({
     }
     set();
   }, [sideBySide]);
+
+  useEffect(() => {
+    async function set() {
+      await AsyncStorage.setItem(
+        "selectedCategory",
+        JSON.stringify(selectedCategory)
+      );
+    }
+    set();
+  }, [selectedCategory]);
+  useLayoutEffect(() => {
+    async function get() {
+      const selectedCategoryLocal = await AsyncStorage.getItem(
+        "selectedCategory"
+      );
+      if (selectedCategoryLocal) {
+        setSelectedCategory(JSON.parse(selectedCategoryLocal) as Category[]);
+      } else {
+        setSelectedCategory([]);
+      }
+    }
+    get();
+  }, []);
+
   const data = {
     categories: categories,
     GET_categories: GET_categories,
