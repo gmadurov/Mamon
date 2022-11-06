@@ -99,6 +99,7 @@ const BottomSearch = ({
     if (index === -1) {
       setBottomSearch(false);
       setSearch("");
+      NfcProxy.stopReading()
     }
   }, []);
 
@@ -152,6 +153,8 @@ const BottomSearch = ({
     }
     if (BottomSearch) {
       useNfc();
+    } else {
+      NfcProxy.stopReading();
     }
   }, [BottomSearch]);
   const renderItem = ({ item }: { item: HolderChoice }) => {

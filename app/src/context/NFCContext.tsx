@@ -12,9 +12,9 @@ import { getOutlet } from "reconnect.js";
 import { showMessage } from "react-native-flash-message";
 
 export interface TagEventLocal extends TagEvent {
-  ndefStatus: {
-    status: NdefStatus;
-    capacity: number;
+  ndefStatus?: {
+    status?: NdefStatus;
+    capacity?: number;
   };
 }
 export type NFCContextType = {
@@ -27,6 +27,7 @@ export type NFCContextType = {
   goToNfcSetting: () => Promise<boolean>;
   readNdefOnce: () => Promise<TagEventLocal>;
   readTag: () => Promise<TagEventLocal>;
+  stopReading(): Promise<void>
 };
 
 const NFCContext = createContext({} as NFCContextType);
@@ -177,6 +178,10 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
     return tag;
   }) as () => Promise<TagEventLocal>;
 
+  async function stopReading() {
+    NfcManager.cancelTechnologyRequest();
+  }
+
   useEffect(() => {
     async function initNfc() {
       try {
@@ -220,6 +225,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
     setSupported,
     enabled,
     setEnabled,
+    stopReading,
   };
   return <NFCContext.Provider value={data}>{children}</NFCContext.Provider>;
 };

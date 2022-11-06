@@ -115,7 +115,7 @@ def handle_WalletUpgrades(request):
         )
         if seller and checked:
             id = int(data.get("holder")["id"])
-            holder = Holder.objects.get(id=50)
+            holder = Holder.objects.get(id=id)
             personel = Personel.objects.get(user=seller)
             wallet_upgrade = WalletUpgrades.objects.create(
                 holder=holder, amount=data.get("amount"), seller=personel
