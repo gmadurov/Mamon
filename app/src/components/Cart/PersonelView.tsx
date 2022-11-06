@@ -4,6 +4,7 @@ import React, { ScrollView, StyleSheet, View } from "react-native";
 import { useContext, useState } from "react";
 
 import CartContext from "../../context/CartContext";
+import User from "../../models/Users";
 
 type MenuVisibility = {
   [key: string]: boolean | undefined;
@@ -59,6 +60,12 @@ const PersonelView = () => {
           >
             <Menu.Item
               onPress={() => {
+                setSeller({} as User);
+              }}
+              title={"Verkoper weghalen "}
+            />
+            <Menu.Item
+              onPress={() => {
                 setSeller(user);
               }}
               title={"Zet als Verkoper"}
@@ -67,7 +74,7 @@ const PersonelView = () => {
               onPress={() => {
                 logoutFunc(user);
               }}
-              title={"Log out " + user.name}
+              title={"Log out " + user.nickname}
             />
           </Menu>
         </View>

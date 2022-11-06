@@ -30,7 +30,7 @@ export enum Action {
 }
 const ReportScreen = () => {
   //  create state for all properties of Report
-  const { seller } = useContext(CartContext);
+  const { seller, setSeller } = useContext(CartContext);
   const { ApiRequest } = useContext(ApiContext);
   const [report, setReport] = useState<Report>({
     personel: undefined,
@@ -68,6 +68,7 @@ const ReportScreen = () => {
         flow_meter2: 0,
         comment: "",
       } as Report);
+      setSeller({} as User);
     } else if (res?.status === 501) {
       showMessage({
         message: `Cannot close Barcycle`,
@@ -137,12 +138,12 @@ const ReportScreen = () => {
       <TextInput
         label="Tapper Wachtwoord"
         secureTextEntry
-        value={report.password ? report.password : undefined}
+        value={report.password ? report.password : ""}
         onChangeText={(text) => setReport({ ...report, password: text })}
       />
       <TextInput
         label="Total Cash"
-        value={report.total_cash ? report.total_cash.toString() : undefined}
+        value={report.total_cash ? report.total_cash.toString() : ""}
         keyboardType="numeric"
         onChangeText={(text) =>
           setReport({ ...report, total_cash: Number(text) })
@@ -150,7 +151,7 @@ const ReportScreen = () => {
       />
       <TextInput
         label="Flow Meter 1"
-        value={report.flow_meter1 ? report.flow_meter1.toString() : undefined}
+        value={report.flow_meter1 ? report.flow_meter1.toString() : ""}
         keyboardType="numeric"
         onChangeText={(text) =>
           setReport({ ...report, flow_meter1: Number(text) })
@@ -158,7 +159,7 @@ const ReportScreen = () => {
       />
       <TextInput
         label="Flow Meter 2"
-        value={report.flow_meter2 ? report.flow_meter2.toString() : undefined}
+        value={report.flow_meter2 ? report.flow_meter2.toString() : ""}
         keyboardType="numeric"
         onChangeText={(text) =>
           setReport({ ...report, flow_meter2: Number(text) })

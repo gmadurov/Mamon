@@ -6,6 +6,7 @@ import { AuthToken } from "../models/AuthToken";
 import User from "../models/Users";
 import dayjs from "dayjs";
 import jwt_decode from "jwt-decode";
+import { log } from "react-native-reanimated";
 import { showMessage } from "react-native-flash-message";
 
 // ("https://stropdas2.herokuapp.com/");
@@ -137,6 +138,11 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     // console.log({ type1: typeof authTokens, authTokens });
     let usersLocal = [] as User[];
     let tokens = [] as AuthToken[];
+    // console.log(await AsyncStorage.getAllKeys());
+    // await AsyncStorage.clear()
+    // console.log(await AsyncStorage.getAllKeys());
+    
+    
     authTokens.map(async (authToken, index) => {
       const currentUser = jwt_decode(authToken?.access as string) as User;
       if (currentUser.user_id in usersLocal.map((u) => u.user_id)) {
@@ -156,6 +162,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       setTimeout(() => controller.abort(), 2000);
       let data: AuthToken = await res.json();
       let localUser = jwt_decode((data?.access as string) || "") as User;
+      console.log(res?.status, localUser);
       if (res?.status === 200) {
         if (index === 0) {
           setAuthTokens(() => data);

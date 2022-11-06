@@ -1,9 +1,5 @@
-import {
-  Button,
-  Subheading,
-  Text,
-  TextInput,
-} from "react-native-paper";
+import { Button, Subheading, Text, TextInput } from "react-native-paper";
+import NFCContext, { TagEventLocal } from "../context/NFCContext";
 import React, { useContext, useEffect, useState } from "react";
 
 import ApiContext from "../context/ApiContext";
@@ -12,7 +8,6 @@ import { Card } from "../models/Card";
 import CartContext from "../context/CartContext";
 import FullContext from "../context/FullContext";
 import Holder from "../models/Holder";
-import NFCContext from "../context/NFCContext";
 import { View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 
@@ -26,6 +21,9 @@ function LinkCardScreen(props: { navigation: any }) {
   const NfcProxy = useContext(NFCContext);
   const { buyer, setBuyer } = useContext(CartContext);
   const { ApiRequest } = useContext(ApiContext);
+
+  const [scanning, setScanning] = useState<boolean>(false);
+
   useEffect(() => {
     setCard({ ...card, holder: buyer });
   }, [buyer]);
@@ -38,6 +36,8 @@ function LinkCardScreen(props: { navigation: any }) {
         body: JSON.stringify(card),
       }
     );
+    console.log(res?.status);
+    
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Card linked was successful`,
@@ -49,6 +49,7 @@ function LinkCardScreen(props: { navigation: any }) {
         duration: 2500,
         position: "bottom",
       });
+      setCard({ card_id: "", card_name: "", holder: {} as Holder } as Card);
       setBuyer({} as Holder);
     } else {
       showMessage({
@@ -68,22 +69,33 @@ function LinkCardScreen(props: { navigation: any }) {
     return (
       <View
         style={{
-          flex: 2,
+          flex: 4,
           alignItems: "stretch",
           alignSelf: "center",
         }}
       >
-        <Text style={{ fontSize: 15 }}></Text>
         <Button
           onPress={async () => {
-            const tag = await NfcProxy.readTag();
-            if (tag) {
-              setCard({ ...card, card_id: tag.id });
+            let tag: TagEventLocal | null = null;
+            try {
+              setScanning(true);
+              tag = await NfcProxy.readTag();
+            } catch (e) {
+            } finally {
+              setScanning(false);
+            }
+            //  tag = { id: "0410308AC85E80" }; //for testing locally
+            if (![null, {} as TagEventLocal].includes(tag)) {
+              setCard({ ...card, card_id: tag?.id });
             }
           }}
           mode="contained"
         >
-          {card.card_id ? "Card id:" + card.card_id : "Scan Card"}
+          {scanning
+            ? "Scanning"
+            : card.card_id
+            ? "Card id:" + card.card_id
+            : "Scan Card"}
         </Button>
         <View style={{ paddingTop: 5 }} />
         <Button
@@ -155,7 +167,7 @@ function LinkCardScreen(props: { navigation: any }) {
     <>
       {NfcProxy.supported && !NfcProxy.enabled && renderNfcNotEnabled()}
 
-      {NfcProxy.supported && NfcProxy.enabled && renderNfcButtons()}
+      {!NfcProxy.supported && !NfcProxy.enabled && renderNfcButtons()}
 
       {!NfcProxy.supported && (
         <View
@@ -174,7 +186,7 @@ function LinkCardScreen(props: { navigation: any }) {
           </Subheading>
         </View>
       )}
-      <BottomSearch placeholder={"Kies Gebruiker om te linken"} />
+      <BottomSearch placeholder={"Kies Gebruiker om te linken"} noNFC={true} />
     </>
   );
 }

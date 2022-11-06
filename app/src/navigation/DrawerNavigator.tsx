@@ -99,7 +99,8 @@ const DrawerNavigator = () => {
         (user) =>
           user?.roles.includes("Tapper") || user?.roles.includes("Linker")
       ) &&
-        supported && (
+        // supported && 
+        (
           <Drawer.Screen
             name="LinkCardScreen"
             component={LinkCardScreen}

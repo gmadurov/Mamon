@@ -50,6 +50,8 @@ const WalletUpgrateScreen = () => {
   }, [buyer]);
 
   async function SubmitWalletUpgrade() {
+    console.log(wallet);
+
     let { res } = await ApiRequest<WalletUpgrade>("/api/walletupgrade/", {
       method: "POST",
       body: JSON.stringify(wallet),
@@ -134,7 +136,7 @@ const WalletUpgrateScreen = () => {
         <PersonelView />
         <TextInput
           label="Hoeveelhieid"
-          value={wallet.amount ? wallet.amount.toString() : undefined}
+          value={wallet.amount ? wallet.amount.toString() : ""}
           keyboardType="numeric"
           onChangeText={(text) =>
             setWallet({ ...wallet, amount: Number(text) })
@@ -143,7 +145,7 @@ const WalletUpgrateScreen = () => {
         <TextInput
           label="Tapper Wachtwoord"
           secureTextEntry
-          value={wallet.password ? wallet.password : undefined}
+          value={wallet.password ? wallet.password : ""}
           onChangeText={(text) => setWallet({ ...wallet, password: text })}
         />
 

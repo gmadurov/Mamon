@@ -177,7 +177,7 @@ export default function App() {
     <PaperProvider>
       <NavigationContainer>
         <SafeAreaView style={{ flex: 1 }}>
-          <StatusBar style="light" />
+          <StatusBar />
           <FullProvider>
             <Root />
           </FullProvider>

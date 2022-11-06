@@ -28,6 +28,7 @@ import Holder from "../../models/Holder";
 import HolderContext from "../../context/HolderContext";
 import { baseUrl } from "../../context/AuthContext";
 import { showMessage } from "react-native-flash-message";
+import { useRoute } from "@react-navigation/native";
 
 export interface HolderChoice extends Holder {
   value: number;
@@ -40,6 +41,7 @@ export type BottomSearchProps = {
   invalid?: boolean;
   textInputConfig?: { multiline: boolean | undefined; numberOfLines: number };
   placeholder: string | undefined;
+  noNFC?: boolean;
 };
 
 const BottomSearch = ({
@@ -47,6 +49,7 @@ const BottomSearch = ({
   invalid,
   textInputConfig,
   placeholder,
+  noNFC = false,
 }: BottomSearchProps) => {
   const { BottomSearch, setBottomSearch } = useContext(FullContext);
   const { setBuyer } = useContext(CartContext);
@@ -98,45 +101,49 @@ const BottomSearch = ({
       setSearch("");
     }
   }, []);
+  const route = useRoute();
 
   async function startNfc() {
     let tag: TagEventLocal | null = null;
-    try {
-      tag = await NfcProxy.readTag();
-    } catch (e) {}
-    // const tag = { id: "0410308AC85E80" }; //for testing locally
-    if (![null, {} as TagEventLocal].includes(tag)) {
-      // console.log(tag);
-      showMessage({
-        message: `card ${tag?.id} scanned`,
-        type: "info",
-        floating: true,
-        hideStatusBar: true,
-        autoHide: true,
-        duration: 500,
-        position: "bottom",
-      });
-      const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
-      if (res.status === 200) {
-        // console.log(data);
-        setBuyer({
-          ...data.holder,
-          value: data.holder.id,
-          label: data.holder?.name,
-        } as HolderChoice);
-        setBottomSearch(false);
-        setSearch("");
-      } else {
+    if ((await NfcProxy.isEnabled()) && NfcProxy.supported) {
+      // console.log("start nfc");
+      try {
+        tag = await NfcProxy.readTag();
+      } catch (e) {}
+      // const tag = { id: "0410308AC85E80" }; //for testing locally
+      if (![null, {} as TagEventLocal].includes(tag)) {
+        // console.log(tag);
         showMessage({
-          message: `Card niet gevonden`,
-          description: `is card gekopeld`,
-          type: "danger",
+          message: `card ${tag?.id} scanned`,
+          type: "info",
           floating: true,
           hideStatusBar: true,
           autoHide: true,
-          duration: 1500,
+          duration: 500,
           position: "bottom",
         });
+        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
+        if (res.status === 200) {
+          // console.log(data);
+          setBuyer({
+            ...data.holder,
+            value: data.holder.id,
+            label: data.holder?.name,
+          } as HolderChoice);
+          setBottomSearch(false);
+          setSearch("");
+        } else {
+          showMessage({
+            message: `Card niet gevonden`,
+            description: `is card gekopeld`,
+            type: "danger",
+            floating: true,
+            hideStatusBar: true,
+            autoHide: true,
+            duration: 1500,
+            position: "bottom",
+          });
+        }
       }
     }
   }
