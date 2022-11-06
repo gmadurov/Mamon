@@ -15,7 +15,7 @@ from .serializers import CardSerializer, HolderSerializer, WalletUpgradesSeriali
 def check_user(username, password):
     user = authenticate(username=username, password=password)
     if user is not None:
-        return True
+        return user, true
     else:
         res, ledenbaseUser = safe_json_decode(
             requests.post(
