@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import render
 
 from users.models import Holder
-from .models import Order, Product, Purchase
+from .models import Order, Product, Purchase, Barcycle
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 
@@ -88,3 +88,16 @@ def showOverview(request):
         "barWinst": barWinst,
     }
     return render(request, "purchase/overview.html", content)
+
+
+@login_required(login_url="login")
+def showBarcycles(request):
+    barcycles = Barcycle.objects.all()
+    content = {"barcycles": barcycles}
+    print(barcycles)
+    return render(request, "purchase/barcycles.html", content)
+
+def showBarcycle(request, pk):
+    barcycle = Barcycle.objects.get(id=pk)
+    content = {"barcycle": barcycle}
+    return render(request, "purchase/barcycle.html", content)

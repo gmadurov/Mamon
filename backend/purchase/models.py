@@ -122,23 +122,43 @@ class Barcycle(models.Model):
         related_name="closing",
     )
 
-    @property
-    def purchases(self):
-        purchase = Purchase.objects.distinct().filter(
-            created__range=[
-                self.opening_report.date,
-                self.closing_report.date
-                if self.closing_report
-                else datetime.datetime.now(),
-            ]
-        )
-        return purchase
-
     # return date as name of object
     def __str__(self):
         if not self.closing_report:
             return f'Open {self.opening_report.date.strftime("%a %d %b %Y, %H:%M:%S")} '
         return f' {self.opening_report.date.strftime("%a %d %b %Y, %H:%M:%S")} - {self.closing_report.date.strftime("%a %d %b %Y, %H:%M:%S")}'
+
+    @property
+    def purchases(self):
+        # get all purchases that are withing the opning and closing report date range
+        return Purchase.objects.filter(
+            created__range=[
+                self.opening_report.date,
+                self.closing_report.date if self.closing_report else datetime.datetime.now(),
+            ]
+        )
+
+    @property
+    def total_dif_cash(self):
+        if not self.closing_report:
+            return "Available at closing"
+        return self.closing_report.total_cash - self.opening_report.total_cash
+
+    @property
+    def total_dif_flowmeter1(self):
+        if not self.closing_report:
+            return "Available at closing"
+        return self.opening_report.flow_meter1 - self.closing_report.flow_meter1
+
+    @property
+    def total_dif_flowmeter2(self):
+        if not self.closing_report:
+            return "Available at closing"
+        return self.opening_report.flow_meter2 - self.closing_report.flow_meter2
+
+    @property
+    def total_sales(self):
+        return sum([purchase.total for purchase in self.purchases])
 
     class Meta:
         ordering = ["-opening_report__date"]

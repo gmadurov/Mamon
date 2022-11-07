@@ -1,0 +1,64 @@
+{% extends 'main.html' %} {% block content %} {% comment %} create a from with
+date inputs called start_date and end_date {% endcomment %}
+<div class="columns">
+  <div class="column is-half"></div>
+  <div class="column is-half">
+    <form action="" method="GET" class="columns">
+      <div class="column is-half">
+        <label for="start_date">Start Date</label>
+        <input
+          type="datetime-local"
+          name="start_date"
+          id="start_date"
+          class="input"
+          value="{{start_date}}"
+        />
+      </div>
+      <div class="column is-half">
+        <label for="end_date">End Date</label>
+        {% comment %} auto add today date and date a month ago {% endcomment %}
+        <input
+          class="input"
+          type="datetime-local"
+            name="end_date"
+          id="end_date"
+          value="{{end_date}}"
+        />
+        <input
+          class="button is-success"
+          type="submit"
+          value="Submit"
+          style="align: riht"
+        />
+      </div>
+    </form>
+    {% if barcycles %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Barcycle</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for barcycle in barcycles %}
+        <tr >
+            <a href={% url 'barcycle' barcycle.id %}>
+          <td>{{barcycle}}</td>
+          <td>{{barcycle.opening_report.date}}</td>
+          {% if barcycle.closing_report %}
+          <td>{{barcycle.closing_report.data}}</td>
+          {% else %}
+          <td>Niet afgesloten</td>
+          {% endif %}
+          <td>{{barcycle.total_sales}}</td></a>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

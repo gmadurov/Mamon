@@ -109,7 +109,7 @@ const WalletUpgrateScreen = () => {
           onPress={() => setWallet({ ...wallet, refund: Refund.refund })}
         >
           <View style={styles.row}>
-            <Text>Dit is wel een terugbetaling</Text>
+            <Text>Refund</Text>
             <RadioButton
               value="first"
               status={wallet.refund === Refund.refund ? "checked" : "unchecked"}
@@ -122,7 +122,7 @@ const WalletUpgrateScreen = () => {
           onPress={() => setWallet({ ...wallet, refund: Refund.notRefunc })}
         >
           <View style={styles.row}>
-            <Text>Dit is geen terugbetaling</Text>
+            <Text>Wallet Upgrade</Text>
             <RadioButton
               value="second"
               status={
@@ -135,7 +135,7 @@ const WalletUpgrateScreen = () => {
         <Divider />
         <PersonelView />
         <TextInput
-          label="Hoeveelhieid"
+          label="Hoeveelheid"
           value={wallet.amount ? wallet.amount.toString() : ""}
           keyboardType="numeric"
           onChangeText={(text) =>
@@ -148,6 +148,7 @@ const WalletUpgrateScreen = () => {
           value={wallet.password ? wallet.password : ""}
           onChangeText={(text) => setWallet({ ...wallet, password: text })}
         />
+        {/* TODO: add comment if it is a refund */}
 
         <Button
           disabled={

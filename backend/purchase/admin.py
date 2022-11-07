@@ -221,4 +221,4 @@ admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Report, ReportAdmin)
 admin.site.register(Barcycle, BarcycleAdmin)
-# admin.site.register(Order)  # do not enable
+admin.site.register(Order)  # do not enable

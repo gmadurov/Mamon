@@ -1,0 +1,71 @@
+{% extends 'main.html' %} {% block content %} {% comment %} create a from with
+date inputs called start_date and end_date {% endcomment %}
+<div class="columns">
+  <div class="column is-half"></div>
+  <div class="column is-half">
+    <form action="" method="GET" class="columns">
+      <div class="column is-half">
+        <label for="start_date">Start Date</label>
+        <input
+          type="datetime-local"
+          name="start_date"
+          id="start_date"
+          class="input"
+          value="{{start_date}}"
+        />
+      </div>
+      <div class="column is-half">
+        <label for="end_date">End Date</label>
+        {% comment %} auto add today date and date a month ago {% endcomment %}
+        <input
+          class="input"
+          type="datetime-local"
+          name="end_date"
+          id="end_date"
+          value="{{end_date}}"
+        />
+        <input
+          class="button is-success"
+          type="submit"
+          value="Submit"
+          style="align: riht"
+        />
+      </div>
+    </form>
+    {% if barcycles %}
+    
+
+        {% for barcycle in barcycles %}
+          <div class='card' style=''>
+            <div class='card-header' style='background-color: grey;color: white;padding: 20px;'>{{barcycle.opening_report.date}}
+              {% if barcycle.closing_report %}
+              <td>{{barcycle.closing_report.date}}</td>
+              {% else %}
+              <td>Niet afgesloten</td>
+              {% endif %}
+            </div>
+            {% comment %} center the text {% endcomment %}
+            <div class='card-content' style='text-align: center;'>
+              <p><b>Opening:    </b>{{barcycle.opening_report.total_cash}}</p>
+              <p><b>Closing:    </b>
+                {% if barcycle.closing_report %}
+                  <td>{{barcycle.closing_report.total_cash}}</td>
+                {% else %}
+                  <td>Niet afgesloten</td>
+                {% endif %}</p>
+              <p><b>Turnover:  </b>{{barcycle.total_sales}}</p>
+              {% if barcycle.open_report %}
+                <img src="{{barcycle.opening_report.personel.image.url}}" alt="open report" style="width: 100px; height: 100px;"/>	
+              {% endif %}
+
+              <a class="button"  href={% url 'barcycle' barcycle.id %}>
+                <span>Details</span>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+    
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
