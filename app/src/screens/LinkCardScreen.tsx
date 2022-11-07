@@ -27,6 +27,27 @@ function LinkCardScreen(props: { navigation: any }) {
   useEffect(() => {
     setCard({ ...card, holder: buyer });
   }, [buyer]);
+  useEffect(() => {
+    async function useNfc() {
+      let tag: TagEventLocal | null = null;
+      try {
+        tag = await NfcProxy.readTag();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setScanning(false);
+        NfcProxy.stopReading();
+      }
+      if (![null, {} as TagEventLocal].includes(tag)) {
+        setCard({ ...card, card_id: tag?.id });
+      }
+    }
+    if (scanning) {
+      useNfc();
+    } else {
+      NfcProxy.stopReading();
+    }
+  }, [scanning]);
   async function SubmitCard() {
     // console.log(card);
     let { res } = await ApiRequest<Card>(
@@ -37,7 +58,7 @@ function LinkCardScreen(props: { navigation: any }) {
       }
     );
     // console.log(res?.status);
-    
+
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Card linked was successful`,
@@ -76,18 +97,8 @@ function LinkCardScreen(props: { navigation: any }) {
       >
         <Button
           onPress={async () => {
-            let tag: TagEventLocal | null = null;
-            try {
-              setScanning(true);
-              tag = await NfcProxy.readTag();
-            } catch (e) {
-            } finally {
-              setScanning(false);
-            }
+            setScanning(true);
             //  tag = { id: "0410308AC85E80" }; //for testing locally
-            if (![null, {} as TagEventLocal].includes(tag)) {
-              setCard({ ...card, card_id: tag?.id });
-            }
           }}
           mode="contained"
         >
