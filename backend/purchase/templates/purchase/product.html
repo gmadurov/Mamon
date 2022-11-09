@@ -34,9 +34,36 @@
             </tbody>
         </table>
     </div>
-    <div class="column is-two-thirds has-text-centered is-centered">
+    {% comment %} <div class="column is-two-thirds has-text-centered is-centered">
     Je hebt {{ purchases|getTotal:product.id }} "{{ product.name }}" gekocht!!!
+    </div> {% endcomment %}
+
+    {% comment %} create table for total, total_costs   {% endcomment %}
+    <div class="column is-two-thirds has-text-centered is-centered" >
+        <h1 class='title'>{{product.name}}</h1>
+        <table
+            class="table table-bordered table-striped table-hover "
+        >
+            <thead>
+            <tr>
+                <th>Total gekocht</th>
+
+                <th>Total revenue</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>{{ purchases|getTotal:product.id }}</td>
+
+                <td>{% widthratio purchases|getTotal:product.id 1 product.price %}</td>
+
+            </tr>
+            </tbody>
+        </table>
     </div>
+
 </div
 {% else %}
 <h2>There are no purchases that contain "{{product.name}}" as a product</h2>

@@ -3,6 +3,7 @@ import os
 
 import requests
 from django.contrib import messages
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -14,7 +15,9 @@ from .models import Holder, Personel
 # Create your views here.
 
 
-def safe_json_decode(response):
+def safe_json_decode(
+    response,
+):
     if response.status_code == 500:
         raise Exception("500")
     # elif response.status_code == 400:
@@ -23,9 +26,15 @@ def safe_json_decode(response):
     #     raise Exception("401")
     else:
         try:
-            return response, response.json()
+            return (
+                response,
+                response.json(),
+            )
         except json.decoder.JSONDecodeError:
-            raise Exception("500", "Ledenbase response not readable or empty")
+            raise Exception(
+                "500",
+                "Ledenbase response not readable or empty",
+            )
 
 
 @login_required(login_url="login")
@@ -42,11 +51,15 @@ def home(request):
         "user": user,
         "purchases": purchases,
     }
-    return render(request, "users/home.html", content)
+    return render(
+        request,
+        "users/home.html",
+        content,
+    )
 
 
 def loginLedenbase(request):
-    res, ledenbaseUser = safe_json_decode(
+    (res, ledenbaseUser,) = safe_json_decode(
         requests.post(
             os.environ.get("BACKEND_URL") + "/v2/login/",
             json={
@@ -56,22 +69,23 @@ def loginLedenbase(request):
         )
     )
     if res.status_code != 200:
-        messages.error(request, ledenbaseUser["non_field_errors"])
+        messages.error(
+            request,
+            ledenbaseUser["non_field_errors"],
+        )
         return None
 
-    user, created = User.objects.get_or_create(
+    (user, created,) = User.objects.get_or_create(
         username=request.POST["username"],
         first_name=ledenbaseUser["user"]["first_name"],
         last_name=ledenbaseUser["user"]["last_name"],
         # user purposely doesnt have a password set here to make sure it
     )
-    holder, created = Holder.objects.get_or_create(
+    (holder, created,) = Holder.objects.get_or_create(
         user=user,
     )
     holder.ledenbase_id = ledenbaseUser["user"]["id"]
-    holder.image_ledenbase = (
-        os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
-    )
+    holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
     holder.save()
     return user
 
@@ -90,22 +104,38 @@ def loginUser(request):
         else:
             user = loginLedenbase(request)
         if user:
-            login(request, user)
-            messages.info(request, "User was logged in")
-            return redirect(
-                request.GET["next"] if "next" in request.GET else "userHome"
+            login(
+                request,
+                user,
             )
+            messages.info(
+                request,
+                "User was logged in",
+            )
+            return redirect(request.GET["next"] if "next" in request.GET else "userHome")
         else:
-            messages.error(request, "Username or password is incorrect")
+            messages.error(
+                request,
+                "Username or password is incorrect",
+            )
 
-    return render(request, "users/login.html")
+    return render(
+        request,
+        "users/login.html",
+    )
 
 
 def logoutUser(request):
     logout(request)
-    messages.info(request, "User logged out")
+    messages.info(
+        request,
+        "User logged out",
+    )
     return redirect("login")
 
 
 def app(request):
-    return render(request, "users/app.html")
+    return render(
+        request,
+        "users/app.html",
+    )

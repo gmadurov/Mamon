@@ -42,15 +42,7 @@ export const FullProvider = ({ children }: { children: React.ReactNode }) => {
             </NFCProvider>
           </SettingsProvider>
         </ApiProvider>
-        {/* ApiRequest: ApiRequest,
-            ApiFileRequest: ApiFileRequest, */}
       </AuthProvider>
-      {/* loginFunc: loginFunc,
-          logoutFunc: logOutUser,
-          setAuthTokens: setAuthTokens,
-          setUser: setUser,
-          user: user,
-          authTokens: authTokens, */}
     </FullContext.Provider>
   );
 };

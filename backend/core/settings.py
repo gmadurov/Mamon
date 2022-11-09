@@ -198,7 +198,7 @@ ADMINS = [
 ]
 MANAGERS = [
     ("Gustavo Maduro", "dev.gam.vollmer@gmail.com"),
-    ("webmaster", "webmaster@dispuutstropdas.nl"),
+    ("webmaster", "webmaster@esrtheta.nl"),
 ]
 # SECURE_SSL_REDIRECT = True
 CSRF_TRUSTED_ORIGINS = ["https://*.esrtheta.nl", "http://localhost:8000"]

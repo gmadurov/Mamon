@@ -16,6 +16,7 @@ class Product(models.Model):
     name = models.CharField(max_length=20, unique=True)
     price = models.FloatField(default=0)
     color = ColorField(default="#ffdd00")
+    active = models.BooleanField(default=True)
     # add image field without category field
     image = models.ImageField(
         upload_to="products/", null=True, blank=True, default="products/default.png"
@@ -50,6 +51,9 @@ class Purchase(models.Model):
         related_name="sold",
     )
     payed = models.BooleanField(default=False)
+    cash = models.BooleanField(default=False)
+    pin = models.BooleanField(default=False)
+
     orders = models.ManyToManyField("Order", related_name="ordered")
 
     created = models.DateTimeField(auto_now_add=True)

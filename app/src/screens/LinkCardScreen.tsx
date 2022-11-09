@@ -42,21 +42,25 @@ function LinkCardScreen(props: { navigation: any }) {
         setCard({ ...card, card_id: tag?.id });
       }
     }
+    async function stopNfc() {
+      await NfcProxy.stopReading();
+    }
+
     if (scanning) {
       useNfc();
     } else {
-      NfcProxy.stopReading();
+      stopNfc();
     }
+    return () => {
+      NfcProxy.stopReading();
+    };
   }, [scanning]);
   async function SubmitCard() {
     // console.log(card);
-    let { res } = await ApiRequest<Card>(
-      `/api/holder/${card.holder.id}/cards`,
-      {
-        method: "POST",
-        body: JSON.stringify(card),
-      }
-    );
+    let { res } = await ApiRequest<Card>(`/api/holder/${card.holder.id}/cards`, {
+      method: "POST",
+      body: JSON.stringify(card),
+    });
     // console.log(res?.status);
 
     if (res?.status === 201 || res?.status === 200) {
@@ -102,17 +106,10 @@ function LinkCardScreen(props: { navigation: any }) {
           }}
           mode="contained"
         >
-          {scanning
-            ? "Scanning"
-            : card.card_id
-            ? "Card id:" + card.card_id
-            : "Scan Card"}
+          {scanning ? "Scanning" : card.card_id ? "Card id:" + card.card_id : "Scan Card"}
         </Button>
         <View style={{ paddingTop: 5 }} />
-        <Button
-          onPress={() => setBottomSearch((nu: boolean) => !nu)}
-          mode="contained"
-        >
+        <Button onPress={() => setBottomSearch((nu: boolean) => !nu)} mode="contained">
           {buyer.name ? buyer.name : "Kies Lid Hier"}
         </Button>
         <View>
@@ -150,15 +147,10 @@ function LinkCardScreen(props: { navigation: any }) {
         }}
       >
         <Text style={{ textAlign: "center", marginBottom: 10 }}>
-          Your NFC is not enabled. Please first enable it and hit CHECK AGAIN
-          button
+          Your NFC is not enabled. Please first enable it and hit CHECK AGAIN button
         </Text>
 
-        <Button
-          mode="contained"
-          onPress={() => NfcProxy.goToNfcSetting()}
-          style={{ marginBottom: 10 }}
-        >
+        <Button mode="contained" onPress={() => NfcProxy.goToNfcSetting()} style={{ marginBottom: 10 }}>
           GO TO NFC SETTINGS
         </Button>
 
@@ -192,9 +184,7 @@ function LinkCardScreen(props: { navigation: any }) {
           <Subheading style={{ textAlign: "center", marginBottom: 10 }}>
             NFC is niet enabled op dit apparaat of is niet beschikbaar.
           </Subheading>
-          <Subheading style={{ textAlign: "center", marginBottom: 10 }}>
-            Card Linking is niet mogelijk.
-          </Subheading>
+          <Subheading style={{ textAlign: "center", marginBottom: 10 }}>Card Linking is niet mogelijk.</Subheading>
         </View>
       )}
       <BottomSearch placeholder={"Kies Gebruiker om te linken"} noNFC={true} />

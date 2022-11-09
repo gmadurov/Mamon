@@ -1,9 +1,24 @@
 {
-    "python.formatting.provider": "black",
-    "git.ignoreLimitWarning": true,
-    "explorer.fileNesting.enabled": true,
-    "explorer.fileNesting.expand": false,
-    "explorer.fileNesting.patterns": {
-        "*.py": "${basename}_*.py"
-    }
+  "git.ignoreLimitWarning": true,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.py": "${basename}_*.py"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+  },
+  },
+  "black-formatter.args": [
+    "--line-length",
+    "155",
+  ],
+  "isort.args":["--profile", "black", "--ls","--virtual-env"],
+  "prettier.endOfLine": "auto",
+  "prettier.printWidth": 125
 }

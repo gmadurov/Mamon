@@ -29,14 +29,14 @@ class WalletUpdateAdmin(admin.ModelAdmin):
         "holder__ledenbase_id",
     )
     # has no change and delete rights
-    def has_add_permission(self, request, obj=None):
-        return False
+    # def has_add_permission(self, request, obj=None):
+    #     return False
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    # def has_change_permission(self, request, obj=None):
+    #     return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 class CardAdmin(admin.ModelAdmin):

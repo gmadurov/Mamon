@@ -121,6 +121,10 @@ def getRoutes(request):
 # TODO: make the login use the check_user method from views_holders
 
 
+@api_view(["GET"])
+def getVersion(request):
+    return Response({"version": os.environ.get("VERSION")})
+
 @api_view(["POST"])
 def LoginAllUsers(request):
     user1 = User.objects.filter(username=request.data["username"])

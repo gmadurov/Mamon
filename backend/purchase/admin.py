@@ -11,9 +11,9 @@ from .models import Barcycle, Category, Order, Product, Purchase, Report
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "price", "image", "color"]
+    list_display = ["name", "price", "image", "color", 'active']
     # list_display = ['name', 'price', 'category', 'barcode']
-    list_editable = ["image", "color"]
+    list_editable = ["image", "color", "active"]
     list_filter = ["cat_products"]
     search_fields = ["name", "price", "id"]
     add_readonly_fields = []

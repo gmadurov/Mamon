@@ -1,23 +1,8 @@
 import { Avatar, Divider, Text } from "react-native-paper";
-import BottomSheet, {
-  BottomSheetFlatList,
-  BottomSheetTextInput,
-} from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetFlatList, BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import NFCContext, { TagEventLocal } from "../../context/NFCContext";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import ApiContext from "../../context/ApiContext";
 import { Card } from "../../models/Card";
@@ -44,13 +29,7 @@ export type BottomSearchProps = {
   noNFC?: boolean;
 };
 
-const BottomSearch = ({
-  style,
-  invalid,
-  textInputConfig,
-  placeholder,
-  noNFC = false,
-}: BottomSearchProps) => {
+const BottomSearch = ({ style, invalid, textInputConfig, placeholder, noNFC = false }: BottomSearchProps) => {
   const { BottomSearch, setBottomSearch } = useContext(FullContext);
   const { setBuyer } = useContext(CartContext);
   const NfcProxy = useContext(NFCContext);
@@ -95,11 +74,10 @@ const BottomSearch = ({
   }
   const sheetRef = useRef(null);
   const snapPoints = useMemo(() => ["25%", "50%", "90%"], ["50%"]);
-  const handleSheetChange = useCallback((index: number) => {
+  const handleSheetChange = useCallback(async (index: number) => {
     if (index === -1) {
       setBottomSearch(false);
       setSearch("");
-      NfcProxy.stopReading()
     }
   }, []);
 
@@ -109,7 +87,12 @@ const BottomSearch = ({
       // console.log("start nfc");
       try {
         tag = await NfcProxy.readTag();
-      } catch (e) {}
+      } catch (e) {
+        await NfcProxy.stopReading();
+      } finally {
+        await NfcProxy.stopReading();
+      }
+
       // const tag = { id: "0410308AC85E80" }; //for testing locally
       if (tag?.id) {
         // console.log(tag);
@@ -151,10 +134,13 @@ const BottomSearch = ({
     async function useNfc() {
       await startNfc();
     }
+    async function stopNfc() {
+      await NfcProxy.stopReading();
+    }
     if (BottomSearch) {
       useNfc();
     } else {
-      NfcProxy.stopReading();
+      stopNfc();
     }
   }, [BottomSearch]);
   const renderItem = ({ item }: { item: HolderChoice }) => {
@@ -204,12 +190,7 @@ const BottomSearch = ({
             style={styles.textInput}
           />
           <BottomSheetFlatList
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => getHolders()}
-              />
-            }
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => getHolders()} />}
             style={{ flex: 1 }}
             data={optionsHolders}
             keyExtractor={(item) => item.value.toString() as string}

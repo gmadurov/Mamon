@@ -1,21 +1,25 @@
-{% if queryset.has_other_pages %}
+{% if queryset.has_other_pages %} {% load pagination_tags %} 
 <div class="pagination">
   <div class="columns is-centered">
     {% if queryset.has_previous %}
-    
-    <div  class="column"><a href="?page={{queryset.previous_page_number}}"
+     
+    {% comment %} {{request.GET.urlencode}}& {% endcomment %}
+    <div class="column page-link"><a href="?{{ request|req_page:pageName|page_num:queryset.previous_page_number}}"
         data-page="{{queryset.previous_page_number}}">&#10094; Previous</a></div>
     {% endif %}
 
     {% for page in custom_range %}
-    {% if page == queryset.number %}
-    <div  class="column"><a href="?page={{page}}" data-page="{{page}}">{{page}}</a></div>
-    {% else %}
-    <div  class="column"><a href="?page={{page}}" data-page="{{page}}">{{page}}</a></div>
+    {% if page == queryset.number %} 
+    {% comment %} {{request.GET.urlencode}}& {% endcomment %}
+    <div  class="column page-link"><a href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a></div>
+    {% else %} 
+    {% comment %} {{request.GET.urlencode}}& {% endcomment %}
+    <div  class="column page-link"><a href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a></div>
     {% endif %} {% endfor %}
 
-    {% if queryset.has_next %}
-    <div class="column" ><a href="?page={{queryset.next_page_number}}" 
+    {% if queryset.has_next %} 
+    {% comment %} {{request.GET.urlencode}}& {% endcomment %}
+    <div class="column page-link" ><a href="?{{request|req_page:pageName|page_num:queryset.next_page_number }}" 
         data-page="{{queryset.next_page_number}}">Next &#10095</a></div>
     {% endif %}
 
@@ -26,9 +30,34 @@
 <!-- this section combines the pagination and the searchquery into on working thing  -->
 <script type='text/javascript'>
   // get serarcg form and page
-  let searchForm = document.getElementById('searchForm')
-  let pageLinks = document.getElementsByClassName('page-link')
+  {% comment %} let searchForm = document.URL.split('?')[1] {% endcomment %}
+  // get value from document.URL that matches pageName
+  {% comment %} page = document.URL.split('?')[1].split('&').filter(item => item === {{pageName}})[0] {% endcomment %}
+  document.URL.split('?')[1].split('&').filter(item => item.includes('{{pageName}}')).map(item => console.log(item.split('=')[0]+'='+(parseInt(item.split('=')[1])+1)))
+  // get value from document.URL that matches search
+  {% comment %} search = document.URL.split('?')[1].split('&').filter(item => item.includes('search'))[0].split('=')[1]
+  // update page value
+   pageLinks = document.querySelectorAll('.page-link')
+  pageLinks.forEach(function(pageLink){
+    let link = pageLink.children[0].href
+    let linkPage = link.split('?')[1].split('&').filter(item => item.includes('{{pageName}}'))[0].split('=')[1]
+    let linkSearch = link.split('?')[1].split('&').filter(item => item.includes('search'))[0].split('=')[1]
+    pageLink.children[0].href = `?search=${linkSearch}&{{pageName}}=${linkPage}`
+  })
 
+  // update search value
+  let searchInput = document.querySelector('.search-input')
+  searchInput.value = search
+  searchInput.addEventListener('keyup', function(){
+    if (searchInput.value == ''){
+      window.location.href = `?{{pageName}}=${page}`
+    }
+    else{
+      window.location.href = `?search=${searchInput.value}&{{pageName}}=${page}`
+    }
+  }) {% endcomment %}
+  {% comment %} let pageLinks = document.getElementsByClassName('page-link')
+  console.log(searchForm)
   // ensure search form exists 
   if (searchForm) {
     for (let i = 0; pageLinks.length > i; i++) {
@@ -37,12 +66,12 @@
         // get the data page
         let page = this.dataset.page
         //
-        searchForm.innerHTML += `<input value=${page} name='page' hidden/>`
+        searchForm.innerHTML += `<input value=${page} name=${pageName} hidden/>`
         searchForm.submit()
 
       })
     }
-  }
+  } {% endcomment %}
 
 
 </script>

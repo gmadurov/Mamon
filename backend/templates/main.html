@@ -3,7 +3,7 @@
   {% load static %}
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-   
+
     <meta content="text/html; charset=utf-8" http-equiv="Context-Type" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title>Mamon</title>
@@ -12,36 +12,31 @@
       name="csrf-token"
       content="AfDAD+MppIohg45k1osDsFKHghgG+Fs3SjqpgL3P/OBWaEzK0h3rW5obKb/IiQl92N1HIczaZDptJBl2Av/TCA=="
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    {% comment %} <link rel="stylesheet" href="{% static 'css/main.css'%}" /> {% endcomment %}
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    {% comment %}
+    <link rel="stylesheet" href="{% static 'css/main.css'%}" />
+    {% endcomment %}
   </head>
-  <body 
-  style="background-color: #edeff1"
-  >
-    {% block navbar %}{% include 'navbar.html' %}{% endblock navbar %}
-     {% if messages %} {% for message in messages %}
-        <div class="columns">
-          <div class="column is-2">
-            <article id="alert" class="message is-{{message.tags}}">
-              <div class="message-header">
-                <p>{{message.tags}}</p>
-                <button
-                  class="delete"
-                  id="alert__close"
-                  aria-label="delete"
-                ></button>
-              </div>
-              <div class="message-body">{{message}}</div>
-            </article>
+  <body style="background-color: #edeff1">
+    {% block navbar %}{% include 'navbar.html' %}{% endblock navbar %} {% if messages %} {% for message in messages %}
+    <div class="columns">
+      <div class="column is-2">
+        <article id="alert" class="message is-{{message.tags}}">
+          <div class="message-header">
+            <p>{{message.tags}}</p>
+            <button class="delete" id="alert__close" aria-label="delete"></button>
           </div>
-        </div>
-    {% endfor %} {% endif %}
-    <div class='columns is-offset-2 column is-8' style=''>
-      {% block content %} {% endblock content %}
+          <div class="message-body">{{message}}</div>
+        </article>
+      </div>
     </div>
+    {% endfor %} {% endif %}
+    <div class="columns  is-mobile is-multiline is-centered" style="">{% block content %} {% endblock content %}</div>
   </body>
-  {% comment %} <script src='{% static "js/app.js" %}'></> {% endcomment %}
-
+  {% comment %}
+  <script src='{% static "js/app.js" %}'>
+    </> {% endcomment %}
+        <script src='{% static "js/main.js" %}'>
+  </script>
 </html>

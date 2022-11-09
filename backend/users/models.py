@@ -27,11 +27,7 @@ class Holder(models.Model):
 
     def __str__(self):
         try:
-            return (
-                str(self.user.first_name + " " + self.user.last_name)
-                + ", €"
-                + str(self.stand)
-            )
+            return str(self.user.first_name + " " + self.user.last_name) + ", €" + str(self.stand)
         except:
             return "Holder"
 
@@ -79,6 +75,7 @@ class WalletUpgrades(models.Model):
     amount = models.FloatField()
     refund = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
+    comment = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return str(self.holder.name) + " upgraded wallet with €" + str(self.amount)

@@ -1,11 +1,5 @@
 import { Alert, Platform } from "react-native";
-import NfcManager, {
-  NdefStatus,
-  NfcError,
-  NfcEvents,
-  NfcTech,
-  TagEvent,
-} from "react-native-nfc-manager";
+import NfcManager, { NdefStatus, NfcError, NfcEvents, NfcTech, TagEvent } from "react-native-nfc-manager";
 import React, { createContext, useEffect, useState } from "react";
 
 import { getOutlet } from "reconnect.js";
@@ -27,7 +21,7 @@ export type NFCContextType = {
   goToNfcSetting: () => Promise<boolean>;
   readNdefOnce: () => Promise<TagEventLocal>;
   readTag: () => Promise<TagEventLocal>;
-  stopReading(): Promise<void>
+  stopReading(): Promise<void>;
 };
 
 const NFCContext = createContext({} as NFCContextType);
@@ -179,7 +173,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
   }) as () => Promise<TagEventLocal>;
 
   async function stopReading() {
-    NfcManager.cancelTechnologyRequest();
+    await NfcManager.cancelTechnologyRequest();
   }
 
   useEffect(() => {
@@ -189,26 +183,21 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
         setSupported(success);
         setEnabled(await isEnabled());
 
-        // if (success) {
-        // listen to the NFC on/off state on Android device
-        // if (Platform.OS === "android") {
-        // NfcManager.setEventListener(
-        //   NfcEvents.StateChanged,
-        //   ({ state }: { state: string }) => {
-        //     console.log(111, state);
+        if (success) {
+          // listen to the NFC on/off state on Android device
+          if (Platform.OS === "android") {
+            NfcManager.setEventListener(NfcEvents.StateChanged, ({ state }: { state: string }) => {
 
-        //   NfcManager.cancelTechnologyRequest().catch(() => 0);
-        //   if (state === "off") {
-        //     setEnabled(false);
-        //   } else if (state === "on") {
-        //     setEnabled(true);
-        //   }
-        // }
-        // );
-        // }
-        // }
+              NfcManager.cancelTechnologyRequest().catch(() => 0);
+              if (state === "off") {
+                setEnabled(false);
+              } else if (state === "on") {
+                setEnabled(true);
+              }
+            });
+          }
+        }
       } catch (ex: any) {
-        console.warn(ex);
         Alert.alert("NFC init error 2041", ex.message);
       }
     }
