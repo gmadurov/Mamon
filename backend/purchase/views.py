@@ -34,10 +34,12 @@ def showProducts(request):
         prod.id: orders.filter(ordered__in=request.user.holder.purchases.all()).filter(product=prod).aggregate(Sum("quantity")).get("quantity__sum") or 0
         for prod in products
     }
+    custom_range, products = paginateObjects(request, list(products), 10, "product_page")
 
     content = {
         "products": products,
         "quantity": quantity,
+        "custom_range": custom_range,
     }
     return render(request, "purchase/products.html", content)
 

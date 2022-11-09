@@ -1,4 +1,4 @@
-{% if request.user.is_authenticated %}
+{% if request.user.is_authenticated %}{% load auth_tags %}
 
 <nav
 class="navbar columns is-offset-2 column is-two-thirds"
@@ -19,24 +19,22 @@ style="background-color: #edeff1"
     aria-label="menu"
     aria-expanded="false"
     data-target="navbarBasicExample"
+
     >
     <span aria-hidden="true"></span>
     <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
-  {% if request.user.personel %}
+  {% if request.user|has_group:'Tapper' %}
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
       <a class="navbar-item"href={% url 'barcycles' %} > Bar Cycles </a>
       <a class="navbar-item"href={% url 'overview' %} > Overview </a>
       <a class="navbar-item" href={% url 'app' %}> App</a>
-      
-      <a class="navbar-item"> Stock Mutations </a>
-      
-      <div class="navbar-item has-dropdown is-hoverable">
+            
+      {% comment %} <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Products </a>
-        
         <div class="navbar-dropdown">
           <a class="navbar-item" href='{% url "products"%}'> All products </a>
           <a class="navbar-item"> Create Unit </a>
@@ -44,8 +42,8 @@ style="background-color: #edeff1"
           <a class="navbar-item"> Categories </a>
           <a class="navbar-item"> Create Categories</a>
         </div>
-      </div>
-      <div class="navbar-item has-dropdown is-hoverable">
+      </div> {% endcomment %}
+      {% comment %} <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Users </a>
         
         <div class="navbar-dropdown">
@@ -53,7 +51,7 @@ style="background-color: #edeff1"
           <hr class="navbar-divider" />
           <a class="navbar-item"> Create User </a>
         </div>
-      </div>
+      </div> {% endcomment %}
     </div>
     {% else %}
     <div id="navbarBasicExample" class="navbar-menu">
@@ -79,9 +77,9 @@ style="background-color: #edeff1"
           
           <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
           <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
-          <hr class="navbar-divider" />
+          {% comment %} <hr class="navbar-divider" />
           <a class="navbar-item"> View Profile </a>
-          <a class="navbar-item"> Edit Profile </a>
+          <a class="navbar-item"> Edit Profile </a> {% endcomment %}
           <hr class="navbar-divider" />
           <a class="navbar-item" href="{% url 'logout' %}"> Log Out </a>
         </div>
@@ -91,3 +89,26 @@ style="background-color: #edeff1"
 </nav>
 
 {% endif %}
+
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', () => {
+    const $navbarBurgers = Array.prototype.slice.call(
+      document.querySelectorAll('.navbar-burger'),
+      0
+      );
+      
+    if ($navbarBurgers.length > 0) {
+      $navbarBurgers.forEach(el => {
+        el.addEventListener('click', () => {
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
+          
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+        });
+      });
+    }
+  });
+</script>
+
+{% comment %} create a function to hide the dropdown {% endcomment %}

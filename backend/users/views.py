@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
+from purchase.utils import paginateObjects
+
 
 from .models import Holder, Personel
 
@@ -47,9 +49,12 @@ def showUsers(request):
 def home(request):
     user = Holder.objects.get(user=request.user)
     purchases = user.purchases.all()
+    custom_range, purchases = paginateObjects(request, list(purchases), 10, "purchase_page")
+
     content = {
         "user": user,
         "purchases": purchases,
+        "custom_range": custom_range,
     }
     return render(
         request,

@@ -1,26 +1,32 @@
 {% extends 'main.html'%}{% load purchase_tags %} {% block content %} {% if products%}
-<table class="table">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Price</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in products %}
-    <tr>
-      <td>{{ product.id }}</td>
-      <td>
-        <a href="{% url 'product' product.id %}">{{ product.name }}</a>
-      </td>
-      <td>€{{ product.price }}</td>
-      <td>{{ product.description }}</td>
+<div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>
+          <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+        </td>
+        <td>€{{ product.price }}</td>
+        <td>{{ product.description }}</td>
 
-      <td>{{quantity|get_item:product.id }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        <td>{{quantity|get_item:product.id }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {%include 'pagination.html' with pageName='product_page' queryset=products custom_range=custom_range %}
+  <br />
+</div>
+
 {% endif %}{% endblock content %}
