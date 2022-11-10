@@ -74,10 +74,17 @@ def loginLedenbase(request):
         )
     )
     if res.status_code != 200:
-        messages.error(
-            request,
-            ledenbaseUser["non_field_errors"],
-        )
+        try:
+
+            messages.error(
+                request,
+                ledenbaseUser["non_field_errors"],
+            )
+        except:
+            messages.error(
+                request,
+                "I have no clue what is happening",
+            )
         return None
 
     (user, created,) = User.objects.get_or_create(
