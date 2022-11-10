@@ -12,7 +12,7 @@ function AuthContent({
   isLogin: boolean;
   onAuthenticate: Function;
 }) {
-  const [username, setUsername] = useState<string>("GMaduro");
+  const [username, setUsername] = useState<string>("");
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState("");
   const [password, setPassword] = useState<string>("");
   // const [enteredConfirmPassword, setEnteredConfirmPassword] = useState("");
