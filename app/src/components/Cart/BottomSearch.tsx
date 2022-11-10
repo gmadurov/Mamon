@@ -30,7 +30,7 @@ export type BottomSearchProps = {
 };
 
 const BottomSearch = ({ style, invalid, textInputConfig, placeholder, noNFC = false }: BottomSearchProps) => {
-  const { BottomSearch, setBottomSearch } = useContext(FullContext);
+  const { BottomSearch, setBottomSearch, enableBottomSearch} = useContext(FullContext);
   const { setBuyer } = useContext(CartContext);
   const NfcProxy = useContext(NFCContext);
   const { ApiRequest } = useContext(ApiContext);
@@ -172,7 +172,7 @@ const BottomSearch = ({ style, invalid, textInputConfig, placeholder, noNFC = fa
       </>
     );
   };
-  if (BottomSearch) {
+  if (BottomSearch && enableBottomSearch) {
     return (
       <BottomSheet
         snapPoints={snapPoints}

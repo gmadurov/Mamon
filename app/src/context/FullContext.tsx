@@ -14,6 +14,8 @@ import { SettingsProvider } from "./SettingsContext";
 type FullContextType = {
   BottomSearch: boolean;
   setBottomSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  enableBottomSearch: boolean;
+  setEnableBottomSearch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 /** provides Settings */
@@ -21,10 +23,12 @@ const FullContext = createContext<FullContextType>({} as FullContextType);
 export default FullContext;
 export const FullProvider = ({ children }: { children: React.ReactNode }) => {
   const [BottomSearch, setBottomSearch] = useState<boolean>(false);
-
+  const [enableBottomSearch, setEnableBottomSearch] = useState<boolean>(false);
   const data = {
     BottomSearch,
     setBottomSearch,
+    enableBottomSearch,
+    setEnableBottomSearch,
   };
   return (
     <FullContext.Provider value={data}>

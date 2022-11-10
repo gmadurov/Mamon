@@ -8,6 +8,8 @@ import React, { useContext } from "react";
 
 import AuthContext from "../context/AuthContext";
 import CategoryScreen from "../screens/CategoryScreen";
+import { Divider } from "react-native-paper";
+import FullContext from "../context/FullContext";
 import LinkCardScreen from "../screens/LinkCardScreen";
 import LoginScreen from "../screens/LoginScreen";
 import NFCContext from "../context/NFCContext";
@@ -20,6 +22,7 @@ const Drawer = createDrawerNavigator();
 
 /** the list of screens that will be reachable via the drawer( the menu you can open to the left of the screen) */
 const DrawerNavigator = () => {
+  const { setEnableBottomSearch } = useContext(FullContext);
   const { setSideBySide } = useContext(SettingsContext);
   const { logoutFunc, users } = useContext(AuthContext);
   const { setEnabled, supported } = useContext(NFCContext);
@@ -38,8 +41,12 @@ const DrawerNavigator = () => {
               />
             )}
             <DrawerItem
-              label="_Set Side by Side view"
+              label="Toggle Side by Side"
               onPress={() => setSideBySide((nu) => !nu)}
+            />
+            <DrawerItem
+              label="Toggle Bottom Search"
+              onPress={() => setEnableBottomSearch((nu) => !nu)}
             />
             <DrawerItem
               label="Uitlogen"
