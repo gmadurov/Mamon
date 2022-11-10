@@ -56,9 +56,7 @@ def getRoutes(request):
             "description": "refresh token",
             "body": {"refresh": "string"},
         },
-        {
-            "ALL BELLOW REQUIRE AUTHENTICATION as a header": "Bearer or Authentication: access token"
-        },
+        {"ALL BELLOW REQUIRE AUTHENTICATION as a header": "Bearer or Authentication: access token"},
         {
             "GET": API_URL + "holders/",
             "description": "Get all holders",
@@ -125,6 +123,7 @@ def getRoutes(request):
 def getVersion(request):
     return Response({"version": os.environ.get("VERSION")})
 
+
 @api_view(["POST"])
 def LoginAllUsers(request):
     user1 = User.objects.filter(username=request.data["username"])
@@ -177,9 +176,7 @@ def loginLedenbase(request, boolean=False):
         holder = user.holder
     holder.ledenbase_id = ledenbaseUser["user"]["id"]
     try:
-        holder.image_ledenbase = (
-        os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
-    )
+        holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
     except:
         pass
     holder.save()

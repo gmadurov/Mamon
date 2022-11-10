@@ -39,14 +39,12 @@ from with date inputs called start_date and end_date {% endcomment %}
       <tr>
         <th>Order Date</th>
         <th>Price</th>
-        <th>Customer</th>
         <th>Products</th>
       </tr>
       {% for purchase in purchases %}
       <tr>
         <td>{{purchase.created}}</td>
         <td>{{purchase.total}}</td>
-        <td>{{purchase.buyer.name}}</td>
         <td>
           {% for item in purchase.orders.all %} {{item.product.name}}: {{item.quantity}}<br />
           {% endfor %}
