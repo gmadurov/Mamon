@@ -176,8 +176,11 @@ def loginLedenbase(request, boolean=False):
     else:
         holder = user.holder
     holder.ledenbase_id = ledenbaseUser["user"]["id"]
-    holder.image_ledenbase = (
+    try:
+        holder.image_ledenbase = (
         os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
     )
+    except:
+        pass
     holder.save()
     return user
