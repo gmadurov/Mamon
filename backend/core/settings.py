@@ -32,11 +32,7 @@ LOCAL = False if os.environ.get("LOCAL") == "False" else True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "mamon.esrtheta.nl",
-    "10.0.2.2",
-]
+ALLOWED_HOSTS = ["localhost", "mamon.esrtheta.nl", "10.0.2.2", ".esrtheta.nl"]
 
 JWT_KEY = os.environ.get("JWT_KEY")
 
