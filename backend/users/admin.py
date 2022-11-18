@@ -15,7 +15,8 @@ class CardAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         return [
-            "holder" "card_id",
+            "holder",
+            "card_id",
         ]
 
     def has_delete_permission(self, request, obj=None):
@@ -117,6 +118,9 @@ class MolliePaymentsAdmin(admin.ModelAdmin):
                 "payment_id",
                 "date",
             ]
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 # Register your models here.

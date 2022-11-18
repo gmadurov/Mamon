@@ -28,7 +28,7 @@ class Holder(models.Model):
 
     def __str__(self):
         try:
-            return str(self.user.first_name + " " + self.user.last_name) 
+            return str(self.user.first_name + " " + self.user.last_name)
         except:
             return "Holder"
 
@@ -107,5 +107,5 @@ class MolliePayments(models.Model):
 
     def __str__(self):
         if self.is_paid:
-            return str(self.holder.name) + " has payed €" + str(self.amount) + " on " + str(self.payed_on)
+            return str(self.holder.name) + " has payed on " + str(self.payed_on)
         return str(self.holder.name) + " paid " + str(self.payment_id)

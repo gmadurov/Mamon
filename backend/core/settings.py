@@ -40,13 +40,8 @@ JWT_KEY = os.environ.get("JWT_KEY")
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
     ######### self added
+    "admin_interface",
     "rest_framework_simplejwt.token_blacklist",
     "purchase.apps.PurchaseConfig",
     "rest_framework_simplejwt",
@@ -56,11 +51,19 @@ INSTALLED_APPS = [
     "colorfield",
     "storages",
     "django_seed",
+    ########## default
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -160,6 +163,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
+
+LANGUAGES = [("en", "us"), ("nl", "nl")]
 
 LANGUAGE_CODE = "en-us"
 

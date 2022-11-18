@@ -159,6 +159,9 @@ class BarcycleAdmin(admin.ModelAdmin):
     total_dif_flowmeter1.short_description = "Total difference flowmeter 1"
     total_dif_flowmeter2.short_description = "Total difference flowmeter 2"
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = [
@@ -183,8 +186,10 @@ class ProductAdmin(admin.ModelAdmin):
         if obj:
             return self.readonly_fields + ("price", "id")
         return self.readonly_fields
+
     def has_delete_permission(self, request, obj=None):
         return False
+
 
 class PurchaseAdmin(admin.ModelAdmin):
     list_display = [
@@ -197,6 +202,15 @@ class PurchaseAdmin(admin.ModelAdmin):
     filter_horizontal = ["orders"]
     list_filter = ["buyer", "payed"]
     search_fields = ["buyer", "payed", "id"]
+    exclude = ("remaining_after_purchase",)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ("orders", "seller", "buyer")
+        return self.readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 # make a ReportAdmin template
@@ -210,10 +224,24 @@ class ReportAdmin(admin.ModelAdmin):
         "flow_meter2",
         "comment",
     ]
-    list_editable = ["action", "comment"]
     list_filter = ["action"]
     search_fields = ["name", "price", "date", "personel", "action", "comment"]
     actions = [set_to_open, set_to_close]
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + (
+                "personel",
+                "date",
+                "action",
+                "total_cash",
+                "flow_meter1",
+                "flow_meter2",
+            )
+        return self.readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 admin.site.register(Product, ProductAdmin)
