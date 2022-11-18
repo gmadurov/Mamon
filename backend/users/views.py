@@ -163,7 +163,7 @@ def app(request):
 def mollieReturn(request, *args, **kwargs):
     molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
     payment = mollie_client.payments.get(molliePayment.payment_id)
-    if payment.is_paid():
+    if payment.status == "paid":
         messages.info(
             request,
             f"Payment was succesful{payment}",
@@ -180,9 +180,18 @@ def mollieReturn(request, *args, **kwargs):
 @csrf_exempt
 def mollieWebhook(request, *args, **kwargs):
     molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
-    print("molliePayment", {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier})
+    print(
+        "molliePayment",
+        {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier},
+    )
     payment = mollie_client.payments.get(molliePayment.payment_id)
-    if payment.is_paid():
+    WalletUpgrades.objects.create(
+            holder=molliePayment.holder,
+            amount=0,
+            comment=f" test output \n\n {payment}",
+            seller=Personel.objects.get(id=5),
+        )
+    if payment.status == "paid":
         # messages.info(
         #     request,
         #     f"Payment was succesful{payment}",
@@ -193,7 +202,7 @@ def mollieWebhook(request, *args, **kwargs):
         WalletUpgrades.objects.create(
             holder=molliePayment.holder,
             amount=molliePayment.amount,
-            comment=f"Upgrade via mollie payment {molliePayment.payment_id}",
+            comment=f"Upgrade via mollie payment {molliePayment.payment_id}\n\n {payment}",
             seller=Personel.objects.get(id=5),
         )
     else:
@@ -229,3 +238,4 @@ def paymentUpgrade(request):
         "form": form,
     }
     return render(request, "users/paymentUpgrade.html", content)
+
