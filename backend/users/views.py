@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_exempt
 
 from django.urls import reverse
 from purchase.utils import paginateObjects
@@ -176,6 +177,7 @@ def mollieReturn(request, *args, **kwargs):
 
 
 @login_required(login_url="login")
+@csrf_exempt
 def mollieWebhook(request, *args, **kwargs):
     molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
     payment = mollie_client.payments.get(molliePayment.payment_id)
