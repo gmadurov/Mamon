@@ -57,14 +57,14 @@ class PersonelAdmin(admin.ModelAdmin):
 
 # create WalletUpdateAdmin if you want to see the wallet upgrades in the admin
 class WalletUpdateAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "amount", "date", "seller", "refund")
+    list_display = ("__str__", "date", "seller", "refund")
     search_fields = (
         "holder__user__username",
         "holder__user__first_name",
         "holder__user__last_name",
-        "amount",
         "holder__ledenbase_id",
     )
+    exclude = ("amount",)
     # has no change and delete rights
     def has_add_permission(self, request, obj=None):
         return False
@@ -79,7 +79,6 @@ class WalletUpdateAdmin(admin.ModelAdmin):
         return [
             "holder",
             "seller",
-            "amount",
             "refund",
             "date",
             "cash",
@@ -105,7 +104,6 @@ class MolliePaymentsAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return [
-                "amount",
                 "date",
                 "payment_id",
                 "payed_on",
