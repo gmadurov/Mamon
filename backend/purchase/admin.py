@@ -10,92 +10,6 @@ from .models import Barcycle, Category, Order, Product, Purchase, Report
 # Register your models here.
 
 
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "price", "image", "color", 'active']
-    # list_display = ['name', 'price', 'category', 'barcode']
-    list_editable = ["image", "color", "active"]
-    list_filter = ["cat_products"]
-    search_fields = ["name", "price", "id"]
-    add_readonly_fields = []
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj:
-            return self.readonly_fields + ("price", "id")
-        return self.readonly_fields
-
-
-# you can use the ProductAdmin as a template
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "description",
-    ]
-    filter_horizontal = ["products"]
-    # list_editable = ["description"]
-    list_filter = ["products"]
-    search_fields = ["name", "description", "products"]
-
-
-class PurchaseAdmin(admin.ModelAdmin):
-    list_display = [
-        "buyer",
-        "total",
-        "payed",
-        "created",
-        "seller",
-    ]
-    filter_horizontal = ["orders"]
-    list_filter = ["buyer", "payed"]
-    search_fields = ["buyer", "payed", "id"]
-
-
-# make a ReportAdmin template
-class ReportAdmin(admin.ModelAdmin):
-    list_display = [
-        "date",
-        "personel",
-        "action",
-        "total_cash",
-        "flow_meter1",
-        "flow_meter2",
-        "comment",
-    ]
-    list_editable = ["action", "comment"]
-    list_filter = ["action"]
-    search_fields = ["name", "price", "date", "personel", "action", "comment"]
-    actions = [set_to_open, set_to_close]
-
-
-class PurchaseBarCycleInline(NonrelatedTabularInline):
-    model = Purchase
-    # extra = 1
-    # filter_horizontal = ["created", "payed", "buyer", "orders"]
-    readonly_fields = [
-        "created",
-        "payed",
-        "buyer",
-        "orders",
-        "remaining_after_purchase",
-    ]
-    # exclude = ["product", "quantity"]
-    def get_form_queryset(self, obj):
-        return self.model.objects.filter(
-            created__range=[
-                obj.opening_report.date,
-                obj.closing_report.date if obj.closing_report else datetime.now(),
-            ]
-        )
-
-    def get_readonly_fields(self, request, obj=None):
-        return self.readonly_fields
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
 class ReportInlineAdmin(NonrelatedTabularInline):
     model = Report
     readonly_fields = [
@@ -134,7 +48,37 @@ class ReportInlineAdmin(NonrelatedTabularInline):
         parent.closing_report.id = instance.id
 
 
-# make a BarcycleAdmin template
+class PurchaseBarCycleInline(NonrelatedTabularInline):
+    model = Purchase
+    readonly_fields = [
+        "pin",
+        "cash",
+        "seller",
+        "created",
+        "payed",
+        "orders",
+        "remaining_after_purchase",
+    ]
+    exclude = ["buyer"]
+
+    def get_form_queryset(self, obj):
+        return self.model.objects.filter(
+            created__range=[
+                obj.opening_report.date,
+                obj.closing_report.date if obj.closing_report else datetime.now(),
+            ]
+        )
+
+    def get_readonly_fields(self, request, obj=None):
+        return self.readonly_fields
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 class BarcycleAdmin(admin.ModelAdmin):
     list_display = [
         "__str__",
@@ -216,9 +160,65 @@ class BarcycleAdmin(admin.ModelAdmin):
     total_dif_flowmeter2.short_description = "Total difference flowmeter 2"
 
 
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "description",
+    ]
+    filter_horizontal = ["products"]
+    # list_editable = ["description"]
+    list_filter = ["products"]
+    search_fields = ["name", "description", "products"]
+
+
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ["name", "price", "image", "color", "active"]
+    # list_display = ['name', 'price', 'category', 'barcode']
+    list_editable = ["image", "color", "active"]
+    list_filter = ["cat_products"]
+    search_fields = ["name", "price", "id"]
+    add_readonly_fields = []
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ("price", "id")
+        return self.readonly_fields
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+class PurchaseAdmin(admin.ModelAdmin):
+    list_display = [
+        "buyer",
+        "total",
+        "payed",
+        "created",
+        "seller",
+    ]
+    filter_horizontal = ["orders"]
+    list_filter = ["buyer", "payed"]
+    search_fields = ["buyer", "payed", "id"]
+
+
+# make a ReportAdmin template
+class ReportAdmin(admin.ModelAdmin):
+    list_display = [
+        "date",
+        "personel",
+        "action",
+        "total_cash",
+        "flow_meter1",
+        "flow_meter2",
+        "comment",
+    ]
+    list_editable = ["action", "comment"]
+    list_filter = ["action"]
+    search_fields = ["name", "price", "date", "personel", "action", "comment"]
+    actions = [set_to_open, set_to_close]
+
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Report, ReportAdmin)
 admin.site.register(Barcycle, BarcycleAdmin)
-admin.site.register(Order)  # do not enable
+# admin.site.register(Order)  # do not enable

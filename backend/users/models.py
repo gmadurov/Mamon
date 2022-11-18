@@ -28,7 +28,7 @@ class Holder(models.Model):
 
     def __str__(self):
         try:
-            return str(self.user.first_name + " " + self.user.last_name) + ", €" + str(self.stand)
+            return str(self.user.first_name + " " + self.user.last_name) 
         except:
             return "Holder"
 
@@ -99,11 +99,13 @@ class MolliePayments(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=7)
     date = models.DateTimeField(auto_now_add=True)
     comment = models.CharField(max_length=100, null=True, blank=True)
-    payment_id = models.CharField(max_length=15, blank=True)
+    payment_id = models.CharField(max_length=15, blank=True, unique=True)
     is_paid = models.BooleanField(blank=False, default=False)
     identifier = models.CharField(max_length=36, unique=True, default=uuid4, editable=False)
     payed_on = models.DateTimeField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.holder.name)
+        if self.is_paid:
+            return str(self.holder.name) + " has payed €" + str(self.amount) + " on " + str(self.payed_on)
+        return str(self.holder.name) + " paid " + str(self.payment_id)

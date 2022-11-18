@@ -61,8 +61,8 @@ class Purchase(models.Model):
 
     def __str__(self):
         return (
-            str(self.buyer.name)
-            + ", €"
+            str('Total:')
+            + " €"
             + str(
                 sum([item.quantity * item.product.price for item in self.orders.all()])
             )
