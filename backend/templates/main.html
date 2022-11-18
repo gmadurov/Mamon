@@ -6,7 +6,7 @@
 
     <meta content="text/html; charset=utf-8" http-equiv="Context-Type" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <title>Mamon</title>
+    <title>Mamon | {% block title %}{% endblock title %}</title>
     <meta name="csrf-param" content="authenticity_token" />
     <meta
       name="csrf-token"
@@ -32,7 +32,7 @@
       </div>
     </div>
     {% endfor %} {% endif %}
-    <div class="columns  is-mobile is-multiline is-centered" style="">{% block content %} {% endblock content %}</div>
+    <div class="columns is-mobile is-multiline is-centered" style="">{% block content %} {% endblock content %}</div>
   </body>
   {% comment %}
   <script src='{% static "js/app.js" %}'>

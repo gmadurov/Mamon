@@ -31,4 +31,7 @@ services:
       - SECRET_KEY=$SECRET_KEY
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
       - DEBUG=True
-
+      - LOCAL=$LOCAL
+      - MOLLIE_API_KEY=$MOLLIE_API_KEY
+      - MOLLIE_PARTNER_ID=$MOLLIE_PARTNER_ID
+      - MOLLIE_PROFILE_ID=$MOLLIE_PROFILE_ID

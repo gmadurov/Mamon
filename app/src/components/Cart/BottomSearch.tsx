@@ -73,7 +73,7 @@ const BottomSearch = ({ style, invalid, textInputConfig, placeholder, noNFC = fa
     setRefreshing(false);
   }
   const sheetRef = useRef(null);
-  const snapPoints = useMemo(() => ["25%", "50%", "90%"], ["50%"]);
+  const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
   const handleSheetChange = useCallback(async (index: number) => {
     if (index === -1) {
       setBottomSearch(false);

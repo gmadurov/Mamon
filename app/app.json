@@ -22,6 +22,7 @@
       "bundleIdentifier": "com.gusmadvol.mamongus"
     },
     "android": {
+      "ANDROID_HOME": "/mnt/c/Users/Gustavo\\ Maduro/AppData/Local/Android/Sdk",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/pwa-icons/manifest-icon-512.png",
         "backgroundColor": "#FFFFFF"

@@ -29,10 +29,9 @@ style="background-color: #edeff1"
   {% if request.user|has_group:'Tapper' %}
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
-      <a class="navbar-item"href={% url 'barcycles' %} > Bar Cycles </a>
-      <a class="navbar-item"href={% url 'overview' %} > Overview </a>
+      <a class="navbar-item" href={% url 'barcycles' %} > Bar Cycles </a>
+      <a class="navbar-item" href={% url 'overview' %} > Overview </a>
       <a class="navbar-item" href={% url 'app' %}> App</a>
-            
       {% comment %} <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Products </a>
         <div class="navbar-dropdown">
@@ -63,7 +62,10 @@ style="background-color: #edeff1"
           <div class="navbar-dropdown">
             <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
           </div>
+
       </div>
+      <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
+
     </div>
     {% endif %}
     <div class="navbar-end">
@@ -77,6 +79,7 @@ style="background-color: #edeff1"
           
           <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
           <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
+          <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
           {% comment %} <hr class="navbar-divider" />
           <a class="navbar-item"> View Profile </a>
           <a class="navbar-item"> Edit Profile </a> {% endcomment %}

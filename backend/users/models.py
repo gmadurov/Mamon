@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.db import models
 
 # Create your models here.
@@ -78,7 +79,7 @@ class WalletUpgrades(models.Model):
     comment = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return str(self.holder.name) + " upgraded wallet with €" + str(self.amount)
+        return str(self.holder.name)
 
 
 class Card(models.Model):
@@ -88,3 +89,18 @@ class Card(models.Model):
 
     def __str__(self):
         return str(self.holder.name) + " has card " + str(self.card_name)
+
+
+class MolliePayments(models.Model):
+    holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
+    amount = models.DecimalField(decimal_places=2, max_digits=7)
+    date = models.DateTimeField(auto_now_add=True)
+    comment = models.CharField(max_length=100, null=True, blank=True)
+    payment_id = models.CharField(max_length=15, blank=True)
+    is_paid = models.BooleanField(blank=False, default=False)
+    identifier = models.CharField(max_length=36, unique=True, default=uuid4, editable=False)
+    payed_on = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.holder.name)

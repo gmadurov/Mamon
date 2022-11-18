@@ -1,5 +1,7 @@
+from datetime import datetime
 import json
 import os
+import pprint
 
 import requests
 from django.contrib import messages
@@ -9,10 +11,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
+from django.urls import reverse
 from purchase.utils import paginateObjects
+from .forms import MolliePaymentsForm
 
-
-from .models import Holder, Personel
+from .models import Holder, MolliePayments, Personel, WalletUpgrades
+from core.settings import mollie_client
 
 # Create your views here.
 
@@ -146,8 +150,79 @@ def logoutUser(request):
     return redirect("login")
 
 
+@login_required(login_url="login")
 def app(request):
     return render(
         request,
         "users/app.html",
     )
+
+
+@login_required(login_url="login")
+def mollieReturn(request, *args, **kwargs):
+    payment = mollie_client.payments.get(kwargs["payment_id"])
+    if payment.is_paid():
+        messages.info(
+            request,
+            "Payment was succesful",
+        )
+    else:
+        messages.error(
+            request,
+            "Payment was not succesful",
+        )
+    return redirect("userHome")
+
+
+@login_required(login_url="login")
+def mollieWebhook(request, *args, **kwargs):
+    molliePayment = MolliePayments.objects.get(payment_id=kwargs["identifier"])
+    payment = mollie_client.payments.get(kwargs["identifier"])
+    if payment.is_paid():
+        messages.info(
+            request,
+            "Payment was succesful",
+        )
+        molliePayment.is_paid = True
+        molliePayment.payed_on = datetime.now()
+        molliePayment.save()
+        WalletUpgrades.objects.create(
+            holder=molliePayment.holder,
+            amount=molliePayment.amount,
+            comment=f"Upgrade via mollie payment {molliePayment.payment_id}",
+            seller=Personel.objects.get(id=5),
+        )
+    else:
+        messages.error(
+            request,
+            "Payment was not succesful",
+        )
+    return redirect("userHome")
+
+
+@login_required(login_url="login")
+def paymentUpgrade(request):
+    form = MolliePaymentsForm()
+    if request.method == "POST":
+        form = MolliePaymentsForm(request.POST)
+        if form.is_valid():
+            molliePayment = form.save(commit=False)
+            molliePayment.holder = request.user.holder
+            # molliePayment.save()
+            body = {
+                "amount": {"currency": "EUR", "value": f"{molliePayment.amount:.2f}"},
+                "description": f"Mamon | Wallet Opwarderen  €{molliePayment.amount:.2f}",
+                "redirectUrl": request.build_absolute_uri(reverse("mollie-return", args=[str(molliePayment.identifier)])),
+                "webhookUrl": request.build_absolute_uri(reverse("mollie-webhook", args=[str(molliePayment.identifier)])),
+                "method": ["applepay", "creditcard", "ideal"],
+                "metadata": {"identifier": str(molliePayment.identifier)},
+            }
+            payment = mollie_client.payments.create(body)
+            molliePayment.payment_id = payment.id
+            molliePayment.expiry_date = payment.get("expiresAt")
+            molliePayment.save()
+            return redirect(payment.checkout_url)
+    content = {
+        "form": form,
+    }
+    return render(request, "users/paymentUpgrade.html", content)

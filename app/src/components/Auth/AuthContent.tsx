@@ -5,13 +5,7 @@ import Button from "../ui/Button";
 import { GlobalStyles } from "../../constants/styles";
 import Input from "../ui/Input";
 
-function AuthContent({
-  isLogin,
-  onAuthenticate,
-}: {
-  isLogin: boolean;
-  onAuthenticate: Function;
-}) {
+function AuthContent({ isLogin, onAuthenticate }: { isLogin: boolean; onAuthenticate: Function }) {
   const [username, setUsername] = useState<string>("");
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState("");
   const [password, setPassword] = useState<string>("");
@@ -39,11 +33,11 @@ function AuthContent({
   // });
 
   // function switchAuthModeHandler() {
-    // if (isLogin) {
-    //   navigation.replace("Signup");
-    // } else {
-    //   navigation.replace("Login");
-    // }
+  // if (isLogin) {
+  //   navigation.replace("Signup");
+  // } else {
+  //   navigation.replace("Login");
+  // }
   // }
 
   function submitHandler() {
@@ -56,9 +50,7 @@ function AuthContent({
         <View>
           <Input
             label="Gebruikers naam"
-            onUpdateValue={(text: string) =>
-              updateInputValueHandler(text, "username")
-            }
+            onUpdateValue={(text: string) => updateInputValueHandler(text, "username")}
             value={username}
             // isInvalid={emailIsInvalid}
           />
@@ -73,9 +65,7 @@ function AuthContent({
         )} */}
           <Input
             label="Wachtwoord"
-            onUpdateValue={(text: string) =>
-              updateInputValueHandler(text, "password")
-            }
+            onUpdateValue={(text: string) => updateInputValueHandler(text, "password")}
             secure
             value={password}
             keyboardType={undefined}
@@ -92,7 +82,8 @@ function AuthContent({
         )} */}
           <View style={styles.buttons}>
             <Button onPressFunction={submitHandler}>
-              {isLogin || true ? "Log In" : "Sign Up"}
+              Log In
+              {/* {isLogin || true ? "Log In" : "Sign Up"} */}
               {/* for if we ever want to expand*/}
             </Button>
           </View>

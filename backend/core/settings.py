@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from mollie.api.client import Client
 from .utils.utils import init_DB
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -198,3 +199,10 @@ MANAGERS = [
 ]
 # SECURE_SSL_REDIRECT = True
 CSRF_TRUSTED_ORIGINS = ["https://*.esrtheta.nl", "http://localhost:8000"]
+
+
+MOLLIE_API_KEY = os.environ.get("MOLLIE_API_KEY")
+MOLLIE_PARTNER_ID = os.environ.get("MOLLIE_PARTNER_ID")
+MOLLIE_PROFILE_ID = os.environ.get("MOLLIE_PROFILE_ID")
+mollie_client = Client()
+mollie_client.set_api_key(MOLLIE_API_KEY)

@@ -2,7 +2,6 @@ import { Alert, Platform } from "react-native";
 import NfcManager, { NdefStatus, NfcError, NfcEvents, NfcTech, TagEvent } from "react-native-nfc-manager";
 import React, { createContext, useEffect, useState } from "react";
 
-import { getOutlet } from "reconnect.js";
 import { showMessage } from "react-native-flash-message";
 
 export interface TagEventLocal extends TagEvent {
@@ -34,33 +33,12 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
     async function wrapper() {
       if (supported && enabled) {
         try {
-          if (Platform.OS === "android") {
-            getOutlet("androidPrompt").update({
-              visible: true,
-              message: "Ready to scan NFC",
-            });
-          }
-
-          const resp = await fn.apply(null, arguments);
-
-          if (Platform.OS === "android") {
-            getOutlet("androidPrompt").update({
-              visible: true,
-              message: "Completed",
-            });
-          }
-
+          const resp = await fn.apply(null, arguments)
           return resp;
         } catch (ex) {
           throw ex;
         } finally {
-          if (Platform.OS === "android") {
-            setTimeout(() => {
-              getOutlet("androidPrompt").update({
-                visible: false,
-              });
-            }, 800);
-          }
+          console.log('finished scanning');
         }
       }
     }

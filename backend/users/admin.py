@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Card, Holder, Personel, WalletUpgrades
+from .models import Card, Holder, MolliePayments, Personel, WalletUpgrades
 
 
 class HolderAdmin(admin.ModelAdmin):
@@ -55,9 +55,39 @@ class CardAdmin(admin.ModelAdmin):
         ]
 
 
+class MolliePaymentsAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "date")
+    search_fields = (
+        "holder__user__username",
+        "holder__user__first_name",
+        "holder__user__last_name",
+        "holder__ledenbase_id",
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return [
+                "amount",
+                "date",
+                "payment_id",
+                "payed_on",
+                "expiry_date",
+                "is_paid",
+                "holder",
+            ]
+        else:
+            return [
+                "is_paid",
+                "payment_id",
+                "date",
+            ]
+
+
 # Register your models here.
 admin.site.register(Holder, HolderAdmin)
 admin.site.register(Personel, PersonelAdmin)
 
 admin.site.register(WalletUpgrades, WalletUpdateAdmin)
 admin.site.register(Card, CardAdmin)
+
+admin.site.register(MolliePayments, MolliePaymentsAdmin)
