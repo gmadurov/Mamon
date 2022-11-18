@@ -160,7 +160,7 @@ def app(request):
 
 @login_required(login_url="login")
 def mollieReturn(request, *args, **kwargs):
-    payment = mollie_client.payments.get(kwargs["payment_id"])
+    payment = mollie_client.payments.get(kwargs["identifier"])
     if payment.is_paid():
         messages.info(
             request,
@@ -169,7 +169,7 @@ def mollieReturn(request, *args, **kwargs):
     else:
         messages.error(
             request,
-            "Payment was not succesful",
+            "Payment was not yet succesful",
         )
     return redirect("userHome")
 
