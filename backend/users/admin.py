@@ -36,7 +36,18 @@ class WalletUpdateAdmin(admin.ModelAdmin):
     #     return False
 
     # def has_delete_permission(self, request, obj=None):
-    #     return False
+    #     return False'
+    def get_readonly_fields(self, request, obj=None):
+        return [
+            "holder",
+            "seller",
+            "amount",
+            "refund",
+            "date",
+            "cash",
+            "pin",
+            "molliePayment",
+        ]
 
 
 class CardAdmin(admin.ModelAdmin):

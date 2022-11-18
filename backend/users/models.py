@@ -79,7 +79,7 @@ class WalletUpgrades(models.Model):
     comment = models.CharField(max_length=100, null=True, blank=True)
     cash = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
-    molliePayment = models.ForeignKey('MolliePayments', on_delete=models.CASCADE, null=True, blank=True, related_name='payment')
+    molliePayment = models.OneToOneField("MolliePayments", on_delete=models.CASCADE, null=True, blank=True, related_name="payment")
 
     def __str__(self):
         return str(self.holder.name)
