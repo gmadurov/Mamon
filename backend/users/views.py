@@ -160,7 +160,8 @@ def app(request):
 
 @login_required(login_url="login")
 def mollieReturn(request, *args, **kwargs):
-    payment = mollie_client.payments.get(kwargs["identifier"])
+    molliePayment = MolliePayments.objects.get(payment_id=kwargs["identifier"])
+    payment = mollie_client.payments.get(molliePayment.payment_id)
     if payment.is_paid():
         messages.info(
             request,
@@ -177,7 +178,7 @@ def mollieReturn(request, *args, **kwargs):
 @login_required(login_url="login")
 def mollieWebhook(request, *args, **kwargs):
     molliePayment = MolliePayments.objects.get(payment_id=kwargs["identifier"])
-    payment = mollie_client.payments.get(kwargs["identifier"])
+    payment = mollie_client.payments.get(molliePayment.payment_id)
     if payment.is_paid():
         messages.info(
             request,
@@ -208,7 +209,6 @@ def paymentUpgrade(request):
         if form.is_valid():
             molliePayment = form.save(commit=False)
             molliePayment.holder = request.user.holder
-            # molliePayment.save()
             body = {
                 "amount": {"currency": "EUR", "value": f"{molliePayment.amount:.2f}"},
                 "description": f"Mamon | Wallet Opwarderen  €{molliePayment.amount:.2f}",
