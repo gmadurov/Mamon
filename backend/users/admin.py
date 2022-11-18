@@ -62,6 +62,10 @@ class MolliePaymentsAdmin(admin.ModelAdmin):
         "holder__user__first_name",
         "holder__user__last_name",
         "holder__ledenbase_id",
+        "payment_id",
+        "payed_on",
+        "is_paid",
+        "identifier",
     )
 
     def get_readonly_fields(self, request, obj=None):
