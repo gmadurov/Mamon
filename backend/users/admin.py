@@ -56,7 +56,7 @@ class CardAdmin(admin.ModelAdmin):
 
 
 class MolliePaymentsAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "date")
+    list_display = ("__str__", "date", "payment_id", "is_paid", "payed_on")
     search_fields = (
         "holder__user__username",
         "holder__user__first_name",

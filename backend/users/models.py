@@ -77,6 +77,9 @@ class WalletUpgrades(models.Model):
     refund = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
     comment = models.CharField(max_length=100, null=True, blank=True)
+    cash = models.BooleanField(default=False)
+    pin = models.BooleanField(default=False)
+    molliePayment = models.ForeignKey('MolliePayments', on_delete=models.CASCADE, null=True, blank=True, related_name='payment')
 
     def __str__(self):
         return str(self.holder.name)
