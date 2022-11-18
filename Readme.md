@@ -97,42 +97,42 @@ npm start
 add remote to git repo
 
 ```
- git remote add metis metis:master
+ git remote add metis metis:staging-mamon
 ```
 
 op metis
 
 ````
- dokku apps:create mamon
- dokku postgres:create mamon-db -I 14
- dokku postgres:link mamon-db mamon```
-````
+ dokku apps:create staging-mamon
+ dokku postgres:create staging-mamon-db -I 14
+ dokku postgres:link staging-mamon-db staging-mamon --no-restart
+```
 
-set mamon DATABASE_URL variaable to mamon -db link
+set staging-mamon DATABASE_URL variaable to staging-mamon -db link 
 
 ```
-dokku domains:add mamon "mamon.esrtheta.nl"
-dokku config:set mamon <key>=<value>
-mkdir /home/mamon/staticfiles
-dokku storage:mount mamon /backend/staticfiles:/home/mamon/staticfiles
-dokku letsencrypt:enable mamon
+dokku domains:add staging-mamon "staging-mamon.esrtheta.nl"
+dokku config:set staging-mamon <key>=<value>
+mkdir /home/staging-mamon
+dokku letsencrypt:enable staging-mamon
 dokku ssh-keys:add key_name <KEY>
 
 ```
 
 ```
-dokku docker-options:add mamon deploy "-v /home/mamon/database:/code/backend/database"
-dokku docker-options:add mamon deploy "-v /home/mamon/staticfiles:/code/backend/staticfiles"
-dokku docker-options:add mamon deploy "-v /home/mamon/mediafiles:/code/backend/mediafiles"
-dokku docker-options:add mamon run "-v /home/mamon/database:/code/backend/database"
-dokku docker-options:add mamon run "-v /home/mamon/staticfiles:/code/backend/staticfiles"
-dokku docker-options:add mamon run "-v /home/mamon/mediafiles:/code/backend/mediafiles"
+dokku docker-options:add staging-mamon deploy "-v /home/staging-mamon/database:/code/backend/database"
+dokku docker-options:add staging-mamon deploy "-v /home/staging-mamon/staticfiles:/code/backend/staticfiles"
+dokku docker-options:add staging-mamon deploy "-v /home/staging-mamon/mediafiles:/code/backend/mediafiles"
+dokku docker-options:add staging-mamon run "-v /home/staging-mamon/database:/code/backend/database"
+dokku docker-options:add staging-mamon run "-v /home/staging-mamon/staticfiles:/code/backend/staticfiles"
+dokku docker-options:add staging-mamon run "-v /home/staging-mamon/mediafiles:/code/backend/mediafiles"
 
+dokku config:unset --no-restart staging-mamon DOKKU_PROXY_PORT_MAP
 
  git push metis <branch>
-dokku builder-dockerfile:set mamon dockerfile-path
+dokku builder-dockerfile:set staging-mamon dockerfile-path backend/Dockerfile
 
-dokku run mamon python backend/manage.py migrate --noinput
+dokku run staging-mamon python backend/manage.py migrate --noinput
 ```
 
 

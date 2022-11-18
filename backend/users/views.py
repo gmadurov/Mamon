@@ -167,24 +167,18 @@ def mollieReturn(request, *args, **kwargs):
         {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier},
     )
     payment = mollie_client.payments.get(molliePayment.payment_id)
-    WalletUpgrades.objects.create(
-            holder=molliePayment.holder,
-            amount=0,
-            comment=f" test output \n\n {payment}",
-            seller=Personel.objects.get(id=5),
-        )
     if payment.status == "paid":
-        # messages.info(
-        #     request,
-        #     f"Payment was succesful{payment}",
-        # )
+        messages.info(
+            request,
+            f"Betaling is gelukt, je hebt nu {payment.amount['value']} {payment.amount['currency']} op je account",
+        )
         molliePayment.is_paid = True
         molliePayment.payed_on = datetime.now()
         molliePayment.save()
         WalletUpgrades.objects.create(
             holder=molliePayment.holder,
             amount=molliePayment.amount,
-            comment=f"Upgrade via mollie payment {molliePayment.payment_id}\n\n {payment}",
+            comment=f"Upgrade via mollie payment {molliePayment.payment_id}",
             seller=Personel.objects.get(id=5),
         )
     else:
@@ -204,12 +198,6 @@ def mollieWebhook(request, *args, **kwargs):
         {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier},
     )
     payment = mollie_client.payments.get(molliePayment.payment_id)
-    WalletUpgrades.objects.create(
-            holder=molliePayment.holder,
-            amount=0,
-            comment=f" test output \n\n {payment}",
-            seller=Personel.objects.get(id=5),
-        )
     if payment.status == "paid":
         # messages.info(
         #     request,
@@ -221,7 +209,7 @@ def mollieWebhook(request, *args, **kwargs):
         WalletUpgrades.objects.create(
             holder=molliePayment.holder,
             amount=molliePayment.amount,
-            comment=f"Upgrade via mollie payment {molliePayment.payment_id}\n\n {payment}",
+            comment=f"Upgrade via mollie payment {molliePayment.payment_id}",
             seller=Personel.objects.get(id=5),
         )
     else:
@@ -257,4 +245,3 @@ def paymentUpgrade(request):
         "form": form,
     }
     return render(request, "users/paymentUpgrade.html", content)
-
