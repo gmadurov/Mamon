@@ -160,7 +160,7 @@ def app(request):
 
 @login_required(login_url="login")
 def mollieReturn(request, *args, **kwargs):
-    molliePayment = MolliePayments.objects.get(payment_id=kwargs["identifier"])
+    molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
     payment = mollie_client.payments.get(molliePayment.payment_id)
     if payment.is_paid():
         messages.info(
@@ -177,7 +177,7 @@ def mollieReturn(request, *args, **kwargs):
 
 @login_required(login_url="login")
 def mollieWebhook(request, *args, **kwargs):
-    molliePayment = MolliePayments.objects.get(payment_id=kwargs["identifier"])
+    molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
     payment = mollie_client.payments.get(molliePayment.payment_id)
     if payment.is_paid():
         messages.info(
