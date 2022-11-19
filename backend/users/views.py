@@ -101,6 +101,9 @@ def loginLedenbase(request):
         user.first_name = ledenbase_lid.get("voornaam")
         user.last_name = ledenbase_lid.get("achternaam")
         user.is_superuser = ledenbase_lid.get("is_administrator")
+        if not user.is_staff and ledenbase_lid.get("is_administrator"):
+            user.is_staff = True
+
         user.save()
         (holder, created,) = Holder.objects.get_or_create(
             user=user,
