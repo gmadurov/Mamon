@@ -85,10 +85,19 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
   }
   useEffect(() => {
     async function useNfc() {
-      setReading(true);
       await startNfc();
+      setReading(false);
     }
-    useNfc();
+    async function stopNfc() {
+      await NfcProxy.stopReading();
+      setReading(true);
+    }
+
+    if (reading) {
+          useNfc();
+    } else {
+      stopNfc();
+    }
     return () => {
       NfcProxy.stopReading();
       setReading(false);
