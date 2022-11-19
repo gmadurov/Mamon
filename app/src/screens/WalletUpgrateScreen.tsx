@@ -9,7 +9,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import ApiContext from "../context/ApiContext";
-import BottomSearch from "../components/Cart/BottomSearch";
+import BottomSheetHolders from "../components/Cart/BottomSheetHolders";
 import CartContext from "../context/CartContext";
 import FullContext from "../context/FullContext";
 import Holder from "../models/Holder";
@@ -165,7 +165,7 @@ const WalletUpgrateScreen = () => {
           Submit
         </Button>
       </ScrollView>
-      <BottomSearch placeholder="Kies Lid Hier" />
+      <BottomSheetHolders placeholder="Kies Lid Hier" />
     </>
   );
 };

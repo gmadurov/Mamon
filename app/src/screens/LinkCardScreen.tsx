@@ -3,7 +3,7 @@ import NFCContext, { TagEventLocal } from "../context/NFCContext";
 import React, { useContext, useEffect, useState } from "react";
 
 import ApiContext from "../context/ApiContext";
-import BottomSearch from "../components/Cart/BottomSearch";
+import BottomSheetHolders from "../components/Cart/BottomSheetHolders";
 import { Card } from "../models/Card";
 import CartContext from "../context/CartContext";
 import FullContext from "../context/FullContext";
@@ -187,7 +187,7 @@ function LinkCardScreen(props: { navigation: any }) {
           <Subheading style={{ textAlign: "center", marginBottom: 10 }}>Card Linking is niet mogelijk.</Subheading>
         </View>
       )}
-      <BottomSearch placeholder={"Kies Gebruiker om te linken"} noNFC={true} />
+      <BottomSheetHolders placeholder={"Kies Gebruiker om te linken"} noNFC={true} />
     </>
   );
 }

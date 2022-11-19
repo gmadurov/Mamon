@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .views_holders import check_user
+from users.views import loginAllUsers
 from purchase.models import Barcycle, Report
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -20,23 +20,15 @@ def handle_report(request):
     data = request.data
     if request.method == "POST":
         data = request.data
-        seller, checked = check_user(
-            username=data.get("personel").get("username"),
-            password=data.get("password"),
-        )
-        if seller and checked:
+        seller, checked = loginAllUsers(request, username=data.get("personel").get("username"), password=data.get("password"), api=True)
+        if seller and checked == 200:
             report = Report.objects.create(
-                personel=Personel.objects.get(
-                    id=data.get("personel").get("personel_id")
-                ),
-                **without_keys(data, ["personel", "password"])
+                personel=Personel.objects.get(id=data.get("personel").get("personel_id")), **without_keys(data, ["personel", "password"])
             )
             if data.get("action") in ["create", "open", "Open"]:
                 barcycle = Barcycle.objects.create(opening_report=report)
             if data.get("action") in ["end", "close", "Close"]:
-                barcycle = (
-                    Barcycle.objects.filter(closing_report=None).order_by("-id").first()
-                )
+                barcycle = Barcycle.objects.filter(closing_report=None).order_by("-id").first()
                 if barcycle:
                     barcycle.closing_report = report
                     barcycle.save()

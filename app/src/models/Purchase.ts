@@ -1,7 +1,9 @@
 export default interface Purchase {
   id?: number;
   orders: Order[];
-  payed: boolean;
+  pin: boolean;
+  cash: boolean;
+  balance: boolean;
   created?: Date;
   remaining_after_purchase?: number;
   buyer: number;

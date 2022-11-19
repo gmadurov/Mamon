@@ -6,10 +6,8 @@ import { AuthToken } from "../models/AuthToken";
 import User from "../models/Users";
 import dayjs from "dayjs";
 import jwt_decode from "jwt-decode";
-import { log } from "react-native-reanimated";
 import { showMessage } from "react-native-flash-message";
 
-// ("https://stropdas2.herokuapp.com/");
 /**### use this instead of fetch
  * user: user, type
  * {"token_type": string,"exp": unix date,"iat": unix date,"jti": string,"user_id": Int,"name": string,"roles": [ ],"user_id": Int}
@@ -67,41 +65,16 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     logoutFunc,
     authTokenUsers,
     setAuthTokenUsers,
+    originalRequest,
   } = useContext(AuthContext);
 
   /** makes the original request called but with the Bearer set and to the correct location */
-  async function originalRequest<TResponse>(
-    url: string,
-    config: object
-  ): Promise<{ res: Response; data: TResponse }> {
-    let urlFetch = `${baseUrl()}${url}`;
-    // console.log(urlFetch, config);
-    const res = await fetch(urlFetch, config);
-    const data = await res.json();
-    // console.log("originalRequest", data, res?.status);
-    if (res?.status === 401) {
-      await logoutFunc();
-    } else if (res?.status !== 200) {
-      // Alert.alert(`Error ${res?.status} fetching ${url}`);
-      showMessage({
-        message: `Error ${res?.status}`,
-        description: `fetching ${url}`,
-        type: "danger",
-        floating: true,
-        hideStatusBar: true,
-        autoHide: true,
-        duration: 1500,
-      });
-    }
-
-    return { res, data } as { res: Response; data: TResponse };
-  }
 
   /** gets the refresh token and update the local state and local storage */
   async function refreshToken(authToken: AuthToken): Promise<boolean> {
     const controller = new AbortController();
     const { signal } = controller;
-    const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
+    const { res, data } = await originalRequest<AuthToken>(`/api/users/token/refresh/`, {
       signal,
       method: "POST",
       headers: { Accept: "*/*", "Content-Type": "application/json" },
@@ -111,7 +84,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     });
     setTimeout(() => controller.abort(), 2000);
     if (res?.status === 200) {
-      let data: AuthToken = await res.json();
       setAuthTokens(data); // if cycling refresh tokens
       setUser(jwt_decode(data?.access as string) as User);
       await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
@@ -121,8 +93,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       // console.log(`Problem met de refresh token: ${res?.status}`);
       showMessage({
         message: "Refresh token expired",
-        description:
-          "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
+        description: "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
         type: "info",
         floating: true,
         hideStatusBar: true,
@@ -141,8 +112,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     // console.log(await AsyncStorage.getAllKeys());
     // await AsyncStorage.clear()
     // console.log(await AsyncStorage.getAllKeys());
-    
-    
     authTokens.map(async (authToken, index) => {
       const currentUser = jwt_decode(authToken?.access as string) as User;
       if (currentUser.user_id in usersLocal.map((u) => u.user_id)) {
@@ -151,7 +120,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       // console.log({ index, currentUser, type: typeof authToken });
       const controller = new AbortController();
       const { signal } = controller;
-      const res = await fetch(`${baseUrl()}/api/users/token/refresh/`, {
+      const { res, data } = await originalRequest<AuthToken>(`/api/users/token/refresh/`, {
         signal,
         method: "POST",
         headers: { Accept: "*/*", "Content-Type": "application/json" },
@@ -160,23 +129,16 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       });
       setTimeout(() => controller.abort(), 2000);
-      let data: AuthToken = await res.json();
       let localUser = jwt_decode((data?.access as string) || "") as User;
-      console.log(res?.status, localUser);
       if (res?.status === 200) {
         if (index === 0) {
           setAuthTokens(() => data);
           setUser(() => localUser);
         }
         await AsyncStorage.removeItem("authToken" + localUser.user_id);
-        await AsyncStorage.setItem(
-          "authToken" + localUser.user_id,
-          JSON.stringify(data)
-        );
-        !usersLocal.some((u) => u.user_id === localUser.user_id) &&
-          tokens.push(data);
-        !usersLocal.some((u) => u.user_id === localUser.user_id) &&
-          usersLocal.push(localUser);
+        await AsyncStorage.setItem("authToken" + localUser.user_id, JSON.stringify(data));
+        !usersLocal.some((u) => u.user_id === localUser.user_id) && tokens.push(data);
+        !usersLocal.some((u) => u.user_id === localUser.user_id) && usersLocal.push(localUser);
         // console.log(usersLocal, tokens);
         // await AsyncStorage.setItem(
         //   "authToken" + localUser.user_id,
@@ -198,8 +160,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         // console.log(`Problem met de refresh token: ${res?.status}`);
         showMessage({
           message: "Refresh token expired",
-          description:
-            "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
+          description: "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
           type: "info",
           floating: true,
           hideStatusBar: true,
@@ -214,13 +175,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   async function checkTokens() {
-    const isExpired = user
-      ? dayjs.unix(user.exp).diff(dayjs(), "minute") < 1
-      : false;
+    const isExpired = user ? dayjs.unix(user.exp).diff(dayjs(), "minute") < 1 : false;
     const isExpiredRefresh = authTokens
-      ? dayjs
-          .unix((jwt_decode(authTokens.refresh as string) as User).exp)
-          .diff(dayjs(), "minute") < 1
+      ? dayjs.unix((jwt_decode(authTokens.refresh as string) as User).exp).diff(dayjs(), "minute") < 1
       : true;
     if (isExpiredRefresh) {
       // Alert.alert("refresh token has expired, you were logged out");
@@ -336,7 +293,5 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     refreshToken: refreshToken,
     refreshTokenUsers: refreshTokenUsers,
   };
-  return (
-    <ApiContext.Provider value={value_dic}>{children}</ApiContext.Provider>
-  );
+  return <ApiContext.Provider value={value_dic}>{children}</ApiContext.Provider>;
 };

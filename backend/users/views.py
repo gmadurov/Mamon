@@ -33,15 +33,9 @@ def safe_json_decode(
     #     raise Exception("401")
     else:
         try:
-            return (
-                response,
-                response.json(),
-            )
+            return (response, response.json())
         except json.decoder.JSONDecodeError:
-            raise Exception(
-                "500",
-                "Ledenbase response not readable or empty",
-            )
+            raise Exception("500", "Ledenbase response not readable or empty")
 
 
 @login_required(login_url="login")
@@ -63,121 +57,101 @@ def home(request):
     return render(request, "users/home.html", content)
 
 
-def loginLedenbase(request):
-    LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
-    LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
-    login_res = requests.post(
-        f"{LEDENBASE_URL}/login/",
-        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-        json={
-            "password": request.POST.get("password"),
-            "username": request.POST.get("username"),
-        },
-    )
-    lid_token = login_res.text
-    if login_res.status_code != 200:
-        try:
-
-            messages.error(
-                request,
-                "Error 4032:" + lid_token["non_field_errors"][0],
-            )
-        except:
-            messages.error(
-                request,
-                "Error 4041: No response from Ledenbase",
-            )
-        return None
-    if login_res.status_code == 200:
-        person_res = requests.get(
-            f"{LEDENBASE_URL}/personen/{json.loads(lid_token).get('token')}/",
+def loginAllUsers(request, username=None, password=None, api=False):
+    """this function will loging and update all users, it will return the user and the status code
+    it will first try to authenticate the user with the django auth system,
+    if that fails it will try to authenticate with the ledenbase api
+    if the user is not found it will return a 404"""
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        return user, 200
+    else:
+        LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
+        LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
+        login_res = requests.post(
+            f"{LEDENBASE_URL}/login/",
             headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
+            json={"password": password, "username": username},
         )
-        ledenbase_lid = json.loads(person_res.text)
-        (user, created,) = User.objects.get_or_create(
-            username=request.POST.get("username"),
-            # user purposely doesnt have a password set here to make sure it
-        )
-        user.first_name = ledenbase_lid.get("voornaam")
-        user.last_name = ledenbase_lid.get("achternaam")
-        user.is_superuser = ledenbase_lid.get("is_administrator")
-        if not user.is_staff and ledenbase_lid.get("is_administrator"):
-            user.is_staff = True
+        lid_token = login_res.text
+        if login_res.status_code != 200:
+            if not api:
+                try:
+                    messages.error(request, "Error 4032:" + lid_token["non_field_errors"][0])
+                except:
+                    messages.error(request, "Error 4041: No response from Ledenbase")
+                return None
+            else:
+                # return ledenbase response and status code
+                return json.loads(login_res.text), login_res.status_code
 
-        user.save()
-        (holder, created,) = Holder.objects.get_or_create(
-            user=user,
-        )
-        holder.ledenbase_id = ledenbase_lid.get("id")
-        holder.image_ledenbase = ledenbase_lid.get("foto")
-        holder.save()
-        if created:
-            messages.info(
-                request,
-                "User and Holder were created",
+        if login_res.status_code == 200:
+            person_res = requests.get(
+                f"{LEDENBASE_URL}/personen/{json.loads(lid_token).get('token')}/",
+                headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
             )
-        return user
+            ledenbase_lid = json.loads(person_res.text)
+            (user, created,) = User.objects.get_or_create(
+                username=username,
+                # user purposely doesnt have a password set here to make sure it
+            )
+            user.first_name = ledenbase_lid.get("voornaam")
+            user.last_name = ledenbase_lid.get("achternaam")
+            user.is_superuser = ledenbase_lid.get("is_administrator")
+            if not user.is_staff and ledenbase_lid.get("is_administrator"):
+                user.is_staff = True
+
+            user.save()
+            (holder, created) = Holder.objects.get_or_create(user=user)
+            holder.ledenbase_id = ledenbase_lid.get("id")
+            holder.image_ledenbase = ledenbase_lid.get("foto")
+            holder.save()
+            if created and not api:
+                messages.info(request, "User and Holder were created")
+            return user, login_res.status_code
+    return user, 404128
 
 
 def loginUser(request):
     if request.user.is_authenticated:
         return redirect("userHome")
     if request.method == "POST":
-        user1 = User.objects.filter(username=request.POST["username"])
-        if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
-            # print("user exists and doesnt have ledenbase id")
-            user = authenticate(
-                password=request.POST["password"],
-                username=request.POST["username"],
-            )
-        else:
-            user = loginLedenbase(request)
-        if user:
+        user, status = loginAllUsers(
+            request,
+            password=request.POST["password"],
+            username=request.POST["username"],
+        )
+        if status == 200:
             login(
                 request,
                 user,
             )
-            messages.info(
-                request,
-                "User was logged in",
-            )
+            messages.info(request, "User was logged in")
             return redirect(request.GET["next"] if "next" in request.GET else "userHome")
         else:
-            messages.error(
-                request,
-                "Username or password is incorrect",
-            )
+            messages.error(request, "Username or password is incorrect")
 
-    return render(
-        request,
-        "users/login.html",
-    )
+    return render(request, "users/login.html")
 
 
 def logoutUser(request):
     logout(request)
-    messages.info(
-        request,
-        "User logged out",
-    )
+    messages.info(request, "User logged out")
     return redirect("login")
 
 
 @login_required(login_url="login")
 def app(request):
-    return render(
-        request,
-        "users/app.html",
-    )
+    return render(request, "users/app.html")
 
 
 @login_required(login_url="login")
 def mollieReturn(request, *args, **kwargs):
     molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
-    print(
-        "molliePayment",
-        {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier},
-    )
+    # print(
+    #     "molliePayment",
+    #     {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier},
+    # )
     payment = mollie_client.payments.get(molliePayment.payment_id)
     if payment.status == "paid":
         messages.info(
@@ -219,10 +193,7 @@ def mollieWebhook(request, *args, **kwargs):
             molliePayment=molliePayment,
         )
     else:
-        messages.error(
-            request,
-            "Payment was not succesful",
-        )
+        messages.error(request, "Payment was not succesful")
     return redirect("userHome")
 
 
@@ -247,7 +218,6 @@ def paymentUpgrade(request):
             molliePayment.expiry_date = payment.get("expiresAt")
             molliePayment.save()
             return redirect(payment.checkout_url)
-    content = {
-        "form": form,
-    }
+
+    content = {"form": form}
     return render(request, "users/paymentUpgrade.html", content)

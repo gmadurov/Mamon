@@ -28,7 +28,7 @@ class Holder(models.Model):
 
     def __str__(self):
         try:
-            return str(self.user.first_name + " " + self.user.last_name)
+            return str(self.user.first_name + " " + self.user.last_name) 
         except:
             return "Holder"
 

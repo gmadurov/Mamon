@@ -29,7 +29,7 @@ export type BottomSearchProps = {
   noNFC?: boolean;
 };
 
-const BottomSearch = ({ style, invalid, textInputConfig, placeholder, noNFC = false }: BottomSearchProps) => {
+const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNFC = false }: BottomSearchProps) => {
   const { BottomSearch, setBottomSearch, enableBottomSearch} = useContext(FullContext);
   const { setBuyer } = useContext(CartContext);
   const NfcProxy = useContext(NFCContext);
@@ -207,7 +207,7 @@ const BottomSearch = ({ style, invalid, textInputConfig, placeholder, noNFC = fa
   }
 };
 
-export default BottomSearch;
+export default BottomSheetHolders;
 
 const styles = StyleSheet.create({
   inputContainer: {

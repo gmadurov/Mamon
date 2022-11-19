@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from api.tokens import MyTokenObtainPairSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from users.views import loginAllUsers
 from users.models import Holder
 
 
@@ -134,7 +135,12 @@ def LoginAllUsers(request):
             username=request.data.get("username"),
         )
     else:
-        user, status = loginLedenbaseAPI(request)
+        user, status = loginAllUsers(
+            request,
+            password=request.data.get("password"),
+            username=request.data.get("username"),
+            api=True
+        )
         if status != 200:
             return Response(data=user, status=status)
     # try:
@@ -146,41 +152,4 @@ def LoginAllUsers(request):
     return Response(response)
 
 
-def loginLedenbaseAPI(request, boolean=False):
-    LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
-    LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
-    login_res = requests.post(
-        f"{LEDENBASE_URL}/login/",
-        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-        json={
-            "password": request.data.get("password"),
-            "username": request.data.get("username"),
-        },
-    )
-    if login_res.status_code != 200:
-        return json.loads(login_res.text), login_res.status_code
-    person_res = requests.get(
-        f"{LEDENBASE_URL}/personen/{json.loads(login_res.text).get('token')}/",
-        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-    )
-    ledenbase_lid = json.loads(person_res.text)
-    user, created = User.objects.get_or_create(
-        username=request.data.get("username"),
-        # user purposely doesnt have a password set here to make sure it
-    )
 
-    user.first_name = ledenbase_lid.get("voornaam")
-    user.last_name = ledenbase_lid.get("achternaam")
-    user.is_superuser = ledenbase_lid.get("is_administrator")
-    if not user.is_staff and ledenbase_lid.get("is_administrator"):
-        user.is_staff = True
-    user.save()
-    if created:
-        holder = Holder.objects.create(user=user)
-        holder.save()
-    else:
-        holder = user.holder
-    holder.ledenbase_id = ledenbase_lid.get("id")
-    holder.image_ledenbase = ledenbase_lid.get("foto")
-    holder.save()
-    return user, 200

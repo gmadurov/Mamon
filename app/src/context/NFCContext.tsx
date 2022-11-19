@@ -33,12 +33,12 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
     async function wrapper() {
       if (supported && enabled) {
         try {
-          const resp = await fn.apply(null, arguments)
+          const resp = await fn.apply(null, arguments);
           return resp;
         } catch (ex) {
           throw ex;
         } finally {
-          console.log('finished scanning');
+          console.log("finished scanning");
         }
       }
     }
@@ -144,7 +144,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
       // });
       tag = {} as TagEventLocal;
     } finally {
-      NfcManager.cancelTechnologyRequest();
+      await NfcManager.cancelTechnologyRequest();
     }
 
     return tag;
@@ -165,7 +165,6 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
           // listen to the NFC on/off state on Android device
           if (Platform.OS === "android") {
             NfcManager.setEventListener(NfcEvents.StateChanged, ({ state }: { state: string }) => {
-
               NfcManager.cancelTechnologyRequest().catch(() => 0);
               if (state === "off") {
                 setEnabled(false);

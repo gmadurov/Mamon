@@ -1,16 +1,13 @@
-import {
-  Dimensions,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import React, { useContext, useState } from "react";
+import BottomSheetHolders, { HolderChoice } from "../components/Cart/BottomSheetHolders";
+import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import NFCContext, { TagEventLocal } from "../context/NFCContext";
+import React, { useContext, useEffect, useState } from "react";
 
-import BottomSearch from "../components/Cart/BottomSearch";
+import ApiContext from "../context/ApiContext";
+import { Card } from "../models/Card";
 import Cart from "../components/Cart/Cart";
 import CartContext from "../context/CartContext";
+import FullContext from "../context/FullContext";
 import { GlobalStyles } from "../constants/styles";
 import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
@@ -19,6 +16,7 @@ import ProductContext from "../context/ProductContext";
 import ProductTile from "../components/Product/ProductTile";
 import SettingsContext from "../context/SettingsContext";
 import User from "../models/Users";
+import { showMessage } from "react-native-flash-message";
 
 const { width } = Dimensions.get("screen");
 
@@ -26,18 +24,76 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
   const { GET_categories, sideBySide } = useContext(SettingsContext);
+  const { ApiRequest } = useContext(ApiContext);
   const { setBuyer, setSeller } = useContext(CartContext);
   const [refreshing, setRefreshing] = useState(false);
+  const NfcProxy = useContext(NFCContext);
+  const { BottomSearch, setBottomSearch, enableBottomSearch } = useContext(FullContext);
+  const [reading, setReading] = useState(false);
   const [selected, setSelected] = useState(0);
   function renderProducts(itemData: { item: any }) {
-    return (
-      <ProductTile
-        product={itemData.item}
-        selected={selected}
-        setSelected={setSelected}
-      />
-    );
+    return <ProductTile product={itemData.item} selected={selected} setSelected={setSelected} />;
   }
+
+  async function startNfc() {
+    let tag: TagEventLocal | null = null;
+    if (NfcProxy.enabled && NfcProxy.supported) {
+      // console.log("start nfc");
+      try {
+        tag = await NfcProxy.readTag();
+      } catch (e) {
+        await NfcProxy.stopReading();
+      } finally {
+        await NfcProxy.stopReading();
+      }
+
+      // const tag = { id: "0410308AC85E80" }; //for testing locally
+      if (tag?.id) {
+        // console.log(tag);
+        showMessage({
+          message: `Card ${tag?.id} scanned`,
+          type: "info",
+          floating: true,
+          hideStatusBar: true,
+          autoHide: true,
+          duration: 500,
+          position: "bottom",
+        });
+        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
+        if (res.status === 200) {
+          // console.log(data);
+          setBuyer({
+            ...data.holder,
+            value: data.holder.id,
+            label: data.holder?.name,
+          } as HolderChoice);
+          setBottomSearch(false);
+        } else {
+          showMessage({
+            message: `Card niet gevonden`,
+            description: `is card gekopeld aan een account?`,
+            type: "danger",
+            floating: true,
+            hideStatusBar: true,
+            autoHide: true,
+            duration: 1500,
+            position: "bottom",
+          });
+        }
+      }
+    }
+  }
+  useEffect(() => {
+    async function useNfc() {
+      setReading(true);
+      await startNfc();
+    }
+    useNfc();
+    return () => {
+      NfcProxy.stopReading();
+      setReading(false);
+    };
+  }, [refreshing, reading]);
   async function getProducts() {
     setRefreshing(true);
     await GET();
@@ -58,31 +114,29 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
           },
         ]}
       >
-        <View style={styles.cartView}>
+        <View style={[styles.cartView, !sideBySide && { flex: 1 }]}>
           <View style={{ flex: 3 }}>
             <Cart sell={sell ? true : false} />
           </View>
           <View style={{ flex: 1 }}>
             <PersonelView />
           </View>
+          <View style={{ flex: 1 }}>
+            <Cart buttons={true} />
+          </View>
         </View>
-        <View style={styles.productView}>
+        <View style={[styles.productView, !sideBySide && { flex: 1 }]}>
           <Text style={styles.text}>Producten</Text>
           <FlatList
             data={selectedProducts}
             keyExtractor={(item) => item.id.toString() as string}
             renderItem={renderProducts}
             numColumns={Math.floor(width / 196)}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => getProducts()}
-              />
-            }
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => getProducts()} />}
           />
         </View>
       </View>
-      <BottomSearch placeholder="Kies Lid Hier" />
+      <BottomSheetHolders placeholder="Kies Lid Hier" />
     </>
   );
 };
