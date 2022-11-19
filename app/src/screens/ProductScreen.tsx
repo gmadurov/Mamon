@@ -25,7 +25,7 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
   const { GET: GET_HOLDER } = useContext(HolderContext);
   const { GET_categories, sideBySide } = useContext(SettingsContext);
   const { ApiRequest } = useContext(ApiContext);
-  const { setBuyer, setSeller } = useContext(CartContext);
+  const { cart, setBuyer, setSeller } = useContext(CartContext);
   const [refreshing, setRefreshing] = useState(false);
   const NfcProxy = useContext(NFCContext);
   const { BottomSearch, setBottomSearch, enableBottomSearch } = useContext(FullContext);
@@ -45,6 +45,10 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
         await NfcProxy.stopReading();
       } finally {
         await NfcProxy.stopReading();
+        showMessage({
+          message: "NFC scan stopped",  
+          type: "info",
+        });
       }
 
       // const tag = { id: "0410308AC85E80" }; //for testing locally
@@ -86,23 +90,18 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
   useEffect(() => {
     async function useNfc() {
       await startNfc();
-      setReading(false);
     }
     async function stopNfc() {
       await NfcProxy.stopReading();
-      setReading(true);
     }
 
-    if (reading) {
-          useNfc();
+    if (cart.length > 0) {
+      stopNfc();
+      useNfc();
     } else {
       stopNfc();
     }
-    return () => {
-      NfcProxy.stopReading();
-      setReading(false);
-    };
-  }, [refreshing, reading]);
+  }, [cart]);
   async function getProducts() {
     setRefreshing(true);
     await GET();
