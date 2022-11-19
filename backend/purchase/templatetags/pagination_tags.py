@@ -12,6 +12,4 @@ def req_page(request, page):
 def page_num(req_page_output, page):
     request, pageName = req_page(req_page_output[0], req_page_output[1])
     get = request.GET.urlencode().replace(f"{pageName}={request.GET.get(pageName)}", "") + f"{pageName}={page}"
-
-    print(req_page_output, get)
     return get

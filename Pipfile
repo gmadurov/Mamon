@@ -24,7 +24,7 @@ collectStatic = """sh -c \"docker-compose run web python manage.py collectstatic
 start = """sh -c \"cd app && expo start \""""
 freeze = """sh -c \"pip freeze > $(pwd)/backend/requirements.txt \""""
 createsuperuser = """sh -c \"docker-compose run web python manage.py createsuperuser \""""
-backup_mamon = """sh -c \"ssh root@metis dokku run staging-mamon python backend/manage.py dumpdata --indent 4 > $(pwd)/data/db_real_$(date  +%m_%d_%Y).json\""""
+backup_mamon = """sh -c \"ssh root@metis dokku run mamon python backend/manage.py dumpdata --indent 4 > $(pwd)/data/db_real_$(date  +%m_%d_%Y).json\""""
 
 [packages]
 asgiref = "==3.5.2"

@@ -1,6 +1,6 @@
 import os
 import requests
-from api.views import loginLedenbase, safe_json_decode
+from api.views import loginLedenbaseAPI, safe_json_decode
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q

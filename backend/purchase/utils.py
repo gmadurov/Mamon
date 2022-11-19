@@ -3,9 +3,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 def paginateObjects(request, objects, results, pageName):
     page = request.GET.get(pageName or 1)
-    # print(request.GET.urlencode())
     paginator = Paginator(objects, results)
-    # paginate the events
     try:
         objects = paginator.page(page)
     except PageNotAnInteger:
@@ -21,5 +19,4 @@ def paginateObjects(request, objects, results, pageName):
         rightIndex = paginator.num_pages + 1
     custom_range = range(leftIndex, rightIndex)
     # list(paginator.get_elided_page_range(8, on_each_side=1))
-
     return custom_range, objects

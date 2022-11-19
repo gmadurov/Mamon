@@ -130,7 +130,6 @@ def showOverview(request):
 def showBarcycles(request):
     barcycles = Barcycle.objects.all()
     content = {"barcycles": barcycles}
-    print(barcycles)
     return render(
         request,
         "purchase/barcycles.html",

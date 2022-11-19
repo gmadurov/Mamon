@@ -55,56 +55,65 @@ def home(request):
     user = Holder.objects.get(user=request.user)
     purchases = user.purchases.all()
     custom_range, purchases = paginateObjects(request, list(purchases), 10, "purchase_page")
-
     content = {
         "user": user,
         "purchases": purchases,
         "custom_range": custom_range,
     }
-    return render(
-        request,
-        "users/home.html",
-        content,
-    )
+    return render(request, "users/home.html", content)
 
 
 def loginLedenbase(request):
-    (res, ledenbaseUser,) = safe_json_decode(
-        requests.post(
-            os.environ.get("BACKEND_URL") + "/v2/login/",
-            json={
-                "password": request.POST["password"],
-                "username": request.POST["username"],
-            },
-        )
+    LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
+    LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
+    login_res = requests.post(
+        f"{LEDENBASE_URL}/login/",
+        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
+        json={
+            "password": request.POST.get("password"),
+            "username": request.POST.get("username"),
+        },
     )
-    if res.status_code != 200:
+    lid_token = login_res.text
+    if login_res.status_code != 200:
         try:
 
             messages.error(
                 request,
-                ledenbaseUser["non_field_errors"],
+                "Error 4032:" + lid_token["non_field_errors"][0],
             )
         except:
             messages.error(
                 request,
-                "I have no clue what is happening",
+                "Error 4041: No response from Ledenbase",
             )
         return None
-
-    (user, created,) = User.objects.get_or_create(
-        username=request.POST["username"],
-        first_name=ledenbaseUser["user"]["first_name"],
-        last_name=ledenbaseUser["user"]["last_name"],
-        # user purposely doesnt have a password set here to make sure it
-    )
-    (holder, created,) = Holder.objects.get_or_create(
-        user=user,
-    )
-    holder.ledenbase_id = ledenbaseUser["user"]["id"]
-    holder.image_ledenbase = os.environ.get("BACKEND_URL") + ledenbaseUser["user"]["photo_url"]
-    holder.save()
-    return user
+    if login_res.status_code == 200:
+        person_res = requests.get(
+            f"{LEDENBASE_URL}/personen/{json.loads(lid_token).get('token')}/",
+            headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
+        )
+        ledenbase_lid = json.loads(person_res.text)
+        (user, created,) = User.objects.get_or_create(
+            username=request.POST.get("username"),
+            # user purposely doesnt have a password set here to make sure it
+        )
+        user.first_name = ledenbase_lid.get("voornaam")
+        user.last_name = ledenbase_lid.get("achternaam")
+        user.is_superuser = ledenbase_lid.get("is_administrator")
+        user.save()
+        (holder, created,) = Holder.objects.get_or_create(
+            user=user,
+        )
+        holder.ledenbase_id = ledenbase_lid.get("id")
+        holder.image_ledenbase = ledenbase_lid.get("foto")
+        holder.save()
+        if created:
+            messages.info(
+                request,
+                "User and Holder were created",
+            )
+        return user
 
 
 def loginUser(request):
