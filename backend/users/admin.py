@@ -34,10 +34,11 @@ class HolderAdmin(admin.ModelAdmin):
     exclude = ("stand",)
 
     def get_readonly_fields(self, request, obj=None):
-        return [
-            "user",
-            "ledenbase_id",
-        ]
+        if obj:
+            return [
+                "user",
+                "ledenbase_id",
+            ]
 
     def has_delete_permission(self, request, obj=None):
         return False
