@@ -22,7 +22,7 @@ import { showMessage } from "react-native-flash-message";
 
 const { width } = Dimensions.get("screen");
 
-const ProductScreen = ({ sell }: { sell?: boolean }) => {
+const ProductScreen = ({ sell, navigation }: { sell?: boolean; navigation: any }) => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
   const { GET_categories, sideBySide } = useContext(SettingsContext);
@@ -110,6 +110,25 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
       stopNfc();
     }
   }, [cart]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: () => (
+        <Appbar.Header style={{ backgroundColor: "white" }}>
+          <Appbar.Action
+            icon={"burger"}
+            onPress={() => {
+              navigation.openDrawer();
+            }}
+          />
+
+          <Appbar.Content title="Mamon" />
+          {NfcProxy.NFCreading && <Appbar.Action icon="nfc" />}
+        </Appbar.Header>
+      ),
+    });
+  }, [NfcProxy.NFCreading]);
+
   async function getProducts() {
     setRefreshing(true);
     await GET();

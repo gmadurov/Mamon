@@ -52,12 +52,6 @@ const DrawerNavigator = () => {
         children={() => <ProductScreen sell />}
         options={{
           title: "Mamon",
-          header: () => (
-            <Appbar.Header style={{ backgroundColor: "white" }}>
-              <Appbar.Content title="Mamon" />
-              {NFCreading && <Appbar.Action icon="nfc" />}
-            </Appbar.Header>
-          ),
         }}
       />
 
