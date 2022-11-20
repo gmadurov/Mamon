@@ -27,4 +27,5 @@ urlpatterns = [
     path(r"login/", views.LoginAllUsers),
     # path("users/token/", MyTokenObtainPairView.as_view()),
     path("users/token/refresh/", MyRefreshPairView.as_view()),
+    path("environment/<str:name>/", views.getEnvironment),
 ]

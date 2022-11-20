@@ -113,6 +113,10 @@ def getRoutes(request):
             "description": "Get card by id",
             "pk": "Card id",
         },
+        {
+            "GET": API_URL + "environment/<str:name>/",
+            "name": "name of enviroment variable",
+        },
     ]
     return Response(routes)
 
@@ -135,12 +139,7 @@ def LoginAllUsers(request):
             username=request.data.get("username"),
         )
     else:
-        user, status = loginAllUsers(
-            request,
-            password=request.data.get("password"),
-            username=request.data.get("username"),
-            api=True
-        )
+        user, status = loginAllUsers(request, password=request.data.get("password"), username=request.data.get("username"), api=True)
         if status != 200:
             return Response(data=user, status=status)
     # try:
@@ -152,4 +151,9 @@ def LoginAllUsers(request):
     return Response(response)
 
 
-
+@api_view(["GET"])
+def getEnvironment(request, name):
+    if "open_" in name:
+        return Response({"variable": os.environ.get(name)})
+    else:
+        return Response({"error": "not allowed"}, status=403)
