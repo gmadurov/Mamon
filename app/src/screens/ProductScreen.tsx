@@ -41,13 +41,18 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
       // console.log("start nfc");
       try {
         tag = await NfcProxy.readTag();
+        setBuyer({} as Holder);
       } catch (e) {
         await NfcProxy.stopReading();
       } finally {
         await NfcProxy.stopReading();
         showMessage({
-          message: "NFC scan stopped",  
+          message: "NFC scan stopped",
           type: "info",
+          hideStatusBar: true,
+          autoHide: true,
+          position: "bottom",
+          duration: 500,
         });
       }
 
@@ -99,6 +104,7 @@ const ProductScreen = ({ sell }: { sell?: boolean }) => {
       stopNfc();
       useNfc();
     } else {
+      setBuyer({} as Holder);
       stopNfc();
     }
   }, [cart]);

@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useLayoutEffect, useState } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthToken } from "../models/AuthToken";
@@ -9,20 +9,20 @@ import { useNavigation } from "@react-navigation/native";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
-export const baseUrl = () => {
-  let url: string;
-  // console.log("process.env.NODE_ENV", process.env.NODE_ENV);
+// export const baseUrl = () => {
+//   let url: string;
+//   // console.log("process.env.NODE_ENV", process.env.NODE_ENV);
 
-  if (process.env.NODE_ENV === "development") {
-    url = "https://mamon.esrtheta.nl";
-    url = "http://10.0.2.2:8000";
-  } else if (process.env.NODE_ENV === "production") {
-    url = "https://mamon.esrtheta.nl";
-  } else {
-    url = "http://10.0.2.2:8000";
-  }
-  return url;
-};
+//   if (process.env.NODE_ENV === "development") {
+//     url = "https://mamon.esrtheta.nl";
+//     url = "http://10.0.2.2:8000";
+//   } else if (process.env.NODE_ENV === "production") {
+//     url = "https://mamon.esrtheta.nl";
+//   } else {
+//     url = "http://10.0.2.2:8000";
+//   }
+//   return url;
+// };
 
 interface FailedData extends AuthToken {
   message: string;
@@ -48,6 +48,8 @@ export type AuthContextType = {
     res: Response;
     data: TResponse;
   }>;
+  baseUrl: string;
+  setBaseUrl: React.Dispatch<React.SetStateAction<string>>;
 };
 const AuthContext = createContext({} as AuthContextType);
 
@@ -60,6 +62,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>({} as User);
   const [users, setUsers] = useState<User[]>([] as User[]);
   /**this function is simply to wake up the backend when working with heroku */
+  const [baseUrl, setBaseUrl] = useState<string>("");
+  // console.log("baseUrl", baseUrl);
+
+  useLayoutEffect(() => {
+    async () => {
+      let url = await AsyncStorage.getItem("baseUrl");
+      setBaseUrl(url || "");
+    };
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    async function wakeUp() {
+      if (baseUrl === "") {
+        if (process.env.NODE_ENV === "development") {
+          setBaseUrl("https://staging-mamon.esrtheta.nl");
+        } else if (process.env.NODE_ENV === "production") {
+          setBaseUrl("https://mamon.esrtheta.nl");
+        }
+      }
+      await AsyncStorage.setItem("baseUrl", baseUrl);
+      await logoutFunc();
+    }
+    wakeUp();
+  }, [baseUrl]);
 
   async function storeUsers(data: AuthToken) {
     let localUser = jwt_decode((data?.access as string) || "") as User;
@@ -102,33 +129,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   async function logoutFunc(userOut?: User) {
-    if (userOut) {
-      // remove user from users
-      setUsers(() => users.filter((u) => u.user_id !== userOut.user_id));
-      setAuthTokenUsers(() =>
-        authTokenUsers.filter((u) => (jwt_decode((u?.access as string) || "") as User).user_id !== userOut.user_id)
-      );
-      if (user.user_id === userOut?.user_id) {
-        setUser(() => users.filter((u) => u.user_id !== userOut.user_id)[0] as User);
-        setAuthTokens(
-          () =>
-            authTokenUsers.filter(
-              (u) => (jwt_decode((u?.access as string) || "") as User).user_id !== userOut.user_id
-            )[0] as AuthToken
-        );
+    try {
+      try {
+        if (userOut) {
+          // remove user from users
+          setUsers(() => users.filter((u) => u.user_id !== userOut.user_id));
+          setAuthTokenUsers(() =>
+            authTokenUsers.filter((u) => (jwt_decode((u?.access as string) || "") as User).user_id !== userOut.user_id)
+          );
+          if (user.user_id === userOut?.user_id) {
+            setUser(() => users.filter((u) => u.user_id !== userOut.user_id)[0] as User);
+            setAuthTokens(
+              () =>
+                authTokenUsers.filter(
+                  (u) => (jwt_decode((u?.access as string) || "") as User).user_id !== userOut.user_id
+                )[0] as AuthToken
+            );
+          }
+          await AsyncStorage.removeItem("authToken" + userOut.user_id);
+        } else {
+          setUser(() => ({} as User));
+          setUsers(() => [] as User[]);
+          await AsyncStorage.multiRemove((await AsyncStorage.getAllKeys()).filter((key) => key.includes("authToken")));
+          setAuthTokens(() => ({} as AuthToken));
+          setAuthTokenUsers(() => [] as AuthToken[]);
+        }
+      } catch (err) {
+        // await AsyncStorage.multiRemove((await AsyncStorage.getAllKeys()).filter((key) => key.includes("auth")));
       }
-      await AsyncStorage.removeItem("authToken" + userOut.user_id);
-    } else {
-      setUser(() => ({} as User));
-      setUsers(() => [] as User[]);
-      await AsyncStorage.multiRemove((await AsyncStorage.getAllKeys()).filter((key) => key.includes("authToken")));
-      setAuthTokens(() => ({} as AuthToken));
-      setAuthTokenUsers(() => [] as AuthToken[]);
+    } catch (err) {
+      console.log(`Logging out error ${err}`);
     }
     // navigation.replace("LoginPage");
   }
   async function originalRequest<TResponse>(url: string, config: object): Promise<{ res: Response; data: TResponse }> {
-    let urlFetch = `${baseUrl()}${url}`;
+    let urlFetch;
+
+    if (!["", null].includes(baseUrl)) {
+      urlFetch = `${baseUrl}${url}`;
+      // console.log("urlFetch 162", );
+    } else {
+      urlFetch = `${await AsyncStorage.getItem("baseUrl")}${url}`;
+    }
+    console.log("baseUrlORIGIN", urlFetch);
     // console.log(urlFetch, config);
     const res = await fetch(urlFetch, config);
     const data = await res.json();
@@ -162,6 +205,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authTokenUsers,
     storeUsers,
     originalRequest,
+    baseUrl,
+    setBaseUrl,
   };
   // user && navigate("../login", { replace: true });
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;

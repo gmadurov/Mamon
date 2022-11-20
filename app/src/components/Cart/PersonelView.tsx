@@ -1,17 +1,18 @@
-import AuthContext, { baseUrl } from "../../context/AuthContext";
 import { Avatar, Menu, TouchableRipple } from "react-native-paper";
 import React, { ScrollView, StyleSheet, View } from "react-native";
 import { useContext, useState } from "react";
 
+import AuthContext from "../../context/AuthContext";
 import CartContext from "../../context/CartContext";
+import Holder from "../../models/Holder";
 import User from "../../models/Users";
 
 type MenuVisibility = {
   [key: string]: boolean | undefined;
 };
 const PersonelView = () => {
-  const { users, logoutFunc } = useContext(AuthContext);
-  const { seller, setSeller } = useContext(CartContext);
+  const { users, logoutFunc, baseUrl } = useContext(AuthContext);
+  const { seller, setSeller,setBuyer, setCart } = useContext(CartContext);
   let avatarSize = 50;
 
   const [visible, setVisible] = useState<MenuVisibility>({});
@@ -46,7 +47,7 @@ const PersonelView = () => {
               >
                 {!user?.image?.includes("default") ? (
                   <Avatar.Image
-                    source={{ uri: baseUrl() + user.image }}
+                    source={{ uri: baseUrl + user.image }}
                     size={avatarSize}
                   />
                 ) : (
@@ -58,6 +59,14 @@ const PersonelView = () => {
               </TouchableRipple>
             }
           >
+            <Menu.Item
+              onPress={() => {
+                setSeller({} as User);
+                setBuyer({} as Holder);
+                setCart([]);
+              }}
+              title={"Cart Legmaken "}
+            />
             <Menu.Item
               onPress={() => {
                 setSeller({} as User);

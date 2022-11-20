@@ -1,7 +1,7 @@
-import AuthContext, { baseUrl } from "./AuthContext";
 import React, { createContext, useContext } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AuthContext from "./AuthContext";
 import { AuthToken } from "../models/AuthToken";
 import User from "../models/Users";
 import dayjs from "dayjs";
@@ -47,6 +47,7 @@ export type ApiContextType = {
   ): Promise<{ res: Response; data: TResponse }>;
   refreshToken: (authTokens: AuthToken) => Promise<boolean>;
   refreshTokenUsers(authTokens: AuthToken[]): Promise<void>;
+  baseUrl: string;
 };
 
 const ApiContext = createContext<ApiContextType>({} as ApiContextType);
@@ -66,6 +67,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     authTokenUsers,
     setAuthTokenUsers,
     originalRequest,
+    baseUrl,
   } = useContext(AuthContext);
 
   /** makes the original request called but with the Bearer set and to the correct location */
@@ -292,6 +294,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     ApiFileRequest: ApiFileRequest,
     refreshToken: refreshToken,
     refreshTokenUsers: refreshTokenUsers,
+    baseUrl,
   };
   return <ApiContext.Provider value={value_dic}>{children}</ApiContext.Provider>;
 };

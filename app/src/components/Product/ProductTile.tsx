@@ -1,28 +1,12 @@
-import {
-  Image,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 
 import CartContext from "../../context/CartContext";
 import { GlobalStyles } from "../../constants/styles";
 import { Surface } from "react-native-paper";
-import { baseUrl } from "../../context/AuthContext";
 
-const ProductTile = ({
-  selected,
-  product,
-}: {
-  selected: number;
-  setSelected: any;
-  quantity?: number;
-  product: any;
-}) => {
-  const { add_to_cart, remove_from_cart } = useContext(CartContext);
+const ProductTile = ({ selected, product }: { selected: number; setSelected: any; quantity?: number; product: any }) => {
+  const { add_to_cart } = useContext(CartContext);
   const onAdd = () => {
     add_to_cart(product);
   };
@@ -38,10 +22,7 @@ const ProductTile = ({
     <Surface style={[styles.gridItem, { elevation: 2 }]}>
       <Pressable
         android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-        style={({ pressed }) => [
-          styles.button,
-          pressed ? styles.buttonPressed : { flex: 1 },
-        ]}
+        style={({ pressed }) => [styles.button, pressed ? styles.buttonPressed : { flex: 1 }]}
         onPress={onAdd}
       >
         <View
@@ -55,10 +36,7 @@ const ProductTile = ({
           {product?.image ? (
             <Image source={{ uri: product?.image }} style={styles.avatar} />
           ) : (
-            <Image
-              source={require("../../assets/default-product.png")}
-              style={styles.avatar}
-            />
+            <Image source={require("../../assets/default-product.png")} style={styles.avatar} />
           )}
           <Text style={styles.title}>{product?.name}</Text>
 

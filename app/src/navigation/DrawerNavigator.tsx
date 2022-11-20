@@ -1,9 +1,4 @@
-import {
-  DrawerContentScrollView,
-  DrawerItem,
-  DrawerItemList,
-  createDrawerNavigator,
-} from "@react-navigation/drawer";
+import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import React, { useContext } from "react";
 
 import AuthContext from "../context/AuthContext";
@@ -24,7 +19,7 @@ const Drawer = createDrawerNavigator();
 const DrawerNavigator = () => {
   const { setEnableBottomSearch } = useContext(FullContext);
   const { setSideBySide } = useContext(SettingsContext);
-  const { logoutFunc, users } = useContext(AuthContext);
+  const { logoutFunc, users, baseUrl, setBaseUrl } = useContext(AuthContext);
   const { setEnabled, supported } = useContext(NFCContext);
 
   return (
@@ -34,24 +29,20 @@ const DrawerNavigator = () => {
         return (
           <DrawerContentScrollView {...props}>
             <DrawerItemList {...props} />
-            {supported && (
-              <DrawerItem
-                label="_Disabled NFC"
-                onPress={() => setEnabled((nu) => !nu)}
-              />
-            )}
             <DrawerItem
-              label="Toggle Side by Side"
-              onPress={() => setSideBySide((nu) => !nu)}
+              label={baseUrl}
+              onPress={() => {
+                if (baseUrl === "https://mamon.esrtheta.nl") {
+                  setBaseUrl("https://staging-mamon.esrtheta.nl");
+                } else if (baseUrl === "https://staging-mamon.esrtheta.nl") {
+                  setBaseUrl("https://mamon.esrtheta.nl");
+                }
+              }}
             />
-            <DrawerItem
-              label="Toggle Bottom Search"
-              onPress={() => setEnableBottomSearch((nu) => !nu)}
-            />
-            <DrawerItem
-              label="Uitlogen"
-              onPress={async () => await logoutFunc()}
-            />
+            {supported && <DrawerItem label="_Disabled NFC" onPress={() => setEnabled((nu) => !nu)} />}
+            <DrawerItem label="Toggle Side by Side" onPress={() => setSideBySide((nu) => !nu)} />
+            <DrawerItem label="Toggle Bottom Search" onPress={() => setEnableBottomSearch((nu) => !nu)} />
+            <DrawerItem label="Uitlogen" onPress={async () => await logoutFunc()} />
           </DrawerContentScrollView>
         );
       }}
@@ -81,11 +72,7 @@ const DrawerNavigator = () => {
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      <Drawer.Screen
-        name="Personeel"
-        children={() => <LoginScreen extra />}
-        options={{ title: "Personeel" }}
-      />
+      <Drawer.Screen name="Personeel" children={() => <LoginScreen extra />} options={{ title: "Personeel" }} />
       <Drawer.Screen
         name="ReportScreen"
         component={ReportScreen}
@@ -102,21 +89,17 @@ const DrawerNavigator = () => {
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      {users.some(
-        (user) =>
-          user?.roles.includes("Tapper") || user?.roles.includes("Linker")
-      ) &&
-        // supported && 
-        (
-          <Drawer.Screen
-            name="LinkCardScreen"
-            component={LinkCardScreen}
-            options={{
-              title: "Link cards",
-              // backgroundColor: GlobalStyles.colors.primary1,
-            }}
-          />
-        )}
+      {users.some((user) => user?.roles.includes("Tapper") || user?.roles.includes("Linker")) && (
+        // supported &&
+        <Drawer.Screen
+          name="LinkCardScreen"
+          component={LinkCardScreen}
+          options={{
+            title: "Link cards",
+            // backgroundColor: GlobalStyles.colors.primary1,
+          }}
+        />
+      )}
     </Drawer.Navigator>
   );
 };

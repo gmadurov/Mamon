@@ -11,7 +11,6 @@ import FullContext from "../../context/FullContext";
 import { GlobalStyles } from "../../constants/styles";
 import Holder from "../../models/Holder";
 import HolderContext from "../../context/HolderContext";
-import { baseUrl } from "../../context/AuthContext";
 import { showMessage } from "react-native-flash-message";
 import { useRoute } from "@react-navigation/native";
 
