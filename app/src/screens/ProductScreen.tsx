@@ -1,6 +1,7 @@
 import BottomSheetHolders, { HolderChoice } from "../components/Cart/BottomSheetHolders";
 import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import NFCContext, { TagEventLocal } from "../context/NFCContext";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 
 import ApiContext from "../context/ApiContext";
@@ -8,11 +9,12 @@ import { Appbar } from "react-native-paper";
 import { Card } from "../models/Card";
 import Cart from "../components/Cart/Cart";
 import CartContext from "../context/CartContext";
+import { DrawerActions } from "@react-navigation/native";
 import FullContext from "../context/FullContext";
 import { GlobalStyles } from "../constants/styles";
 import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import PersonelView from "../components/Cart/PersonelView";
 import ProductContext from "../context/ProductContext";
 import ProductTile from "../components/Product/ProductTile";
@@ -21,8 +23,13 @@ import User from "../models/Users";
 import { showMessage } from "react-native-flash-message";
 
 const { width } = Dimensions.get("screen");
+type RootStackParamList = {
+  props: { sell?: boolean };
+  ProductScreen: undefined;
+};
+type Props = NativeStackScreenProps<RootStackParamList, "ProductScreen">;
 
-const ProductScreen = ({ sell, navigation }: { sell?: boolean; navigation: any }) => {
+const ProductScreen = () => {
   const { GET, selectedProducts } = useContext(ProductContext);
   const { GET: GET_HOLDER } = useContext(HolderContext);
   const { GET_categories, sideBySide } = useContext(SettingsContext);
@@ -30,13 +37,12 @@ const ProductScreen = ({ sell, navigation }: { sell?: boolean; navigation: any }
   const { cart, setBuyer, setSeller } = useContext(CartContext);
   const [refreshing, setRefreshing] = useState(false);
   const NfcProxy = useContext(NFCContext);
-  const { BottomSearch, setBottomSearch, enableBottomSearch } = useContext(FullContext);
-  const [reading, setReading] = useState(false);
+  const { setBottomSearch } = useContext(FullContext);
   const [selected, setSelected] = useState(0);
+  const navigation = useNavigation();
   function renderProducts(itemData: { item: any }) {
     return <ProductTile product={itemData.item} selected={selected} setSelected={setSelected} />;
   }
-
   async function startNfc() {
     let tag: TagEventLocal | null = null;
     if (NfcProxy.enabled && NfcProxy.supported) {
@@ -110,18 +116,11 @@ const ProductScreen = ({ sell, navigation }: { sell?: boolean; navigation: any }
       stopNfc();
     }
   }, [cart]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
         <Appbar.Header style={{ backgroundColor: "white" }}>
-          <Appbar.Action
-            icon={"burger"}
-            onPress={() => {
-              navigation.openDrawer();
-            }}
-          />
-
+          <Appbar.Action icon={"menu"} onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />
           <Appbar.Content title="Mamon" />
           {NfcProxy.NFCreading && <Appbar.Action icon="nfc" />}
         </Appbar.Header>
@@ -151,7 +150,7 @@ const ProductScreen = ({ sell, navigation }: { sell?: boolean; navigation: any }
       >
         <View style={[styles.cartView, !sideBySide && { flex: 1 }]}>
           <View style={{ flex: 3 }}>
-            <Cart sell={sell ? true : false} />
+            <Cart />
           </View>
           <View style={{ flex: 1 }}>
             <PersonelView />

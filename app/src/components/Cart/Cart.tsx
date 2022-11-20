@@ -110,7 +110,7 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
                   buy("pin");
                 }}
               >
-                Cash
+                Pin
               </Button>
             </TouchableRipple>
             <TouchableRipple // was View

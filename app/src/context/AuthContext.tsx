@@ -5,7 +5,6 @@ import { AuthToken } from "../models/AuthToken";
 import User from "../models/Users";
 import jwt_decode from "jwt-decode";
 import { showMessage } from "react-native-flash-message";
-import { useNavigation } from "@react-navigation/native";
 
 //  "https://stropdas.herokuapp.com";
 //  "http://127.0.0.1:8000";
@@ -56,7 +55,6 @@ const AuthContext = createContext({} as AuthContextType);
 export default AuthContext;
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // dont use useFetch here because it will not work
-  const navigation = useNavigation();
   const [authTokens, setAuthTokens] = useState<AuthToken>({} as AuthToken);
   const [authTokenUsers, setAuthTokenUsers] = useState<AuthToken[]>([] as AuthToken[]);
   const [user, setUser] = useState<User>({} as User);

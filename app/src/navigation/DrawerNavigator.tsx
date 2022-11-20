@@ -1,11 +1,13 @@
 import { Appbar, Divider } from "react-native-paper";
 import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
+import ApiContext from "../context/ApiContext";
 import AuthContext from "../context/AuthContext";
 import CategoryScreen from "../screens/CategoryScreen";
 import FullContext from "../context/FullContext";
 import LinkCardScreen from "../screens/LinkCardScreen";
+import { Linking } from "react-native";
 import LoginScreen from "../screens/LoginScreen";
 import NFCContext from "../context/NFCContext";
 import ProductScreen from "../screens/ProductScreen";
@@ -19,9 +21,17 @@ const Drawer = createDrawerNavigator();
 const DrawerNavigator = () => {
   const { setEnableBottomSearch } = useContext(FullContext);
   const { setSideBySide } = useContext(SettingsContext);
+  const { ApiRequest } = useContext(ApiContext);
   const { logoutFunc, users, baseUrl, setBaseUrl } = useContext(AuthContext);
   const { setEnabled, supported, NFCreading } = useContext(NFCContext);
-
+  let updateURL: string;
+  useEffect(() => {
+    const getUpdateURL = async () => {
+      const { data } = await ApiRequest<{ variable?: string }>("/api/environment/open_update_url/");
+      updateURL = data.variable || "";
+    };
+    getUpdateURL();
+  }, []);
   return (
     <Drawer.Navigator
       // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
@@ -40,6 +50,7 @@ const DrawerNavigator = () => {
               }}
             />
             {supported && <DrawerItem label="_Disabled NFC" onPress={() => setEnabled((nu) => !nu)} />}
+            <DrawerItem label="Check Update" onPress={async () => await Linking.openURL(updateURL)} />
             <DrawerItem label="Toggle Side by Side" onPress={() => setSideBySide((nu) => !nu)} />
             <DrawerItem label="Toggle Bottom Search" onPress={() => setEnableBottomSearch((nu) => !nu)} />
             <DrawerItem label="Uitlogen" onPress={async () => await logoutFunc()} />
@@ -49,20 +60,20 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen
         name="Producten"
-        children={() => <ProductScreen sell />}
+        children={() => <ProductScreen  />}
         options={{
           title: "Mamon",
         }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Log"
         children={() => <ProductScreen />}
         options={{
           title: "Mamon (Cash/Pin)",
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="Categorieën"
         children={() => <CategoryScreen />}

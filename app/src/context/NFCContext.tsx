@@ -157,6 +157,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
     await NfcManager.cancelTechnologyRequest();
     setNFCreading(false);
   }
+  
 
   useEffect(() => {
     async function initNfc() {

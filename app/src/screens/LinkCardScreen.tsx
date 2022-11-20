@@ -11,7 +11,7 @@ import Holder from "../models/Holder";
 import { View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 
-function LinkCardScreen(props: { navigation: any }) {
+function LinkCardScreen(props: { [key: string]: any }) {
   const [card, setCard] = useState<Card>({
     card_id: "",
     card_name: "",
