@@ -39,6 +39,7 @@ class HolderAdmin(admin.ModelAdmin):
                 "user",
                 "ledenbase_id",
             ]
+        return []
 
     def has_delete_permission(self, request, obj=None):
         return False
