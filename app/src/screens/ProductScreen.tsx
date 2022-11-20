@@ -1,9 +1,10 @@
 import BottomSheetHolders, { HolderChoice } from "../components/Cart/BottomSheetHolders";
 import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import NFCContext, { TagEventLocal } from "../context/NFCContext";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 
 import ApiContext from "../context/ApiContext";
+import { Appbar } from "react-native-paper";
 import { Card } from "../models/Card";
 import Cart from "../components/Cart/Cart";
 import CartContext from "../context/CartContext";
@@ -11,6 +12,7 @@ import FullContext from "../context/FullContext";
 import { GlobalStyles } from "../constants/styles";
 import Holder from "../models/Holder";
 import HolderContext from "../context/HolderContext";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import PersonelView from "../components/Cart/PersonelView";
 import ProductContext from "../context/ProductContext";
 import ProductTile from "../components/Product/ProductTile";

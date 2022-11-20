@@ -21,6 +21,7 @@ export type NFCContextType = {
   readNdefOnce: () => Promise<TagEventLocal>;
   readTag: () => Promise<TagEventLocal>;
   stopReading(): Promise<void>;
+  NFCreading: boolean;
 };
 
 const NFCContext = createContext({} as NFCContextType);
@@ -29,6 +30,7 @@ export default NFCContext;
 export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
   const [supported, setSupported] = useState<boolean>(false);
   const [enabled, setEnabled] = useState<boolean>(false);
+  const [NFCreading, setNFCreading] = useState<boolean>(false);
   const withAndroidPrompt = (fn: Function) => {
     async function wrapper() {
       if (supported && enabled) {
@@ -124,6 +126,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
   }) as () => Promise<TagEventLocal>;
 
   const readTag = withAndroidPrompt(async () => {
+    setNFCreading(true);
     let tag: TagEventLocal;
     try {
       await NfcManager.requestTechnology([NfcTech.Ndef]);
@@ -144,7 +147,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
       // });
       tag = {} as TagEventLocal;
     } finally {
-      await NfcManager.cancelTechnologyRequest();
+      await stopReading();
     }
 
     return tag;
@@ -152,6 +155,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
 
   async function stopReading() {
     await NfcManager.cancelTechnologyRequest();
+    setNFCreading(false);
   }
 
   useEffect(() => {
@@ -192,6 +196,7 @@ export const NFCProvider = ({ children }: { children: React.ReactNode }) => {
     enabled,
     setEnabled,
     stopReading,
+    NFCreading,
   };
   return <NFCContext.Provider value={data}>{children}</NFCContext.Provider>;
 };

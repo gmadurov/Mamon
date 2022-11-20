@@ -171,7 +171,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       urlFetch = `${await AsyncStorage.getItem("baseUrl")}${url}`;
     }
-    console.log("baseUrlORIGIN", urlFetch);
     // console.log(urlFetch, config);
     const res = await fetch(urlFetch, config);
     const data = await res.json();

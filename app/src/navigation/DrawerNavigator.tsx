@@ -1,9 +1,9 @@
+import { Appbar, Divider } from "react-native-paper";
 import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import React, { useContext } from "react";
 
 import AuthContext from "../context/AuthContext";
 import CategoryScreen from "../screens/CategoryScreen";
-import { Divider } from "react-native-paper";
 import FullContext from "../context/FullContext";
 import LinkCardScreen from "../screens/LinkCardScreen";
 import LoginScreen from "../screens/LoginScreen";
@@ -20,7 +20,7 @@ const DrawerNavigator = () => {
   const { setEnableBottomSearch } = useContext(FullContext);
   const { setSideBySide } = useContext(SettingsContext);
   const { logoutFunc, users, baseUrl, setBaseUrl } = useContext(AuthContext);
-  const { setEnabled, supported } = useContext(NFCContext);
+  const { setEnabled, supported, NFCreading } = useContext(NFCContext);
 
   return (
     <Drawer.Navigator
@@ -52,7 +52,12 @@ const DrawerNavigator = () => {
         children={() => <ProductScreen sell />}
         options={{
           title: "Mamon",
-          // backgroundColor: GlobalStyles.colors.primary1,
+          header: () => (
+            <Appbar.Header style={{ backgroundColor: "white" }}>
+              <Appbar.Content title="Mamon" />
+              {NFCreading && <Appbar.Action icon="nfc" />}
+            </Appbar.Header>
+          ),
         }}
       />
 

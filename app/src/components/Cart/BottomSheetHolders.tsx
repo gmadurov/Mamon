@@ -29,7 +29,7 @@ export type BottomSearchProps = {
 };
 
 const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNFC = false }: BottomSearchProps) => {
-  const { BottomSearch, setBottomSearch, enableBottomSearch} = useContext(FullContext);
+  const { BottomSearch, setBottomSearch, enableBottomSearch, choosePage } = useContext(FullContext);
   const { setBuyer } = useContext(CartContext);
   const NfcProxy = useContext(NFCContext);
   const { ApiRequest } = useContext(ApiContext);
@@ -71,6 +71,11 @@ const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNF
     await GET();
     setRefreshing(false);
   }
+
+  useEffect(() => {
+    getHolders();
+  }, []);
+  
   const sheetRef = useRef(null);
   const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
   const handleSheetChange = useCallback(async (index: number) => {
@@ -80,68 +85,68 @@ const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNF
     }
   }, []);
 
-  async function startNfc() {
-    let tag: TagEventLocal | null = null;
-    if (NfcProxy.enabled && NfcProxy.supported) {
-      // console.log("start nfc");
-      try {
-        tag = await NfcProxy.readTag();
-      } catch (e) {
-        await NfcProxy.stopReading();
-      } finally {
-        await NfcProxy.stopReading();
-      }
+  // async function startNfc() {
+  //   let tag: TagEventLocal | null = null;
+  //   if (NfcProxy.enabled && NfcProxy.supported) {
+  //     // console.log("start nfc");
+  //     try {
+  //       tag = await NfcProxy.readTag();
+  //     } catch (e) {
+  //       await NfcProxy.stopReading();
+  //     } finally {
+  //       await NfcProxy.stopReading();
+  //     }
 
-      // const tag = { id: "0410308AC85E80" }; //for testing locally
-      if (tag?.id) {
-        // console.log(tag);
-        showMessage({
-          message: `card ${tag?.id} scanned`,
-          type: "info",
-          floating: true,
-          hideStatusBar: true,
-          autoHide: true,
-          duration: 500,
-          position: "bottom",
-        });
-        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
-        if (res.status === 200) {
-          // console.log(data);
-          setBuyer({
-            ...data.holder,
-            value: data.holder.id,
-            label: data.holder?.name,
-          } as HolderChoice);
-          setBottomSearch(false);
-          setSearch("");
-        } else {
-          showMessage({
-            message: `Card niet gevonden`,
-            description: `is card gekopeld`,
-            type: "danger",
-            floating: true,
-            hideStatusBar: true,
-            autoHide: true,
-            duration: 1500,
-            position: "bottom",
-          });
-        }
-      }
-    }
-  }
-  useEffect(() => {
-    async function useNfc() {
-      await startNfc();
-    }
-    async function stopNfc() {
-      await NfcProxy.stopReading();
-    }
-    if (BottomSearch) {
-      useNfc();
-    } else {
-      stopNfc();
-    }
-  }, [BottomSearch]);
+  //     // const tag = { id: "0410308AC85E80" }; //for testing locally
+  //     if (tag?.id) {
+  //       // console.log(tag);
+  //       showMessage({
+  //         message: `card ${tag?.id} scanned`,
+  //         type: "info",
+  //         floating: true,
+  //         hideStatusBar: true,
+  //         autoHide: true,
+  //         duration: 500,
+  //         position: "bottom",
+  //       });
+  //       const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
+  //       if (res.status === 200) {
+  //         // console.log(data);
+  //         setBuyer({
+  //           ...data.holder,
+  //           value: data.holder.id,
+  //           label: data.holder?.name,
+  //         } as HolderChoice);
+  //         setBottomSearch(false);
+  //         setSearch("");
+  //       } else {
+  //         showMessage({
+  //           message: `Card niet gevonden`,
+  //           description: `is card gekopeld`,
+  //           type: "danger",
+  //           floating: true,
+  //           hideStatusBar: true,
+  //           autoHide: true,
+  //           duration: 1500,
+  //           position: "bottom",
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+  // useEffect(() => {
+  //   async function useNfc() {
+  //     await startNfc();
+  //   }
+  //   async function stopNfc() {
+  //     await NfcProxy.stopReading();
+  //   }
+  //   if (BottomSearch) {
+  //     useNfc();
+  //   } else {
+  //     stopNfc();
+  //   }
+  // }, [BottomSearch]);
   const renderItem = ({ item }: { item: HolderChoice }) => {
     let option = item;
     let avatarSize = 50;
@@ -171,7 +176,7 @@ const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNF
       </>
     );
   };
-  if (BottomSearch && enableBottomSearch) {
+  if ((BottomSearch && enableBottomSearch) || choosePage) {
     return (
       <BottomSheet
         snapPoints={snapPoints}
