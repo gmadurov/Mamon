@@ -126,7 +126,7 @@ const ProductScreen = () => {
         </Appbar.Header>
       ),
     });
-  }, [NfcProxy.NFCreading]);
+  }, [cart, NfcProxy.NFCreading]);
 
   async function getProducts() {
     setRefreshing(true);
