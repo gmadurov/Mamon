@@ -209,5 +209,8 @@ CSRF_TRUSTED_ORIGINS = ["https://*.esrtheta.nl", "http://localhost:8000"]
 MOLLIE_API_KEY = os.environ.get("MOLLIE_API_KEY")
 MOLLIE_PARTNER_ID = os.environ.get("MOLLIE_PARTNER_ID")
 MOLLIE_PROFILE_ID = os.environ.get("MOLLIE_PROFILE_ID")
-mollie_client = Client()
-mollie_client.set_api_key(MOLLIE_API_KEY)
+try:
+    mollie_client = Client()
+    mollie_client.set_api_key(MOLLIE_API_KEY)
+except:
+    print('mollie not available')
