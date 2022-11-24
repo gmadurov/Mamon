@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, views_holders, views_products, views_purchases, views_bar
+from . import views, views_holders, views_products, views_purchases, views_bar, views_hap
 from api.tokens import MyTokenObtainPairView, MyRefreshPairView
 
 # from django.views.decorators.csrf import csrf_exempt
@@ -28,4 +28,7 @@ urlpatterns = [
     # path("users/token/", MyTokenObtainPairView.as_view()),
     path("users/token/refresh/", MyRefreshPairView.as_view()),
     path("environment/<str:name>/", views.getEnvironment),
+
+    # Happens ###############################
+    path("happen/", views_hap.handleHaps),
 ]

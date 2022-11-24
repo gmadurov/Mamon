@@ -5,9 +5,12 @@ from django.db.models import Q
 from nonrelated_inlines.admin import NonrelatedTabularInline
 
 from .actions import set_to_close, set_to_open
-from .models import Barcycle, Category, Order, Product, Purchase, Report
+from .models import Barcycle, Category, Happen, Order, Product, Purchase, Report
 
 # Register your models here.
+import pytz
+
+utc = pytz.UTC
 
 
 class ReportInlineAdmin(NonrelatedTabularInline):
@@ -244,9 +247,34 @@ class ReportAdmin(admin.ModelAdmin):
         return False
 
 
+class HapAdmin(admin.ModelAdmin):
+    list_display = [
+        "title",
+        "description",
+        "cost",
+        "active",
+    ]
+    list_filter = ["title"]
+    search_fields = ["title", "description", "cost", "id"]
+
+    filter_horizontal = ["participants", "deducted_from"]
+
+    # def active(self, obj):
+    #     return obj.opening_date <= utc.localize(datetime.now()) and utc.localize(datetime.now()) <= obj.closing_date
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ("cost", "id")
+        return self.readonly_fields
+
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
+
+
+admin.site.register(Barcycle, BarcycleAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Happen, HapAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Purchase, PurchaseAdmin)
-admin.site.register(Category, CategoryAdmin)
 admin.site.register(Report, ReportAdmin)
-admin.site.register(Barcycle, BarcycleAdmin)
 # admin.site.register(Order)  # do not enable

@@ -25,6 +25,9 @@ start = """sh -c \"cd app && expo start \""""
 freeze = """sh -c \"pip freeze > $(pwd)/backend/requirements.txt \""""
 createsuperuser = """sh -c \"docker-compose run web python manage.py createsuperuser \""""
 backup_mamon = """sh -c \"ssh root@metis dokku run mamon python backend/manage.py dumpdata --indent 4 > $(pwd)/data/db_real_$(date  +%m_%d_%Y).json\""""
+backup_local = """sh -c \"docker-compose run web python manage.py dumpdata --indent 4 > $(pwd)/data/local_db_$(date  +%m_%d_%Y).json\""""
+restore_local = """sh -c \"docker-compose run web python manage.py loaddata local_db_$(date  +%m_%d_%Y).json\""""
+flush_local = """sh -c \"docker-compose run web python manage.py flush \""""
 
 [packages]
 asgiref = "==3.5.2"

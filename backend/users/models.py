@@ -84,6 +84,9 @@ class WalletUpgrades(models.Model):
     def __str__(self):
         return str(self.holder.name)
 
+    class Meta:
+        verbose_name_plural = "Wallet Upgrades"
+        verbose_name = 'Wallet Upgrade'
 
 class Card(models.Model):
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
@@ -92,6 +95,9 @@ class Card(models.Model):
 
     def __str__(self):
         return str(self.holder.name) + " has card " + str(self.card_name)
+    
+    class Meta:
+        verbose_name_plural = "Carden"
 
 
 class MolliePayments(models.Model):
@@ -109,3 +115,6 @@ class MolliePayments(models.Model):
         if self.is_paid:
             return str(self.holder.name) + " has payed on " + str(self.payed_on)
         return str(self.holder.name) + " paid " + str(self.payment_id)
+
+    class Meta:
+        verbose_name_plural = "Mollie Payments"

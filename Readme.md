@@ -2,6 +2,33 @@ Basic intro we user
 react-native-paper as a theme
 https://callstack.github.io/react-native-paper
 
+## to develop locally
+
+go to the the folder where you want to have the code and paste the following to clone the app and open it in vs code
+
+```
+git clone git@gitlab.com:esrtheta/Mamon.git
+cd Mamon && code . -rm
+```
+
+open a terminal and type the following to initialise the docker application
+
+```
+docker-compose build
+```
+
+to start the docker application
+
+```
+docker-compose up
+```
+
+to load inital data run the following
+
+```
+docker-compose run web python manage.py loaddata starterDATA
+```
+
 # PIP environment I recomend not mixing the modules you need for webdev and the modules you normally use. For this I use a virtual enviroment(pipenv)
 
 to install it just do
@@ -108,7 +135,7 @@ op metis
  dokku postgres:link staging-mamon-db staging-mamon --no-restart
 ```
 
-set staging-mamon DATABASE_URL variaable to staging-mamon -db link 
+set staging-mamon DATABASE_URL variaable to staging-mamon -db link
 
 ```
 dokku domains:add staging-mamon "staging-mamon.esrtheta.nl"
@@ -139,3 +166,4 @@ dokku run staging-mamon python backend/manage.py migrate --noinput
 # TypeScript
 
 run ```npm tsc``` to test the types of the whole app
+````

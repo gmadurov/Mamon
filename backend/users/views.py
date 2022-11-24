@@ -73,14 +73,15 @@ def loginAllUsers(request, username=None, password=None, api=False):
             headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
             json={"password": password, "username": username},
         )
+        print(login_res.text)
         lid_token = login_res.text
         if login_res.status_code != 200:
             if not api:
                 try:
-                    messages.error(request, "Error 4032:" + lid_token["non_field_errors"][0])
+                    messages.error(request, "Error 4032:" + json.loads(lid_token).get("non_field_errors")[0])
                 except:
                     messages.error(request, "Error 4041: No response from Ledenbase")
-                return None
+                return None, login_res.status_code
             else:
                 # return ledenbase response and status code
                 return json.loads(login_res.text), login_res.status_code

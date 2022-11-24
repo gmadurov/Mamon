@@ -8,8 +8,11 @@ from colorfield.fields import ColorField
 from django.db.models import Q
 
 from users.models import Holder, Personel
+import pytz
 
 # Create your models here.
+
+utc = pytz.UTC
 
 
 class Product(models.Model):
@@ -18,15 +21,17 @@ class Product(models.Model):
     color = ColorField(default="#ffdd00")
     active = models.BooleanField(default=True)
     # add image field without category field
-    image = models.ImageField(
-        upload_to="products/", null=True, blank=True, default="products/default.png"
-    )
+    image = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
 
     def __str__(self):
         return str(self.name) + ", €" + str(self.price)
 
+    class Meta:
+        verbose_name_plural = "Producten"
+
 
 class Category(models.Model):
+
     name = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)
     products = models.ManyToManyField(
@@ -37,6 +42,9 @@ class Category(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+    class Meta:
+        verbose_name_plural = "Categories"
 
 
 class Purchase(models.Model):
@@ -60,13 +68,7 @@ class Purchase(models.Model):
     remaining_after_purchase = models.FloatField(default=0)
 
     def __str__(self):
-        return (
-            str('Total:')
-            + " €"
-            + str(
-                sum([item.quantity * item.product.price for item in self.orders.all()])
-            )
-        )
+        return str("Total:") + " €" + str(sum([item.quantity * item.product.price for item in self.orders.all()]))
 
     @property
     def total(self):
@@ -93,9 +95,7 @@ class Report(models.Model):
         ("Middle", "Middle"),
     )
     date = models.DateTimeField(auto_now_add=True)
-    personel = models.ForeignKey(
-        Personel, verbose_name=("creator"), on_delete=models.CASCADE
-    )
+    personel = models.ForeignKey(Personel, verbose_name=("creator"), on_delete=models.CASCADE)
     action = models.CharField(("action"), choices=ACTIONS, max_length=50)
     total_cash = models.FloatField(("total Cash"))
     flow_meter1 = models.IntegerField(("flow meter 1"))
@@ -166,3 +166,54 @@ class Barcycle(models.Model):
 
     class Meta:
         ordering = ["-opening_report__date"]
+
+
+class Happen(models.Model):
+    date = models.DateTimeField()
+    title = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    opening_date = models.DateTimeField()
+    closing_date = models.DateTimeField()
+    cost = models.FloatField(default=0)
+    max_participants = models.IntegerField(default=0)
+    participants = models.ManyToManyField(Holder, through="HapOrder", related_name="ingeschreven_happen", blank=True)
+    deducted_from = models.ManyToManyField(Holder, through="HapPayment", related_name="payed_for", blank=True)
+
+    def __str__(self):
+        return self.title + " " + self.date.strftime("%a %d %b %Y")
+
+    @property
+    def active(self):
+        return self.opening_date <= utc.localize(datetime.datetime.now()) and utc.localize(datetime.datetime.now()) <= self.closing_date
+
+    class Meta:
+        verbose_name = "Hap"
+        verbose_name_plural = "Happen"
+
+
+class HapOrder(models.Model):
+    happen = models.ForeignKey(Happen, on_delete=models.CASCADE)
+    holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
+    # how many are to be deducted from the holder
+    quantity = models.IntegerField()
+    comment = models.CharField(max_length=30, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.holder) + " " + str(self.quantity) + " " + str(self.happen)
+
+    @property
+    def total(self):
+        return self.quantity * self.happen.cost
+
+class HapPayment(models.Model):
+    happen = models.ForeignKey(Happen, on_delete=models.CASCADE)
+    holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
+    # how many were deducted from the holder
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return str(self.holder) + " " + str(self.quantity) + " " + str(self.happen)
+
+    @property
+    def total(self):
+        return self.quantity * self.happen.cost
