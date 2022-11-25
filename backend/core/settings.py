@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "colorfield",
     "storages",
     "django_seed",
+    "simple_history",
     ########## default
     "django.contrib.admin",
     "django.contrib.auth",
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     #### self added
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 from api.authentication import CORS_ALLOW_ALL_ORIGINS, REST_FRAMEWORK, SIMPLE_JWT
 
@@ -213,4 +215,4 @@ try:
     mollie_client = Client()
     mollie_client.set_api_key(MOLLIE_API_KEY)
 except:
-    print('mollie not available')
+    print("mollie not available")

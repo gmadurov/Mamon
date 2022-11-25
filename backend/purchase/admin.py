@@ -7,6 +7,8 @@ from nonrelated_inlines.admin import NonrelatedTabularInline
 from .actions import set_to_close, set_to_open
 from .models import Barcycle, Category, HapOrder, HapPayment, Happen, Order, Product, Purchase, Report
 
+from simple_history.admin import SimpleHistoryAdmin
+
 # Register your models here.
 import pytz
 
@@ -82,7 +84,7 @@ class PurchaseBarCycleInline(NonrelatedTabularInline):
         return False
 
 
-class BarcycleAdmin(admin.ModelAdmin):
+class BarcycleAdmin(SimpleHistoryAdmin):
     list_display = [
         "__str__",
         "opening_personel",
@@ -166,7 +168,7 @@ class BarcycleAdmin(admin.ModelAdmin):
         return False
 
 
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(SimpleHistoryAdmin):
     list_display = [
         "name",
         "description",
@@ -177,7 +179,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["name", "description", "products"]
 
 
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(SimpleHistoryAdmin):
     list_display = ["name", "price", "image", "color", "active"]
     # list_display = ['name', 'price', 'category', 'barcode']
     list_editable = ["image", "color", "active"]
@@ -194,7 +196,7 @@ class ProductAdmin(admin.ModelAdmin):
         return False
 
 
-class PurchaseAdmin(admin.ModelAdmin):
+class PurchaseAdmin(SimpleHistoryAdmin):
     list_display = [
         "buyer",
         "total",
@@ -217,7 +219,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 
 
 # make a ReportAdmin template
-class ReportAdmin(admin.ModelAdmin):
+class ReportAdmin(SimpleHistoryAdmin):
     list_display = [
         "date",
         "personel",
@@ -247,14 +249,15 @@ class ReportAdmin(admin.ModelAdmin):
         return False
 
 
-
 class HapOrderInline(admin.TabularInline):
     model = HapOrder
-    
+
+
 class HapPaymentInline(admin.TabularInline):
     model = HapPayment
-    
-class HapAdmin(admin.ModelAdmin):
+
+
+class HapAdmin(SimpleHistoryAdmin):
     list_display = [
         "title",
         "description",
@@ -276,7 +279,6 @@ class HapAdmin(admin.ModelAdmin):
 
     # def has_delete_permission(self, request, obj=None):
     #     return False
-
 
 
 admin.site.register(Barcycle, BarcycleAdmin)

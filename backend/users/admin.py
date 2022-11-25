@@ -2,6 +2,8 @@ from django.contrib import admin
 
 from .models import Card, Holder, MolliePayments, Personel, WalletUpgrades
 
+# admin.site.login_form =  
+# admin.site. 
 
 class CardAdmin(admin.ModelAdmin):
     list_display = ("__str__", "card_id")

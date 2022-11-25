@@ -4,13 +4,13 @@ from django.db import models
 # Create your models here.
 from django.contrib.auth.models import User
 from django.conf import settings
+from simple_history.models import HistoricalRecords
 
 # Create your models here.
 
 
 class Holder(models.Model):
     """stand, user{first_name, last_name}"""
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     stand = models.FloatField(default=0.0)
     ledenbase_id = models.IntegerField(default=0, null=True, blank=True)
@@ -21,6 +21,7 @@ class Holder(models.Model):
         default="holder/user-default.jpg",
     )
     image_ledenbase = models.CharField(max_length=100, null=True, blank=True)
+    history = HistoricalRecords()
 
     @property
     def name(self):
@@ -28,7 +29,7 @@ class Holder(models.Model):
 
     def __str__(self):
         try:
-            return str(self.user.first_name + " " + self.user.last_name) 
+            return str(self.user.first_name + " " + self.user.last_name)
         except:
             return "Holder"
 
@@ -51,6 +52,7 @@ class Personel(models.Model):
         blank=True,
         default="personel/user-default.jpg",
     )
+    history = HistoricalRecords()
 
     @property
     def image_url(self):
@@ -80,22 +82,25 @@ class WalletUpgrades(models.Model):
     cash = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
     molliePayment = models.OneToOneField("MolliePayments", on_delete=models.CASCADE, null=True, blank=True, related_name="payment")
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.holder.name)
 
     class Meta:
         verbose_name_plural = "Wallet Upgrades"
-        verbose_name = 'Wallet Upgrade'
+        verbose_name = "Wallet Upgrade"
+
 
 class Card(models.Model):
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
     card_id = models.CharField(max_length=50, unique=True)
     card_name = models.CharField(max_length=15)
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.holder.name) + " has card " + str(self.card_name)
-    
+
     class Meta:
         verbose_name_plural = "Carden"
 
@@ -110,6 +115,7 @@ class MolliePayments(models.Model):
     identifier = models.CharField(max_length=36, unique=True, default=uuid4, editable=False)
     payed_on = models.DateTimeField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         if self.is_paid:

@@ -28,6 +28,7 @@ backup_mamon = """sh -c \"ssh root@metis dokku run mamon python backend/manage.p
 backup_local = """sh -c \"docker-compose run web python manage.py dumpdata --indent 4 > $(pwd)/data/local_db_$(date  +%m_%d_%Y).json\""""
 restore_local = """sh -c \"docker-compose run web python manage.py loaddata local_db_$(date  +%m_%d_%Y).json\""""
 flush_local = """sh -c \"docker-compose run web python manage.py flush \""""
+docker = """sh -c \"docker-compose run web python manage.py\""""
 
 [packages]
 asgiref = "==3.5.2"
@@ -53,6 +54,7 @@ whitenoise = "==6.2.0"
 django-seed = "*"
 django-nonrelated-inlines = "*"
 django-admin-interface = "*"
+django-simple-history = "*"
 
 [dev-packages]
 

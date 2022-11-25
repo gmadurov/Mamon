@@ -9,6 +9,8 @@ from django.db.models import Q
 
 from users.models import Holder, Personel
 import pytz
+from simple_history.models import HistoricalRecords
+
 
 # Create your models here.
 
@@ -22,7 +24,7 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
     # add image field without category field
     image = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
-
+    history = HistoricalRecords()
     def __str__(self):
         return str(self.name) + ", €" + str(self.price)
 
@@ -39,6 +41,7 @@ class Category(models.Model):
         related_name="cat_products",
         blank=True,
     )
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.name)
@@ -66,6 +69,7 @@ class Purchase(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     remaining_after_purchase = models.FloatField(default=0)
+    history = HistoricalRecords()
 
     def __str__(self):
         return str("Total:") + " €" + str(sum([item.quantity * item.product.price for item in self.orders.all()]))
@@ -82,6 +86,7 @@ class Order(models.Model):
     # purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.quantity) + " " + str(self.product)
@@ -101,6 +106,7 @@ class Report(models.Model):
     flow_meter1 = models.IntegerField(("flow meter 1"))
     flow_meter2 = models.IntegerField(("flow meter 2"))
     comment = models.TextField(("comment"), null=True, blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.personel.name}, {self.date.isoformat()} {self.action}"
@@ -125,6 +131,7 @@ class Barcycle(models.Model):
         on_delete=models.CASCADE,
         related_name="closing",
     )
+    history = HistoricalRecords()
 
     # return date as name of object
     def __str__(self):
@@ -180,6 +187,7 @@ class Happen(models.Model):
     max_participants = models.IntegerField(default=0)
     participants = models.ManyToManyField(Holder, through="HapOrder", related_name="ingeschreven_happen", blank=True)
     deducted_from = models.ManyToManyField(Holder, through="HapPayment", related_name="payed_for", blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.title + " " + self.date.strftime("%a %d %b %Y")
@@ -202,6 +210,7 @@ class HapOrder(models.Model):
     # how many are to be deducted from the holder
     quantity = models.IntegerField()
     comment = models.CharField(max_length=30, null=True, blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.holder) + " " + str(self.quantity) + " " + str(self.happen)
@@ -216,6 +225,7 @@ class HapPayment(models.Model):
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
     # how many were deducted from the holder
     quantity = models.IntegerField()
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.holder) + " " + str(self.quantity) + " " + str(self.happen)
