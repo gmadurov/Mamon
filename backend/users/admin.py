@@ -10,7 +10,7 @@ class CardAdmin(admin.ModelAdmin):
         # "holder__user__first_name",
         # "holder__user__last_name",
         "card_id",
-        # "holder__ledenbase_id",
+        # "holder__ledenbase
     )
 
     def get_readonly_fields(self, request, obj=None):
@@ -50,7 +50,8 @@ class PersonelAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "user__first_name", "user__last_name")
 
     def get_readonly_fields(self, request, obj=None):
-        return [
+        if obj:
+            return [
             "user",
         ]
 

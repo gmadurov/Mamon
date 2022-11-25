@@ -12,7 +12,6 @@ import IconButton from "../ui/IconButton";
 
 export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: boolean }) => {
   const { cart, setCart, buy_cart, buyer, setBuyer, seller } = useContext(CartContext);
-  const { setBottomSearch } = useContext(FullContext);
 
   const [disabled, setDisabled] = useState<boolean>(true);
   // let total equal the sum of the products in the cart multiplied by the quantity
@@ -41,21 +40,16 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
-      if (sell) {
-        if (buyer?.stand > total && total > 0.5 && seller.user_id) {
-          console.log({ line46: buyer?.stand > total && total > 0.5 && seller.user_id });
-
-          setDisabled(!true);
-        } else {
-          setDisabled(!false);
-        }
+      if (buyer?.stand > total && total > 0.5 && seller.user_id) {
+        setDisabled(!true);
       } else {
-        setDisabled(false);
+        setDisabled(!false);
       }
     }
     checkStand();
     // eslint-disable-next-line
   }, [buyer, total, seller]);
+
   if (buttons) {
     return (
       <View style={styles.view}>
@@ -79,24 +73,7 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
           </Button>
         </TouchableRipple> */}
 
-        {buyer.id ? (
-          <TouchableRipple // was View
-            onPress={() => {
-              buy("balance");
-            }}
-            style={[{ backgroundColor: GlobalStyles.colors.thetaGeel, width: "100%" }, styles.button]}
-          >
-            <Button
-              color={GlobalStyles.colors.thetaBrown}
-              disabled={disabled}
-              onPress={() => {
-                buy("balance");
-              }}
-            >
-              {disabled ? "Geen Saldo" : "Afrekenen"}
-            </Button>
-          </TouchableRipple>
-        ) : (
+        {disabled && (
           <>
             <TouchableRipple // was View
               onPress={() => {
@@ -113,16 +90,41 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
                 Pin
               </Button>
             </TouchableRipple>
+          </>
+        )}
+        {buyer.id && seller.user_id && total > 0 && (
+          <TouchableRipple // was View
+            onPress={() => {
+              buy("balance");
+            }}
+            disabled={disabled}
+            style={[
+              disabled ? { backgroundColor: "grey" } : { backgroundColor: GlobalStyles.colors.thetaGeel, width: "100%" },
+              styles.button,
+            ]}
+          >
+            <Button
+              color={GlobalStyles.colors.thetaBrown}
+              disabled={disabled}
+              onPress={() => {
+                buy("balance");
+              }}
+            >
+              {disabled ? "Geen Saldo" : "Afrekenen"}
+            </Button>
+          </TouchableRipple>
+        )}
+        {disabled && (
+          <>
             <TouchableRipple // was View
               onPress={() => {
                 buy("cash");
               }}
               disabled={disabled}
-              style={[disabled ? { backgroundColor: "grey" } : { backgroundColor: "green" }, styles.button]}
+              style={[{ backgroundColor: "green" }, styles.button]}
             >
               <Button
                 color="white"
-                disabled={disabled}
                 onPress={() => {
                   buy("cash");
                 }}
@@ -138,26 +140,21 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
     return (
       <View style={[styles.gridItem]}>
         <View style={styles.container}>
-          <TouchableRipple // was View
-            onPress={() => setBottomSearch((nu) => !nu)}
-            onLongPress={() => setBuyer({} as Holder)}
-          >
-            <View style={styles.header}>
-              <Text style={styles.headerText}>{buyer.id ? "Koper: " + buyer.name : "Cart"}</Text>
-              <Text style={styles.headerText}>
-                Total: ${total.toFixed(2).toString()}
-                <IconButton
-                  name={"close-circle-outline"}
-                  style={styles.input}
-                  color={GlobalStyles.colors.textColorDark}
-                  onPressFunction={() => {
-                    setCart([] as CartItems[]);
-                    setBuyer({} as Holder);
-                  }}
-                />
-              </Text>
-            </View>
-          </TouchableRipple>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>{buyer.id ? "Koper: " + buyer.name : "Cart"}</Text>
+            <Text style={styles.headerText}>
+              Total: ${total.toFixed(2).toString()}
+              <IconButton
+                name={"close-circle-outline"}
+                style={styles.input}
+                color={GlobalStyles.colors.textColorDark}
+                onPressFunction={() => {
+                  setCart([] as CartItems[]);
+                  setBuyer({} as Holder);
+                }}
+              />
+            </Text>
+          </View>
           <View style={{ height: 1, backgroundColor: "grey" }} />
           {/* </View>
         <View style={[styles.innerContainer, !(cart.length > 0) && { alignItems: "center" }]}> */}
@@ -205,9 +202,8 @@ const styles = StyleSheet.create({
     }),
   },
   header: {
-    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     width: "100%",
   },
   headerText: {

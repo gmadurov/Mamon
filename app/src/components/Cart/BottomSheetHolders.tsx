@@ -75,7 +75,7 @@ const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNF
   useEffect(() => {
     getHolders();
   }, []);
-  
+
   const sheetRef = useRef(null);
   const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
   const handleSheetChange = useCallback(async (index: number) => {
@@ -176,7 +176,7 @@ const BottomSheetHolders = ({ style, invalid, textInputConfig, placeholder, noNF
       </>
     );
   };
-  if ((BottomSearch && enableBottomSearch) || choosePage) {
+  if (BottomSearch) {
     return (
       <BottomSheet
         snapPoints={snapPoints}

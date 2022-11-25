@@ -123,6 +123,7 @@ const ProductScreen = () => {
           <Appbar.Action icon={"menu"} onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />
           <Appbar.Content title="Mamon" />
           {NfcProxy.NFCreading && <Appbar.Action icon="nfc" />}
+          <Appbar.Action icon={"account-box"} onPress={() => setBottomSearch(nu => !nu)} />
         </Appbar.Header>
       ),
     });
