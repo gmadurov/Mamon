@@ -21,13 +21,17 @@ open a terminal and type the following to initialise the docker application
 docker-compose build
 ```
 
-to start the docker application and load inital data run the following
+Now create database tables and load inital data
 
 ```
-docker-compose up && docker-compose run web python manage.py loaddata starterDATA
+docker-compose run web python manage.py migrate && docker-compose run web python manage.py loaddata starterDATA
 ```
 
-backend is ready to be used
+Backend is ready to be used locally!!
+
+```
+docker-compose up
+```
 
 ## development app
 

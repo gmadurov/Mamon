@@ -25,6 +25,7 @@ class Product(models.Model):
     # add image field without category field
     image = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
     history = HistoricalRecords()
+
     def __str__(self):
         return str(self.name) + ", €" + str(self.price)
 
@@ -198,6 +199,17 @@ class Happen(models.Model):
 
     def is_editabled(self):
         return self.closing_date >= utc.localize(datetime.datetime.now())
+
+    def pay(self):
+        failed = []
+        for happayment in self.haporder_set.all():
+            if happayment.holder not in self.deducted_from.all():
+                if happayment.holder.stand >= self.cost * happayment.quantity:
+                    HapPayment.objects.create(holder=happayment.holder, happen=self, quantity=happayment.quantity)
+                else:
+                    failed.append(happayment.holder)
+
+        return failed
 
     class Meta:
         verbose_name = "Hap"

@@ -28,10 +28,11 @@ urlpatterns = [
     # path("users/token/", MyTokenObtainPairView.as_view()),
     path("users/token/refresh/", MyRefreshPairView.as_view()),
     path("environment/<str:name>/", views.getEnvironment),
-
     # Happens ###############################
     path("happen/", views_hap.handleHaps),
     path("happen/<str:pk>/", views_hap.handleHap),
-    path("happen/<str:pk>/signin/<str:lid_id>", views_hap.handleHaps),
-    path("happen/<str:pk>/signout/<str:lid_id>", views_hap.handleHaps),
+    path("happen/<str:pk>/pay/", views_hap.payHappen),
+    path("happen/<str:pk>/leden/", views_hap.registerHappen),
+    path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
+    path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
 ]

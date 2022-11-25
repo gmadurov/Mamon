@@ -1,10 +1,10 @@
 from collections import OrderedDict
 from rest_framework import serializers
 from users.models import Card, Holder, WalletUpgrades
-from purchase.models import HapOrder, Happen, Order, Product, Purchase, Category, Report
+from purchase.models import HapOrder, HapPayment, Happen, Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 
 
 def without_keys(d, keys):
@@ -81,31 +81,6 @@ class SimpleHolderSerializer(serializers.ModelSerializer):
         exclude = ["image_ledenbase", "stand", "image", "user"]
 
 
-class HapPaymentHolderSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
-
-    def get_name(self, holder):
-        return holder.user.first_name + " " + holder.user.last_name
-
-    class Meta:
-        model = Holder
-        # fields = "__all__"
-        exclude = ["image_ledenbase", "stand", "image", "user"]
-
-
-# class HapOrderHolderSerializer(serializers.ModelSerializer):
-#     holder = SimpleHolderSerializer(read_only=True)
-#     holder_ledenbase_id = serializers.SerializerMethodField()
-
-#     def get_holder_ledenbase_id(self, obj):
-#         return obj.holder.ledenbase_id
-
-#     class Meta:
-#         model = HapOrder
-#         fields = "__all__"
-#         # exclude = ["happen"]
-
-
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True)
 
@@ -136,51 +111,54 @@ class CardSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class HapOrderHolderSerializer(serializers.ModelSerializer):
+class HapPaymentHolderSerializer(serializers.ModelSerializer):
     holder = SimpleHolderSerializer()
-    # holder_ledenbase_id = serializers.IntegerField(source="holder.ledenbase_id")
 
-    def get_holder_ledenbase_id(self, obj):
-        return obj.holder.ledenbase_id
+    class Meta:
+        model = HapPayment
+        fields = "__all__"
+        # exclude = ["holder"]
 
-    def validate_holder_ledenbase_id(self, value):
-        holder = Holder.objects.filter(ledenbase_id=value)
-        return bool(holder)
 
+class HapOrderHolderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        print("validated_data", validated_data)
-        holder = Holder.objects.get(ledenbase_id=validated_data["holder"]["ledenbase_id"])
-        validated_data["holder"] = holder
-        return HapOrder.objects.create(**validated_data)
+        holder = Holder.objects.get(ledenbase_id=validated_data.get("holder").get("ledenbase_id"))
+        if not holder in validated_data.get("happen").participants.all():
+            validated_data["holder"] = holder
+            return HapOrder.objects.create(**validated_data)
+        else:
+            validated_data.get("happen").participants.remove(holder)
+            validated_data["holder"] = holder
+            return HapOrder.objects.create(**validated_data)
+
+    holder = SimpleHolderSerializer()
+
+    def validate_holder(self, value):
+        try:
+            holder = Holder.objects.get(ledenbase_id=value.get("ledenbase_id"))
+            return value
+        except:
+            raise serializers.ValidationError(f"Holder with ledenbase id {value.get('ledenbase_id')} does not exist")
 
     class Meta:
         model = HapOrder
-        # fields = "__all__"
         exclude = ["happen"]
 
 
 class HappenSerializer(serializers.ModelSerializer):
     def create(self, validated_data: list[str]):
         # removing the participants ids from the about to be created Hap obj
-        print("Happen", validated_data)
+        # print("here", validated_data)
         participants = validated_data.pop("haporder_set", [])
-        print("partici", participants)
         # creating the Courier object
         hap = Happen.objects.create(**validated_data)
-        if participants:
-            # getting the participant objs
-            holders = get_list_or_404(Holder, ledenbase_id__in=[participant.get("holder").get('ledenbase_id') for participant in participants])
-            # adding the regions relations to it
-            participants = tuple(
-                hap.haporder_set.create(
-                    holder=list(filter(lambda holder: holder.ledenbase_id == participant.get("holder").get('ledenbase_id'), holders))[0],
-                    comment=participant.get("comment"),
-                    quantity=participant.get("quantity"),
-                )
-                for participant in participants
-            )
-            print(participants)
 
+        if participants:
+            hapOrder = HapOrderHolderSerializer(data=participants, many=True)
+            if hapOrder.is_valid(True):
+                hapOrder.save(happen=hap)
+            else:
+                raise serializers.ValidationError("HapOrder is not valid")
         return hap
 
     def update(self, instance: Happen, validated_data):
@@ -195,21 +173,11 @@ class HappenSerializer(serializers.ModelSerializer):
             if validated_data.get("haporder_set"):
                 # removing the participants ids from the about to be created Hap obj
                 participants = validated_data.pop("haporder_set")
-                # getting the participant objs
-                holders = get_list_or_404(Holder, ledenbase_id__in=[participant.get("holder").get('ledenbase_id') for participant in participants])
-                participants = tuple(
-                    HapOrder.objects.get_or_create(
-                        holder=list(filter(lambda holder: holder.ledenbase_id == participant.get("holder").get('ledenbase_id'), holders))[0],
-                        happen_id=instance.id,
-                        comment=participant.get("comment"),
-                        quantity=participant.get("quantity"),
-                    )[0]
-                    for participant in participants
-                )
-                instance.haporder_set.set(participants, bulk=True, clear=True)
+                hapOrder = HapOrderHolderSerializer(data=participants, many=True)
+                if hapOrder.is_valid(True):
+                    hapOrder.save(happen=instance)
             else:
                 instance.haporder_set.all().delete()
-                print("no participants")
 
         return instance
 
