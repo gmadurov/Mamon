@@ -67,7 +67,6 @@ def registerHappen(request, pk, lid_id=None):
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
-
 def payHappen(request, pk):
     data = request.data
     hap = Happen.objects.get(id=pk)
@@ -75,7 +74,7 @@ def payHappen(request, pk):
         serialiser = HapPaymentHolderSerializer(hap.happayment_set.all(), many=True)
         return Response(serialiser.data)
     if request.method == "POST":
-        failed=hap.pay()
+        failed = hap.pay()
         serialiser = HapPaymentHolderSerializer(hap.happayment_set.all(), many=True)
         failed = SimpleHolderSerializer(failed, many=True)
-        return Response({"success":serialiser.data, "failed":failed.data})
+        return Response({"success": serialiser.data, "failed": failed.data})
