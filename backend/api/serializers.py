@@ -4,6 +4,12 @@ from users.models import Card, Holder, WalletUpgrades
 from purchase.models import HapOrder, Happen, Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
+from django.shortcuts import get_list_or_404
+
+
+def without_keys(d, keys):
+    return {x: d[x] for x in d if x not in keys}
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,12 +93,17 @@ class HapPaymentHolderSerializer(serializers.ModelSerializer):
         exclude = ["image_ledenbase", "stand", "image", "user"]
 
 
-class HapOrderHolderSerializer(serializers.ModelSerializer):
-    # holder= SimpleHolderSerializer(read_only=True)
-    class Meta:
-        model = HapOrder
-        fields = "__all__"
-        # exclude = ["happen"]
+# class HapOrderHolderSerializer(serializers.ModelSerializer):
+#     holder = SimpleHolderSerializer(read_only=True)
+#     holder_ledenbase_id = serializers.SerializerMethodField()
+
+#     def get_holder_ledenbase_id(self, obj):
+#         return obj.holder.ledenbase_id
+
+#     class Meta:
+#         model = HapOrder
+#         fields = "__all__"
+#         # exclude = ["happen"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -125,20 +136,22 @@ class CardSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class HapPaymentHolderSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
-
-    def get_name(self, holder):
-        return holder.user.first_name + " " + holder.user.last_name
-
-    class Meta:
-        model = Holder
-        # fields = "__all__"
-        exclude = ["image_ledenbase", "stand", "image", "user"]
-
-
 class HapOrderHolderSerializer(serializers.ModelSerializer):
     holder = SimpleHolderSerializer()
+    # holder_ledenbase_id = serializers.IntegerField(source="holder.ledenbase_id")
+
+    def get_holder_ledenbase_id(self, obj):
+        return obj.holder.ledenbase_id
+
+    def validate_holder_ledenbase_id(self, value):
+        holder = Holder.objects.filter(ledenbase_id=value)
+        return bool(holder)
+
+    def create(self, validated_data):
+        print("validated_data", validated_data)
+        holder = Holder.objects.get(ledenbase_id=validated_data["holder"]["ledenbase_id"])
+        validated_data["holder"] = holder
+        return HapOrder.objects.create(**validated_data)
 
     class Meta:
         model = HapOrder
@@ -149,41 +162,55 @@ class HapOrderHolderSerializer(serializers.ModelSerializer):
 class HappenSerializer(serializers.ModelSerializer):
     def create(self, validated_data: list[str]):
         # removing the participants ids from the about to be created Hap obj
-        parts = validated_data.pop("participants")
-        print(type(parts) == list, type(parts[0]) == int)
-        participants = parts if type(parts) == list and type(parts[0]) == int else [participiant.popitem()[1] for participiant in parts]
-        print("apiSerializer", participants)
-        # getting the participant objs
-        participants = tuple(Holder.objects.filter(ledenbase_id__in=participants))
+        print("Happen", validated_data)
+        participants = validated_data.pop("haporder_set", [])
+        print("partici", participants)
         # creating the Courier object
         hap = Happen.objects.create(**validated_data)
-        # adding the regions relations to it
-        hap.participants.add(*participants)
+        if participants:
+            # getting the participant objs
+            holders = get_list_or_404(Holder, ledenbase_id__in=[participant.get("holder").get('ledenbase_id') for participant in participants])
+            # adding the regions relations to it
+            participants = tuple(
+                hap.haporder_set.create(
+                    holder=list(filter(lambda holder: holder.ledenbase_id == participant.get("holder").get('ledenbase_id'), holders))[0],
+                    comment=participant.get("comment"),
+                    quantity=participant.get("quantity"),
+                )
+                for participant in participants
+            )
+            print(participants)
+
         return hap
 
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get("description", instance.description)
-        instance.date = validated_data.get("date", instance.date)
-        instance.opening_date = validated_data.get("opening_date", instance.opening_date)
-        instance.closing_date = validated_data.get("closing_date", instance.closing_date)
-        instance.max_participants = validated_data.get("max_participants", instance.max_participants)
+    def update(self, instance: Happen, validated_data):
         if instance.is_editabled():
+            instance.title = validated_data.get("title", instance.title)
+            instance.description = validated_data.get("description", instance.description)
+            instance.date = validated_data.get("date", instance.date)
+            instance.opening_date = validated_data.get("opening_date", instance.opening_date)
+            instance.closing_date = validated_data.get("closing_date", instance.closing_date)
+            instance.max_participants = validated_data.get("max_participants", instance.max_participants)
             instance.cost = validated_data.get("cost", instance.cost)
-            if validated_data.get("haporder_set", False):
-                print("here2")
+            if validated_data.get("haporder_set"):
                 # removing the participants ids from the about to be created Hap obj
-                parts = validated_data.pop("haporder_set")
-                print([participiant for participiant in parts])
-                [
-                    OrderedDict([("holder", OrderedDict([("ledenbase_id", -14467)])), ("quantity", 1), ("comment", None)]),
-                    OrderedDict([("holder", OrderedDict([("ledenbase_id", 8036)])), ("quantity", 2), ("comment", None)]),
-                ]
-                # participants = validated_data.pop("participants", [])
-                participants = parts if type(parts) == list and type(parts[0]) == int else [participiant.popitem()[1] for participiant in parts]
+                participants = validated_data.pop("haporder_set")
                 # getting the participant objs
-                participants = tuple(Holder.objects.filter(ledenbase_id__in=participants))
-                instance.participants.set(participants)
+                holders = get_list_or_404(Holder, ledenbase_id__in=[participant.get("holder").get('ledenbase_id') for participant in participants])
+                participants = tuple(
+                    HapOrder.objects.get_or_create(
+                        holder=list(filter(lambda holder: holder.ledenbase_id == participant.get("holder").get('ledenbase_id'), holders))[0],
+                        happen_id=instance.id,
+                        comment=participant.get("comment"),
+                        quantity=participant.get("quantity"),
+                    )[0]
+                    for participant in participants
+                )
+                instance.haporder_set.set(participants, bulk=True, clear=True)
+            else:
+                instance.haporder_set.all().delete()
+                print("no participants")
+
         return instance
 
     class Meta:
