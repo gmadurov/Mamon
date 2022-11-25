@@ -5,7 +5,7 @@ from django.db.models import Q
 from nonrelated_inlines.admin import NonrelatedTabularInline
 
 from .actions import set_to_close, set_to_open
-from .models import Barcycle, Category, Happen, Order, Product, Purchase, Report
+from .models import Barcycle, Category, HapOrder, HapPayment, Happen, Order, Product, Purchase, Report
 
 # Register your models here.
 import pytz
@@ -247,6 +247,13 @@ class ReportAdmin(admin.ModelAdmin):
         return False
 
 
+
+class HapOrderInline(admin.TabularInline):
+    model = HapOrder
+    
+class HapPaymentInline(admin.TabularInline):
+    model = HapPayment
+    
 class HapAdmin(admin.ModelAdmin):
     list_display = [
         "title",
@@ -258,7 +265,7 @@ class HapAdmin(admin.ModelAdmin):
     search_fields = ["title", "description", "cost", "id"]
 
     filter_horizontal = ["participants", "deducted_from"]
-
+    inlines = [HapOrderInline, HapPaymentInline]
     # def active(self, obj):
     #     return obj.opening_date <= utc.localize(datetime.now()) and utc.localize(datetime.now()) <= obj.closing_date
 
@@ -269,6 +276,7 @@ class HapAdmin(admin.ModelAdmin):
 
     # def has_delete_permission(self, request, obj=None):
     #     return False
+
 
 
 admin.site.register(Barcycle, BarcycleAdmin)

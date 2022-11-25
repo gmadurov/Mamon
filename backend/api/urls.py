@@ -31,4 +31,7 @@ urlpatterns = [
 
     # Happens ###############################
     path("happen/", views_hap.handleHaps),
+    path("happen/<str:pk>/", views_hap.handleHap),
+    path("happen/<str:pk>/signin/<str:lid_id>", views_hap.handleHaps),
+    path("happen/<str:pk>/signout/<str:lid_id>", views_hap.handleHaps),
 ]

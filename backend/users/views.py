@@ -73,7 +73,6 @@ def loginAllUsers(request, username=None, password=None, api=False):
             headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
             json={"password": password, "username": username},
         )
-        print(login_res.text)
         lid_token = login_res.text
         if login_res.status_code != 200:
             if not api:

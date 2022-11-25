@@ -11,70 +11,106 @@ git clone git@gitlab.com:esrtheta/Mamon.git
 cd Mamon && code . -rm
 ```
 
+get someone to make you a developer on the ledenbase
+go to ledenbase and get the ledenbase token from the client applications
+[ledenbase client applications](https://ledenbase.esrtheta.nl/common/clientapplication/)
+
 open a terminal and type the following to initialise the docker application
 
 ```
 docker-compose build
 ```
 
-to start the docker application
+to start the docker application and load inital data run the following
 
 ```
-docker-compose up
+docker-compose up && docker-compose run web python manage.py loaddata starterDATA
 ```
 
-to load inital data run the following
+backend is ready to be used
+
+## development app
+
+you can install and use the app within ubuntu however that will not let you test it on real devices(something about how WSL accept request from the internet, it might get fixed in the future). You are able to test it using emulators on the computer, however the best would be to install it simply in windows or mac, not in a subsystem. this might mean that you have to have 2 copies of the repo on your computer but that is how it is. if you figure out a better way let me(gustavo) know and update this readme.
 
 ```
-docker-compose run web python manage.py loaddata starterDATA
+cd app
+npm install
+npm install -g expo-cli
 ```
+
+download [android studio ](https://developer.android.com/studio#downloads) if you are running the app within ubuntu download android studio for ubuntu and and install it within ubuntu
+
+todo: look at how you installed gurobi
+
+```
+to start the app
+npx expo run
+
+todo
+finish app instlation
+
 
 # PIP environment I recomend not mixing the modules you need for webdev and the modules you normally use. For this I use a virtual enviroment(pipenv)
 
 to install it just do
 
 ```
+
 pip install pipenv
+
 ```
 
 then to initialize it
 
 ```
+
 pipenv install
+
 ```
 
 if you want to install a module or modules from a file "requirements.txt"
 
 ```
+
 pipenv install module
 pipenv install -r requirements.txt
+
 ```
 
 you can also add modules to that file by doing within the environement
 
 ```
+
 pip freeze > requirements.txt
+
 ```
 
 To use get a shell within the environement use
 
 ```
+
 pipenv shell
+
 ```
 
 to run something within the environement from outside
 ³²¡¤€¼½¾‘’¥äå
 
 ```
+
 pipenv run [command]
+
 ```
 
 To deactivate the environement and remove it
 
 ```
+
 deactivate
 
 pipenv --rm
+
 ```
 
 Local development
@@ -85,6 +121,7 @@ this will load .env into the environment as the enviroment variables
 there are a bunch of commands in the pipfile to help you
 
 ```
+
 all
 --- makemigrations
 --- migrate
@@ -99,8 +136,9 @@ shell
 collectStatic
 start
 launch
---- gunicorn core.wsgi --chdir backend  --log-file -
-```
+--- gunicorn core.wsgi --chdir backend --log-file -
+
+````
 
 # expo
 
@@ -109,13 +147,14 @@ to initialize expo run the folowing commands
 ```shell
 npm i -g expo-cli
 expo login
-```
+````
 
 to initialize the app run
 
 ```shell
 npm install
 npm start
+
 
 ```
 

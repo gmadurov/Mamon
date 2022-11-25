@@ -169,6 +169,8 @@ class Barcycle(models.Model):
 
 
 class Happen(models.Model):
+    """date title description opening_date closing_date cost max_participants participants deducted_from"""
+
     date = models.DateTimeField()
     title = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
@@ -185,6 +187,9 @@ class Happen(models.Model):
     @property
     def active(self):
         return self.opening_date <= utc.localize(datetime.datetime.now()) and utc.localize(datetime.datetime.now()) <= self.closing_date
+
+    def is_editabled(self):
+        return self.closing_date >= utc.localize(datetime.datetime.now())
 
     class Meta:
         verbose_name = "Hap"
@@ -204,6 +209,7 @@ class HapOrder(models.Model):
     @property
     def total(self):
         return self.quantity * self.happen.cost
+
 
 class HapPayment(models.Model):
     happen = models.ForeignKey(Happen, on_delete=models.CASCADE)
