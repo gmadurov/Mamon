@@ -34,3 +34,4 @@ services:
       - DEBUG=True
       - LOCAL=$LOCAL
       - MOLLIE_API_KEY=$MOLLIE_API_KEY
+      - open_update_url=hhtps://open-update.leden.nl

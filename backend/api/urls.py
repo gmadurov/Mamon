@@ -1,10 +1,15 @@
-from django.urls import path
+from django.urls import path, re_path, include
+
+# from django.conf.urls import url
+
 from . import views, views_holders, views_products, views_purchases, views_bar, views_hap
 from api.tokens import MyTokenObtainPairView, MyRefreshPairView
+from django.views.generic import TemplateView
 
-# from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
-    path("", views.getRoutes),
+    path("", views.getRoutes, name="routes"),
+    # User login ######################
+    path(r"login/", views.LoginAllUsers),
     # Products ###############################
     path("product/", views_products.showProducts),
     path("product/<str:pk>", views_products.showProduct),
@@ -23,8 +28,6 @@ urlpatterns = [
     # CARDS ######################
     path("cards/", views_holders.handle_Cards),
     path("cards/<str:pk>", views_holders.handle_Card),
-    # User login ######################
-    path(r"login/", views.LoginAllUsers),
     # path("users/token/", MyTokenObtainPairView.as_view()),
     path("users/token/refresh/", MyRefreshPairView.as_view()),
     path("environment/<str:name>/", views.getEnvironment),
@@ -35,4 +38,6 @@ urlpatterns = [
     path("happen/<str:pk>/leden/", views_hap.registerHappen),
     path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
     path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
+    # Swagger ################################
+    path("apidocs/", TemplateView.as_view(template_name="swagger-ui.html", extra_context={"schema_url": "routes"}), name="swagger-ui"),
 ]

@@ -55,6 +55,11 @@ django-seed = "*"
 django-nonrelated-inlines = "*"
 django-admin-interface = "*"
 django-simple-history = "*"
+drf-yasg = "*"
+django-rest-swagger = "*"
+drf-yasg2 = "*"
+pyyaml = "*"
+coreapi = "*"
 
 [dev-packages]
 

@@ -9,8 +9,7 @@ from api.tokens import MyTokenObtainPairSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from users.views import loginAllUsers
-from users.models import Holder
-
+import yaml
 
 API_URL = "/api/"
 
@@ -118,6 +117,8 @@ def getRoutes(request):
             "name": "name of enviroment variable",
         },
     ]
+    with open("api/openapiMAMON.yaml", "r") as stream:
+        routes = (yaml.safe_load(stream))
     return Response(routes)
 
 
@@ -128,9 +129,11 @@ def getRoutes(request):
 def getVersion(request):
     return Response({"version": os.environ.get("VERSION")})
 
-
 @api_view(["POST"])
 def LoginAllUsers(request):
+    """this is a test
+    :param .Info info: information about the API; if omitted, defaults to :ref:`DEFAULT_INFO <default-swagger-settings>`
+    """
     user1 = User.objects.filter(username=request.data["username"])
     if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
         user = authenticate(
