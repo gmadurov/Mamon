@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from rest_framework import serializers
-from users.models import Card, Holder, WalletUpgrades
+from users.models import Card, Holder, Personel, WalletUpgrades
 from purchase.models import HapOrder, HapPayment, Happen, Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
 
@@ -16,10 +16,23 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = "__all__"
 
+class PersonelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Personel
+        fields = "__all__"
+
 
 class PurchaseSerializer(serializers.ModelSerializer):
-    orders = OrderSerializer(many=True)
 
+    def create(self, validated_data):
+        orders = validated_data.pop("orders")
+        purchase = Purchase.objects.create(**validated_data)
+        for order in orders:
+            order, created = Order.objects.get_or_create(quantity=order.get("quantity"), product=order.get("product"))
+            purchase.orders.add(order)
+        return purchase 
+
+    orders = OrderSerializer(many=True)
     class Meta:
         model = Purchase
         fields = "__all__"

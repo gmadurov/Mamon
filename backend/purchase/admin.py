@@ -60,7 +60,7 @@ class PurchaseBarCycleInline(NonrelatedTabularInline):
         "cash",
         "seller",
         "created",
-        "payed",
+        "balance",
         "orders",
         "remaining_after_purchase",
     ]
@@ -200,13 +200,13 @@ class PurchaseAdmin(SimpleHistoryAdmin):
     list_display = [
         "buyer",
         "total",
-        "payed",
+        "balance",
         "created",
         "seller",
     ]
     filter_horizontal = ["orders"]
-    list_filter = ["buyer", "payed"]
-    search_fields = ["buyer", "payed", "id"]
+    list_filter = ["buyer", "balance"]
+    search_fields = ["buyer", "balance", "id"]
     exclude = ("remaining_after_purchase",)
 
     def get_readonly_fields(self, request, obj=None):

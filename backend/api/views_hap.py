@@ -40,7 +40,7 @@ def handleHap(request, pk):
     return Response(serializer.data)
 
 
-@api_view(["GET", "POST", "PUT", "DELETE"])
+@api_view(["GET", "POST", "DELETE"])
 @permission_classes([IsAuthenticated])
 def registerHappen(request, pk, lid_id=None):
     data = request.data
@@ -63,6 +63,7 @@ def registerHappen(request, pk, lid_id=None):
             return Response({"message": "Holder uitgeschreven"})
         else:
             return Response({"message": "Holder niet ingeschreven voor dit hap"}, status=404)
+    return Response({"message": "Error 404-hap"}, status=404)
 
 
 @api_view(["GET", "POST"])
@@ -83,4 +84,3 @@ def payHappen(request, pk):
         serialiser = HapPaymentHolderSerializer(hap.happayment_set.all(), many=True)
         failed = SimpleHolderSerializer(failed, many=True)
         return Response({"payed": serialiser.data, "not_payed": failed.data})
-

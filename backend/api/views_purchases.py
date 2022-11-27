@@ -1,3 +1,4 @@
+from pprint import pprint
 from purchase.models import Order, Product, Purchase
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -19,26 +20,10 @@ def showPurchases(request):
         return Response(serializer.data)
     if request.method == "POST":
         data = request.data
-        purchase = Purchase.objects.create(
-            buyer=Holder.objects.get(id=data["buyer"]),
-            seller=Personel.objects.get(user_id=data["seller"]),
-            payed=data["payed"] or False,
-        )
-        if data["orders"]:
-            orders = [
-                Order.objects.get_or_create(
-                    quantity=order["quantity"],
-                    product=Product.objects.get(id=order["product"]),
-                )
-                for order in data["orders"]
-            ]
-            # print([order[1] for order in orders])
-            purchase.orders.set([order[0] for order in orders])
-        else:
-            purchase.orders.set([])
-        purchase.save()
-        serializer = PurchaseSerializer(purchase, many=False)
-        return Response(serializer.data)
+        purchase = PurchaseSerializer(data=data)
+        if purchase.is_valid(raise_exception=True):
+            purchase.save()
+            return Response(purchase.data)
 
 
 @api_view(["GET"])

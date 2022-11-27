@@ -6,7 +6,7 @@ Purchases
     Cattegories
         Name, description, products(M2M)
     Purchases
-        buyer, seller, payed, cash, pin, orders, remaining_after_purchase
+        buyer, seller, balance, cash, pin, orders, remaining_after_purchase
     Orders
         product, quantity
     Report

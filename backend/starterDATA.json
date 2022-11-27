@@ -3251,7 +3251,7 @@
     "fields": {
         "buyer": 43,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-21T09:10:58.157Z",
@@ -3265,7 +3265,7 @@
     "fields": {
         "buyer": 40,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-21T09:13:35.272Z",
@@ -3279,7 +3279,7 @@
     "fields": {
         "buyer": 33,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-21T10:41:07.895Z",
@@ -3293,7 +3293,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-23T15:39:24.927Z",
@@ -3307,7 +3307,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": false,
+        "balance": false,
         "cash": false,
         "pin": false,
         "created": "2022-10-23T15:39:43.365Z",
@@ -3321,7 +3321,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": false,
+        "balance": false,
         "cash": false,
         "pin": false,
         "created": "2022-10-23T15:39:50.899Z",
@@ -3335,7 +3335,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": false,
+        "balance": false,
         "cash": false,
         "pin": false,
         "created": "2022-10-23T16:40:59.432Z",
@@ -3349,7 +3349,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T20:42:09.885Z",
@@ -3363,7 +3363,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T20:42:47.480Z",
@@ -3377,7 +3377,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T20:43:05.895Z",
@@ -3391,7 +3391,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T20:43:31.446Z",
@@ -3405,7 +3405,7 @@
     "fields": {
         "buyer": 65,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T20:43:56.882Z",
@@ -3419,7 +3419,7 @@
     "fields": {
         "buyer": 65,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T20:44:35.728Z",
@@ -3433,7 +3433,7 @@
     "fields": {
         "buyer": 62,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-10-30T21:40:50.544Z",
@@ -3447,7 +3447,7 @@
     "fields": {
         "buyer": 65,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T10:25:19.625Z",
@@ -3461,7 +3461,7 @@
     "fields": {
         "buyer": 62,
         "seller": 64,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T10:32:20.087Z",
@@ -3475,7 +3475,7 @@
     "fields": {
         "buyer": 62,
         "seller": 64,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T10:33:01.527Z",
@@ -3489,7 +3489,7 @@
     "fields": {
         "buyer": 65,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T11:21:45.457Z",
@@ -3503,7 +3503,7 @@
     "fields": {
         "buyer": 65,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T12:37:30.075Z",
@@ -3519,7 +3519,7 @@
     "fields": {
         "buyer": 49,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T14:46:03.749Z",
@@ -3535,7 +3535,7 @@
     "fields": {
         "buyer": 33,
         "seller": 65,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-02T14:46:30.027Z",
@@ -3555,7 +3555,7 @@
     "fields": {
         "buyer": 35,
         "seller": 53,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:46:47.133Z",
@@ -3572,7 +3572,7 @@
     "fields": {
         "buyer": 65,
         "seller": 57,
-        "payed": false,
+        "balance": false,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:47:05.496Z",
@@ -3588,7 +3588,7 @@
     "fields": {
         "buyer": 62,
         "seller": 60,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:47:23.003Z",
@@ -3605,7 +3605,7 @@
     "fields": {
         "buyer": 65,
         "seller": 56,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:48:37.299Z",
@@ -3622,7 +3622,7 @@
     "fields": {
         "buyer": 65,
         "seller": 60,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:48:52.913Z",
@@ -3638,7 +3638,7 @@
     "fields": {
         "buyer": 65,
         "seller": 60,
-        "payed": false,
+        "balance": false,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:49:10.060Z",
@@ -3655,7 +3655,7 @@
     "fields": {
         "buyer": 65,
         "seller": 60,
-        "payed": false,
+        "balance": false,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:49:10.219Z",
@@ -3672,7 +3672,7 @@
     "fields": {
         "buyer": 65,
         "seller": 60,
-        "payed": true,
+        "balance": true,
         "cash": false,
         "pin": false,
         "created": "2022-11-09T19:49:31.038Z",

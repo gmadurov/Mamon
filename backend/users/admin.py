@@ -2,8 +2,9 @@ from django.contrib import admin
 
 from .models import Card, Holder, MolliePayments, Personel, WalletUpgrades
 
-# admin.site.login_form =  
-# admin.site. 
+# admin.site.login_form =
+# admin.site.
+
 
 class CardAdmin(admin.ModelAdmin):
     list_display = ("__str__", "card_id")
@@ -54,8 +55,9 @@ class PersonelAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return [
-            "user",
-        ]
+                "user",
+            ]
+        return self.readonly_fields
 
     def has_delete_permission(self, request, obj=None):
         return False

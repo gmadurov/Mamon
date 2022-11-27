@@ -62,7 +62,7 @@ class Purchase(models.Model):
         on_delete=models.SET(Personel),
         related_name="sold",
     )
-    payed = models.BooleanField(default=False)
+    balance = models.BooleanField(default=False)
     cash = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
 

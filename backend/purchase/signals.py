@@ -7,7 +7,7 @@ from .models import Purchase
 def PayForPurchse(sender, instance, created, **kwargs):
     # first send something that says when it was created and 2 when it was payed
     purchase = instance
-    if not created and purchase.payed:
+    if not created and purchase.balance:
         id = purchase.buyer.id
         holder = Holder.objects.get(id=id)
         holder.stand -= round(
