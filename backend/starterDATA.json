@@ -5119,28 +5119,7 @@
         "closing_report": 145
     }
 },
-{
-    "model": "purchase.happen",
-    "pk": 1,
-    "fields": {
-        "date": "2022-11-23T03:45:42Z",
-        "title": "first happ",
-        "description": "eerste hap",
-        "opening_date": "2022-11-22T03:45:53Z",
-        "closing_date": "2022-11-24T03:45:59Z",
-        "cost": 3.5,
-        "max_participants": 20
-    }
-},
-{
-    "model": "purchase.happayment",
-    "pk": 4,
-    "fields": {
-        "happen": 1,
-        "holder": 33,
-        "quantity": 1
-    }
-},
+
 {
     "model": "users.holder",
     "pk": 33,

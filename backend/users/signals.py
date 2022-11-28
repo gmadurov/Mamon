@@ -24,8 +24,8 @@ def update_wallet(sender, instance, created, **kwargs):
 
 
 def charge_happen(sender, instance, created, **kwargs):
-    if created:
-        holder = instance.holder
+    holder = instance.holder
+    if created and not holder in instance.happen.deducted_from.all():
         holder.stand -= instance.happen.cost * instance.quantity
         holder.save()
 
