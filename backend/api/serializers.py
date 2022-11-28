@@ -16,6 +16,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = "__all__"
 
+
 class PersonelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Personel
@@ -23,16 +24,16 @@ class PersonelSerializer(serializers.ModelSerializer):
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
-
     def create(self, validated_data):
         orders = validated_data.pop("orders")
         purchase = Purchase.objects.create(**validated_data)
         for order in orders:
             order, created = Order.objects.get_or_create(quantity=order.get("quantity"), product=order.get("product"))
             purchase.orders.add(order)
-        return purchase 
+        return purchase
 
     orders = OrderSerializer(many=True)
+
     class Meta:
         model = Purchase
         fields = "__all__"
@@ -100,6 +101,14 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
+
+    def create(self, validated_data):
+        products = validated_data.pop("products")
+        category = Category.objects.create(**validated_data)
+        for product in products:
+            product = Product.objects.get(id=product.id)
+            category.products.add(product)
+        return category
 
 
 # make serializer for Report

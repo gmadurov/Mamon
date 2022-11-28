@@ -15,5 +15,6 @@ urlpatterns = [
     path("product/<int:pk>", views.showProduct, name="product"),
     path("barcycles/", views.showBarcycles, name="barcycles"),
     path("barcycle/<str:pk>", views.showBarcycle, name="barcycle"),
+    path('upgrade/', views.showUpgrades, name="upgrades"),
 
 ]

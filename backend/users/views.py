@@ -148,10 +148,6 @@ def app(request):
 @login_required(login_url="login")
 def mollieReturn(request, *args, **kwargs):
     molliePayment = MolliePayments.objects.get(identifier=kwargs["identifier"])
-    # print(
-    #     "molliePayment",
-    #     {"molliePayment.id": molliePayment.id, "molliePayment.payment_id": molliePayment.payment_id, "molliePayment.identifier": molliePayment.identifier},
-    # )
     payment = mollie_client.payments.get(molliePayment.payment_id)
     if payment.status == "paid":
         messages.info(

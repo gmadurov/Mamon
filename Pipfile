@@ -19,6 +19,7 @@ runserver = """sh -c \"docker-compose run web python manage.py runserver localho
 makemigrations = """sh -c \"docker-compose run web python manage.py makemigrations \""""
 migrate = """sh -c \"docker-compose run web python manage.py migrate \""""
 migrateMamon = """sh -c \"ssh root@metis dokku run mamon python backend/manage.py migrate \""""
+migrateStaging = """sh -c \"ssh root@metis dokku run staging-mamon python backend/manage.py migrate \""""
 shell = """sh -c \"docker-compose run web python manage.py shell \""""
 collectStatic = """sh -c \"docker-compose run web python manage.py collectstatic \""""
 start = """sh -c \"cd app && expo start \""""

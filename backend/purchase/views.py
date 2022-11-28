@@ -3,9 +3,8 @@ import datetime
 from users.models import Holder, WalletUpgrades
 from purchase.utils import paginateObjects
 from django.db.models import Sum
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
 from .models import Order, Product, Barcycle, Category, Purchase
 
 # Create your views here.
@@ -141,3 +140,6 @@ def showBarcycle(request, pk):
     barcycle = Barcycle.objects.get(id=pk)
     content = {"barcycle": barcycle}
     return render(request, "purchase/barcycle.html", content)
+
+def showUpgrades(request):
+    return redirect("https://expo.dev/accounts/gusmadvol/projects/mamon-gus/builds/ceadb199-b637-4596-b702-a8fba62e1880")

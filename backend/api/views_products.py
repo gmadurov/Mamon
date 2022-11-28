@@ -12,14 +12,10 @@ def showProducts(request):
     data = request.data
     if request.method == "GET":
         products = Product.objects.filter(active=True)
-        serializer = ProductSerializer(
-            products, many=True, context={"request": request}
-        )
+        serializer = ProductSerializer(products, many=True, context={"request": request})
         return Response(serializer.data)
     if request.method == "POST":
-        serializer = ProductSerializer(
-            data=data, many=False, context={"request": request}
-        )
+        serializer = ProductSerializer(data=data, many=False, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -30,11 +26,7 @@ def showProducts(request):
 def showProduct(request, pk):
     data = request.data
     product = Product.objects.get(id=pk)
-    # if request.method == "GET": # redundant
-    #     serializer = ProductSerializer(product, many=False)
-    #     return Response(serializer.data)
     if request.method == "PUT":
-        # product.price = data.get("price") or None # price shouldn't be changed
         product.color = data.get("color") or None
         product.name = data.get("name") or None
         product.save()
@@ -48,13 +40,11 @@ def cateories(request):
     data = request.data
     if request.method == "GET":
         categories = Category.objects.all()
-        serializer = CategorySerializer(
-            categories, many=True, context={"request": request}
-        )
+        serializer = CategorySerializer(categories, many=True, context={"request": request})
         return Response(serializer.data)
     if request.method == "POST":
-        categorie = Category.objects.create()
-        serializer = CategorySerializer(
-            categorie, many=False, context={"request": request}
-        )
+        serializer = CategorySerializer(many=False, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
         return Response(serializer.data)

@@ -26,19 +26,7 @@ def showHolders(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def showHolder(request, pk):
-    data = request.data
     holder = Holder.objects.get(id=pk)
-    # if request.method == "GET": # redundant
-    #     serializer = HolderSerializer(holder, many=False, context={"request": request})
-    #     return Response(serializer.data)
-
-    # these have been removed because on purpose the user is not allowed to delete or change a holder
-    # if request.method == "PUT":
-    #     holder.stand = data.get("stand") or None
-    #     holder.save()
-    # if request.method == "DELETE":
-    #     holder.delete()
-    #     return Response()
     serializer = HolderSerializer(holder, many=False, context={"request": request})
     return Response(serializer.data)
 
@@ -48,17 +36,6 @@ def showHolder(request, pk):
 def showHolder(request, pk):
     data = request.data
     holder = Holder.objects.get(id=pk)
-    # if request.method == "GET": # redundant
-    #     serializer = HolderSerializer(holder, many=False, context={"request": request})
-    #     return Response(serializer.data)
-
-    # these have been removed because on purpose the user is not allowed to delete or change a holder
-    # if request.method == "PUT":
-    #     holder.stand = data.get("stand") or None
-    #     holder.save()
-    # if request.method == "DELETE":
-    #     holder.delete()
-    #     return Response()
     serializer = HolderSerializer(holder, many=False, context={"request": request})
     return Response(serializer.data)
 
@@ -99,7 +76,7 @@ def handle_WalletUpgradesCards(request):
         if seller and checked == 200:
             id = int(data.get("holder")["id"])
             holder = Holder.objects.get(id=id)
-            personel = Personel.objects.get(user_holder__card=request.data.get('card'))
+            personel = Personel.objects.get(user_holder__card=request.data.get("card"))
             # TODO: check who the card is associated to
             wallet_upgrade = WalletUpgrades.objects.create(holder=holder, amount=data.get("amount"), seller=personel)
             serializer = WalletUpgradesSerializer(wallet_upgrade, many=False, context={"request": request})
