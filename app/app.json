@@ -7,7 +7,7 @@
     "icon": "./src/assets/pwa-icons/manifest-icon-512.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/assets/pwa-icons/manifest-icon-512.png",
+      "image": "./src/assets/pwa-icons/Theta_app.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
