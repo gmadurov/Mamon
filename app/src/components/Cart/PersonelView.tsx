@@ -1,9 +1,12 @@
-import { Avatar, Menu, TouchableRipple } from "react-native-paper";
-import React, { ScrollView, StyleSheet, View } from "react-native";
 import { useContext, useState } from "react";
+import React, { ScrollView, StyleSheet, View } from "react-native";
+import { Avatar, Menu, TouchableRipple } from "react-native-paper";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showMessage } from "react-native-flash-message";
 import AuthContext from "../../context/AuthContext";
 import CartContext from "../../context/CartContext";
+import NFCContext, { TagEventLocal } from "../../context/NFCContext";
 import Holder from "../../models/Holder";
 import User from "../../models/Users";
 
@@ -12,14 +15,44 @@ type MenuVisibility = {
 };
 const PersonelView = () => {
   const { users, logoutFunc, baseUrl } = useContext(AuthContext);
-  const { seller, setSeller,setBuyer, setCart } = useContext(CartContext);
+  const { seller, setSeller, setBuyer, setCart } = useContext(CartContext);
   let avatarSize = 50;
+  const NfcProxy = useContext(NFCContext);
 
   const [visible, setVisible] = useState<MenuVisibility>({});
   function _toggleMenu(name: string) {
     setVisible({ ...visible, [name]: !visible[name] });
   }
   const _getVisible = (name: string) => !!visible[name];
+  async function LinkCard(user: User) {
+    let tag: TagEventLocal | null = null
+    let token = (await AsyncStorage.getItem("authToken" + user.user_id)) as string
+    // await AsyncStorage.setItem("0410308AC85E80", token)
+    if (NfcProxy.enabled && NfcProxy.supported) {
+      // console.log("start nfc");
+      try {
+        tag = await NfcProxy.readTag();
+        await AsyncStorage.setItem((tag?.id as string), token)
+      } catch (e) {
+        await NfcProxy.stopReading();
+        showMessage({
+          message: "Card Not linked",
+          description: 'There was an error linking the card, please try again',
+          type: "danger",
+          floating: true,
+        })
+      } finally {
+        await NfcProxy.stopReading();
+      }
+    } else {
+      showMessage({
+        message: "NFC Not supported",
+        description: "Cards can only be linked on a device with NFC",
+        type: "danger",
+        floating: true,
+      })
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container} horizontal={true}>
@@ -78,6 +111,12 @@ const PersonelView = () => {
                 setSeller(user);
               }}
               title={"Zet als Verkoper"}
+            />
+            <Menu.Item
+              onPress={async () => {
+                await LinkCard(user)
+              }}
+              title={"Link Card"}
             />
             <Menu.Item
               onPress={() => {
