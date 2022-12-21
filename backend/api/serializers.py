@@ -124,6 +124,9 @@ class WalletUpgradesSerializer(serializers.ModelSerializer):
         model = WalletUpgrades
         fields = "__all__"
 
+    holder = SimpleHolderSerializer()
+    seller = PersonelSerializer(read_only=True)
+
 
 class CardSerializer(serializers.ModelSerializer):
     holder = HolderSerializer()
