@@ -26,13 +26,13 @@ const PersonelView = () => {
   const _getVisible = (name: string) => !!visible[name];
   async function LinkCard(user: User) {
     let tag: TagEventLocal | null = null
-    let token = (await AsyncStorage.getItem("authToken" + user.user_id)) as string
-    // await AsyncStorage.setItem("0410308AC85E80", token)
-    if (NfcProxy.enabled && NfcProxy.supported) {
+    let token = await AsyncStorage.getItem("authToken" + user.user_id) || ''
+    // await AsyncStorage.setItem("card_0410308AC85E80", (JSON.parse(token) as AuthToken).access as string)
+    if ((NfcProxy.enabled && NfcProxy.supported)) {
       // console.log("start nfc");
       try {
         tag = await NfcProxy.readTag();
-        await AsyncStorage.setItem((tag?.id as string), token)
+        await AsyncStorage.setItem(`card_${tag.id as string}`, token)
       } catch (e) {
         await NfcProxy.stopReading();
         showMessage({

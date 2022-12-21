@@ -24,11 +24,11 @@ export enum Refund {
   notRefunc = "false",
 }
 export type WalletUpgrade = {
-  comment: string;
+  comment?: string;
   seller?: User;
-  holder?: Holder;
-  refund?: Refund;
-  amount?: number;
+  holder: Holder;
+  refund: Refund;
+  amount: number;
   password?: string;
 };
 
@@ -54,19 +54,29 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
   useEffect(() => {
     setWallet({ ...wallet, seller: seller });
   }, [seller]);
-  useEffect(() => {
-    setWallet({ ...wallet, holder: buyer });
-  }, [buyer]);
-
-  async function SubmitWalletUpgrade() {
-    let { res } = await ApiRequest<WalletUpgrade>("/api/walletupgrade/", {
-      method: "POST",
-      body: JSON.stringify(wallet),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  async function SubmitWalletUpgrade(paymentMethod: string) {
+    let url, config
+    if (token) {
+      url = `/api/walletupgrade/`
+      delete wallet.password
+      delete wallet.seller
+      config = {
+        method: "POST",
+        body: JSON.stringify({ ...wallet, [paymentMethod]: true }),
+        headers: {
+          "Content-Type": "*/*",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    } else {
+      url = `/api/walletupgrade/password/`
+      config = {
+        method: "POST",
+        body: JSON.stringify({ ...wallet, [paymentMethod]: true }),
+      }
+    }
+    let { res, data } = await ApiRequest<WalletUpgrade>(url, config);
+    console.log(data)
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Wallet Upgrade was successful`,
@@ -99,7 +109,7 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     } else {
       showMessage({
         message: `Wallet Upgrade was Unsuccessful`,
-        description: ``,
+        description: JSON.stringify(res?.status),
         type: "danger",
         floating: true,
         hideStatusBar: true,
@@ -115,7 +125,7 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
         <Appbar.Header style={{ backgroundColor: GlobalStyles.colors.primary1 }}>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="Wallet Upgrade" style={{ alignItems: "center" }} />
-          <Appbar.Action icon={showPassword ? "eye" : "eye-off"} onPress={() => setShowPassword((nu) => !nu)} />
+          <Appbar.Action icon={!showPassword ? "eye" : "eye-off"} onPress={() => setShowPassword((nu) => !nu)} />
         </Appbar.Header>
       ),
     });
@@ -130,19 +140,20 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     setSearchHolder(false);
     setSearchTapper((nu) => !nu);
     let tag: TagEventLocal | null = null;
-    if (NfcProxy.enabled && NfcProxy.supported) {
+    if ((NfcProxy.enabled && NfcProxy.supported)) {
       try {
         tag = await NfcProxy.readTag();
-        showMessage({
-          message: `Card ${tag?.id} scanned`,
-          type: "info",
-          floating: true,
-          hideStatusBar: true,
-          autoHide: true,
-          duration: 500,
-          position: "bottom",
-        });
-        const token_local = (JSON.parse(await AsyncStorage.getItem(tag.id as string) as string) as AuthToken).access as string
+        // showMessage({
+        //   message: `Card ${tag?.id} scanned`,
+        //   type: "info",
+        //   floating: true,
+        //   hideStatusBar: true,
+        //   autoHide: true,
+        //   duration: 500,
+        //   position: "bottom",
+        // });
+        // tag = { id: "0410308AC85E80" }; //for testing locally
+        const token_local = await AsyncStorage.getItem(`card_${tag.id as string}`) || ''
         setToken(token_local);
         return true
       } catch (e) {
@@ -172,15 +183,15 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     if ((NfcProxy.enabled && NfcProxy.supported)) {
       try {
         tag = await NfcProxy.readTag();
-        showMessage({
-          message: `Card ${tag?.id} scanned`,
-          type: "info",
-          floating: true,
-          hideStatusBar: true,
-          autoHide: true,
-          duration: 500,
-          position: "bottom",
-        });
+        // showMessage({
+        //   message: `Card ${tag?.id} scanned`,
+        //   type: "info",
+        //   floating: true,
+        //   hideStatusBar: true,
+        //   autoHide: true,
+        //   duration: 500,
+        //   position: "bottom",
+        // });
         // tag = { id: "0410308AC85E80" }; //for testing locally
         const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
         if (res.status === 200) {
@@ -224,6 +235,20 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     }
     setSearchHolder(false)
   }
+  function isDisabled() {
+    if (!showPassword ? [undefined, null, "" as Refund].includes(wallet.refund) ||
+      wallet.amount <= 0 || [undefined, null, NaN].includes(wallet.holder?.id) ||
+      (![undefined, {} as User].includes(wallet.seller) &&
+        ![undefined, null, ""].includes(wallet.password)) || token === '' ||
+      wallet.refund === Refund.refund && wallet.comment === '' : [undefined, null, "" as Refund].includes(wallet.refund) ||
+      [undefined, null, NaN].includes(wallet.amount) ||
+      [undefined, null, ""].includes(wallet.password) ||
+      [undefined, {} as User].includes(wallet.seller) ||
+      [undefined, null, ""].includes(wallet.holder?.name) ||
+    wallet.refund === Refund.refund && wallet.comment === ''
+    ) { return true }
+    else { return false }
+  }
   return (
     <>
       <ScrollView>
@@ -258,6 +283,17 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
               value={wallet.password ? wallet.password : ""}
               onChangeText={(text) => setWallet({ ...wallet, password: text })}
             />
+            <View style={{ flexDirection: "row", flex: 1, justifyContent: "center" }}>
+              <Button
+                onPress={searchHolderNFC}
+                mode={"contained"}
+                style={{
+                  backgroundColor: GlobalStyles.colors.thetaGeel,
+                }}
+              >
+                {wallet.holder?.id ? wallet.holder.name : !searchHolder ? "Scan NFC en Zoek op Gebruiker" : 'Scanning...'}
+              </Button>
+            </View>
           </>
         ) : (
           <View style={{ flexDirection: "row", flex: 1, justifyContent: "center" }}>
@@ -293,20 +329,29 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
           value={wallet.comment || ""}
           onChangeText={(text) => setWallet({ ...wallet, comment: (text) })}
         />}
-        <Button
-          disabled={
-            [undefined, null, "" as Refund].includes(wallet.refund) ||
-              [undefined, null, NaN].includes(wallet.amount) ||
-              [undefined, null, ""].includes(wallet.password) ||
-              [undefined, {} as User].includes(wallet.seller) ||
-              [undefined, null, ""].includes(wallet.holder?.name)
-              ? true
-              : false
-          }
-          onPress={SubmitWalletUpgrade}
-        >
-          Submit
-        </Button>
+        <View style={{ justifyContent: "space-evenly", flex: 1, flexDirection: 'row' }}>
+
+          <Button
+            disabled={
+              isDisabled()
+            }
+            onPress={() => SubmitWalletUpgrade('cash')}
+            color="green"
+            mode='contained'
+          >
+            Cash
+          </Button>
+          <Button
+            disabled={
+              isDisabled()
+            }
+            onPress={() => SubmitWalletUpgrade('pin')}
+            color='black'
+            mode='contained'
+          >
+            Pin
+          </Button>
+        </View>
       </ScrollView>
       <BottomSheetHolders placeholder="Kies Lid Hier" />
     </>

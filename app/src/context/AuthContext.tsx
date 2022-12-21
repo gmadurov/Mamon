@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       let url = await AsyncStorage.getItem("baseUrl");
       setBaseUrl(url || "");
     };
-    return () => {};
+    return () => { };
   }, []);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     setAuthTokenUsers(() => [...authTokenUsers, data]);
     setUsers(() => [...users, localUser]);
-    await AsyncStorage.setItem("authToken" + localUser.user_id, JSON.stringify([...authTokenUsers, data]));
+    await AsyncStorage.setItem("authToken" + localUser.user_id, JSON.stringify(data));
   }
 
   async function loginFunc(username: string, password: string, setIsAuthenticating: any) {
