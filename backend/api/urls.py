@@ -41,4 +41,5 @@ urlpatterns = [
     path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
     # Swagger ################################
     path("apidocs/", TemplateView.as_view(template_name="swagger-ui.html", extra_context={"schema_url": "routes"}), name="swagger-ui"),
+    path("print/", views.printme()),
 ]

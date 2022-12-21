@@ -118,7 +118,7 @@ def getRoutes(request):
         },
     ]
     with open("api/openapiMAMON.yaml", "r") as stream:
-        routes = (yaml.safe_load(stream))
+        routes = yaml.safe_load(stream)
     return Response(routes)
 
 
@@ -128,6 +128,7 @@ def getRoutes(request):
 @api_view(["GET"])
 def getVersion(request):
     return Response({"version": os.environ.get("VERSION")})
+
 
 @api_view(["POST"])
 def LoginAllUsers(request):
@@ -160,3 +161,9 @@ def getEnvironment(request, name):
         return Response({"variable": os.environ.get(name)})
     else:
         return Response({"error": "not allowed"}, status=403)
+
+
+@api_view(["POST"])
+def printme(request):
+    print(request.data)
+    return Response(request.data)
