@@ -33,7 +33,7 @@ LOCAL = False if os.environ.get("LOCAL") == "False" else True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ALLOWED_HOSTS = ["localhost", "mamon.esrtheta.nl", "10.0.2.2", ".esrtheta.nl"]
+ALLOWED_HOSTS = ["localhost", "mamon.esrtheta.nl", "10.0.2.2", ".esrtheta.nl", "host.docker.internal"]
 
 JWT_KEY = os.environ.get("JWT_KEY")
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "purchase.apps.PurchaseConfig",
     "rest_framework_simplejwt",
     "users.apps.UsersConfig",
+    "client.apps.ClientConfig",
     "rest_framework",
     "corsheaders",
     "colorfield",
@@ -75,7 +76,9 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
-from api.authentication import CORS_ALLOW_ALL_ORIGINS, REST_FRAMEWORK, SIMPLE_JWT
+from api.authentication import CORS_ALLOW_ALL_ORIGINS, REST_FRAMEWORK, SIMPLE_JWT, JWT_KEY
+
+JWT_KEY = JWT_KEY
 
 # CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGINS
 CORS_ALLOW_ALL_ORIGINS = CORS_ALLOW_ALL_ORIGINS
