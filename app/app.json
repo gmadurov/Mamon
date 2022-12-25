@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/0351d157-7e89-41ee-88b4-1f20f506fc77"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -27,7 +28,10 @@
         "foregroundImage": "./src/assets/pwa-icons/manifest-icon-512.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.gusmadvol.mamongus"
+      "package": "com.gusmadvol.mamongus",
+      "permissions": [
+        "android.permission.NFC"
+      ]
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
@@ -39,6 +43,9 @@
     },
     "plugins": [
       "react-native-nfc-manager"
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }
