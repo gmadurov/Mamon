@@ -55,13 +55,10 @@ tests:
     changes:
       - backend/*
 
-
-before_script:
-  - npm ci --cache .npm
-
 eas-build:
   stage: deploy
   script:
+    - npm ci --cache .npm
     - cd app
     - apk add --no-cache bash
     - npx eas-cli build --platform all --non-interactive
