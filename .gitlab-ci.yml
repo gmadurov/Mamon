@@ -62,11 +62,12 @@ before_script:
 eas-build:
   stage: deploy
   script:
+    - cd app
     - apk add --no-cache bash
     - npx eas-cli build --platform all --non-interactive
-  only:
-    changes:
-      - app/*
+  # only:
+  #   changes:
+  #     - app/*
 
 deploy_development:
   extends: .deploy_to_metis
