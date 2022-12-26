@@ -8,6 +8,11 @@ variables:
   METIS_IP: $METIS2_IP
   SSH_KEY: $METIS2_SSH_PRIVATE_KEY
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+
 stages:
   - test
   - deploy
@@ -46,6 +51,22 @@ tests:
     - docker-compose run web python manage.py test
     # clear all containers started by the tests
     - docker-compose down -v
+  only:
+    changes:
+      - backend/*
+
+
+before_script:
+  - npm ci --cache .npm
+
+eas-build:
+  stage: deploy
+  script:
+    - apk add --no-cache bash
+    - npx eas-cli build --platform all --non-interactive
+  only:
+    changes:
+      - app/*
 
 deploy_development:
   extends: .deploy_to_metis
