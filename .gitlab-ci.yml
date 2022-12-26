@@ -28,9 +28,9 @@ stages:
     - git checkout -B $BRANCH origin/$BRANCH
     - git push -f $METIS_APP $BRANCH:master
     # update database migrations
-    - ssh $METIS run $APP python manage.py migrate
+    - ssh $METIS run $APP python backend/manage.py migrate
     # update static files
-    - ssh $METIS run $APP python manage.py collectstatic --noinput
+    - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
 
 tests:
   stage: test
