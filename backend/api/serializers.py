@@ -217,4 +217,4 @@ class HappenSerializer(serializers.ModelSerializer):
     opening_date = serializers.DateTimeField()
     closing_date = serializers.DateTimeField()
     active = serializers.BooleanField(read_only=True)
-    participants = HapOrderHolderSerializer(many=True, source="haporder_set")
+    participants = HapOrderHolderSerializer(many=True, source="haporder_set", required=False)
