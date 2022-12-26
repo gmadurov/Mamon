@@ -1,4 +1,4 @@
-image: alpine:3.14
+image: node:alpine
 
 variables:
   # tls support for Docker in Docker (dind)
