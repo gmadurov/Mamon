@@ -37,6 +37,25 @@ stages:
     # update static files
     - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
 
+.Enable NPM Dependencies: &enable_npm_dependencies
+  before_script:
+    - npm ci --cache .npm --prefer-offline --silent
+  cache:
+    # Cache NPM dependencies for each branch so they can be used across
+    # different jobs and stages. Some restrictions apply, as there are some
+    # subtleties involved with which machines the jobs run on, but this should
+    # help speed up pipelines a bit
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .npm
+  variables:
+    # Most jobs inheriting these definitions do not require the Cypress binary
+    # to be installed. This environment variable prevents this from happening
+    # during `npm ci/install`
+    CYPRESS_INSTALL_BINARY: '0'
+    # npm ci seems to ask analytics questions which break this build
+    NG_CLI_ANALYTICS: 'off'
+
 tests:
   stage: test
   image: tiangolo/docker-with-compose
@@ -56,6 +75,7 @@ tests:
       - backend/*
 
 eas-build:
+  <<: *enable_npm_dependencies
   stage: deploy
   script:
     - npm ci --cache .npm
