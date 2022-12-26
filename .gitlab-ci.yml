@@ -7,6 +7,7 @@ variables:
   DOCKER_HOST: tcp://docker:2376/
   METIS_IP: $METIS2_IP
   SSH_KEY: $METIS2_SSH_PRIVATE_KEY
+  EAS_NO_VCS: 1
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -37,31 +38,12 @@ stages:
     # update static files
     - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
 
-.Enable NPM Dependencies: &enable_npm_dependencies
-  before_script:
-    - npm ci --cache .npm --prefer-offline --silent
-  cache:
-    # Cache NPM dependencies for each branch so they can be used across
-    # different jobs and stages. Some restrictions apply, as there are some
-    # subtleties involved with which machines the jobs run on, but this should
-    # help speed up pipelines a bit
-    key: ${CI_COMMIT_REF_SLUG}
-    paths:
-      - .npm
-  variables:
-    # Most jobs inheriting these definitions do not require the Cypress binary
-    # to be installed. This environment variable prevents this from happening
-    # during `npm ci/install`
-    CYPRESS_INSTALL_BINARY: '0'
-    # npm ci seems to ask analytics questions which break this build
-    NG_CLI_ANALYTICS: 'off'
-
 tests:
   stage: test
   image: tiangolo/docker-with-compose
   services:
-  # docker in docker is added as a service to step
-  - docker:20-dind
+    # docker in docker is added as a service to step
+    - docker:20-dind
   tags:
     # can only run on runners with docker in docker correctly configured
     - dind
@@ -74,14 +56,26 @@ tests:
     changes:
       - backend/*
 
-eas-build:
-  <<: *enable_npm_dependencies
+eas-build-ios:
   stage: deploy
-  script:
+  before_script:
     - npm ci --cache .npm
+  script:
     - cd app
     - apk add --no-cache bash
-    - npx eas-cli build --platform all --non-interactive
+    - npx eas-cli build --platform ios --non-interactive --auto-submit
+  # only:
+  #   changes:
+  #     - app/*
+
+eas-build-android:
+  stage: deploy
+  before_script:
+    - npm ci --cache .npm
+  script:
+    - cd app
+    - apk add --no-cache bash
+    - npx eas-cli build --platform android --non-interactive 
   # only:
   #   changes:
   #     - app/*
