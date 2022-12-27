@@ -56,7 +56,7 @@ tests:
 deploy_development:
   extends: .deploy_to_metis
   stage: deploy
-  needs: [tests]
+  needs: ["tests"]
   variables:
     APP: "staging-mamon"
     BRANCH: "master"
@@ -69,7 +69,7 @@ deploy_development:
 
 deploy_production:
   extends: .deploy_to_metis
-  needs: [tests]
+  needs: ["tests"]
   variables:
     APP: "mamon"
     BRANCH: "master"
