@@ -1,0 +1,45 @@
+image: node:alpine
+
+variables:
+  EAS_NO_VCS: 1
+
+stages:
+  - build
+  - submit
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+
+.expo: &expo
+  before_script:
+    - npm ci --cache .npm
+  script:
+    - apk add --no-cache bash
+
+eas-build-ios:
+  stage: build
+  extends: .expo
+  script:
+    - npx eas-cli build --platform ios --non-interactive
+
+eas-build-android:
+  stage: build
+  extends: .expo
+  script:
+    - npx eas-cli build --platform android --non-interactive
+
+eas-submit-ios:
+  stage: submit
+  needs: [eas-build-ios]
+  extends: .expo
+  script:
+    - npx eas-cli submit --platform ios --latest --non-interactive
+
+eas-submit-android:
+  stage: submit
+  needs: [eas-build-android]
+  extends: .expo
+  script:
+    - npx eas-cli submit --platform android --latest --non-interactive

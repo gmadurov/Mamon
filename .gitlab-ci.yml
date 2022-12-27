@@ -1,126 +1,18 @@
-image: node:alpine
-
-variables:
-  # tls support for Docker in Docker (dind)
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
-  DOCKER_HOST: tcp://docker:2376/
-  METIS_IP: $METIS2_IP
-  SSH_KEY: $METIS2_SSH_PRIVATE_KEY
-  EAS_NO_VCS: 1
-
 stages:
-  - test
-  - build
-  - deploy
-  - submit
+  - triggers
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .npm
-
-
-.deploy_to_metis: &deploy_to_metis
-  before_script:
-    - apk add git openssh
-    - mkdir -p ~/.ssh
-    - echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - echo $METIS_IP
-    - ssh-keyscan -H $METIS_IP >> ~/.ssh/known_hosts
-  script:
-    - echo "Deploy to metis"
-    - METIS="dokku@$METIS_IP"
-    - METIS_APP="dokku@$METIS_IP:$APP"
-    - git fetch
-    - git checkout -B $BRANCH origin/$BRANCH
-    - git push -f $METIS_APP $BRANCH:master
-    # update database migrations
-    - ssh $METIS run $APP python backend/manage.py migrate
-    # update static files
-    - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
-
-.expo: &expo
-  before_script:
-    - npm ci --cache .npm
-  script:
-    - apk add --no-cache bash
-
-tests:
-  stage: test
-  image: tiangolo/docker-with-compose
-  services:
-    # docker in docker is added as a service to step
-    - docker:20-dind
-  tags:
-    # can only run on runners with docker in docker correctly configured
-    - dind
-  script:
-    # the docker compose image provides the docker-compose tool
-    - docker-compose run web python manage.py test
-    # clear all containers started by the tests
-    - docker-compose down -v
- 
-
-deploy_development:
-  extends: .deploy_to_metis
-  stage: deploy
-  needs: ["tests"]
-  variables:
-    APP: "staging-mamon"
-    BRANCH: "master"
-  when: on_success
-  only:
-    - development
-
-deploy_production:
-  extends: .deploy_to_metis
-  needs: ["tests"]
-  variables:
-    APP: "mamon"
-    BRANCH: "master"
-  stage: deploy
-  when: on_success
-  only:
-    - master
-
-
-
-eas-build-ios:
-  stage: build
-  extends: .expo
-  script:
-    - npx eas-cli build --platform ios --non-interactive 
+trigger_app:
+  stage: triggers
+  trigger:
+    include: app/.gitlab-ci.yml
   # rules:
   #   - changes:
-  #     - app/*
+  #       - app/*
 
-eas-build-android:
-  stage: build
-  extends: .expo  
-  script:
-    - npx eas-cli build --platform android --non-interactive
+trigger_backend:
+  stage: triggers
+  trigger:
+    include: backend/.gitlab-ci.yml
   # rules:
   #   - changes:
-  #     - app/*
-
-eas-submit-ios:
-  stage: submit
-  needs: [eas-build-ios]
-  extends: .expo
-  script: 
-    - npx eas-cli submit --platform ios --latest --non-interactive
-  # rules:
-  #   - changes:
-  #     - app/*
-
-eas-submit-android:
-  stage: submit
-  needs: [eas-build-android]
-  extends: .expo
-  script: 
-    - npx eas-cli submit --platform android --latest --non-interactive
-  # rules:
-  #   - changes:
-  #     - app/*
+  #       - backend/*
