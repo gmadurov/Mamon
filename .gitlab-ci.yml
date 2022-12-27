@@ -61,9 +61,6 @@ deploy_development:
   when: on_success
   only:
     - development
-  rules:
-    - changes:
-      - backend/*
 
 deploy_production:
   extends: .deploy_to_metis
@@ -75,9 +72,7 @@ deploy_production:
   when: on_success
   only:
     - master
-  rules:
-    - changes:
-      - backend/*
+
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
