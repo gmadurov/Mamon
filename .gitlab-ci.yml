@@ -49,9 +49,7 @@ tests:
     - docker-compose run web python manage.py test
     # clear all containers started by the tests
     - docker-compose down -v
-  only:
-    changes:
-      - backend/*
+ 
 
 deploy_development:
   extends: .deploy_to_metis
@@ -118,6 +116,7 @@ eas-submit-ios:
   rules:
     - changes:
       - app/*
+
 eas-submit-android:
   stage: submit
   needs: [eas-build-android]

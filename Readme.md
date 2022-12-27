@@ -210,3 +210,9 @@ dokku run staging-mamon python backend/manage.py migrate --noinput
 
 run ```npm tsc``` to test the types of the whole app
 ````
+
+
+## CI/CD 
+you want to run only changed sections of CI in the merge requests (MR) - mainly to save CI resources. So we can avoid running whole 30 minutes of jobs for a change we know is not likely to affect them. This is especially important if we have code in the repo that is not depending on each other - for example, our main application in one place and some landing pages in other folders.
+
+after changes are merged to master/main, we want to build everything no matter if it was changed or not. In this way, our main branch is indeed continuously integrated, and we keep on checking on even less commonly changed parts of the project.
