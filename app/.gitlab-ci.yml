@@ -7,7 +7,6 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .npm
-    
 
 stages:
   - build
@@ -35,6 +34,7 @@ eas-submit-ios:
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform ios --latest --non-interactive
+    
 eas-submit-android:
   stage: submit
   needs: [eas-build-android]

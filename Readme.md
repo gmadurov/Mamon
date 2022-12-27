@@ -213,6 +213,5 @@ run ```npm tsc``` to test the types of the whole app
 
 
 ## CI/CD 
-you want to run only changed sections of CI in the merge requests (MR) - mainly to save CI resources. So we can avoid running whole 30 minutes of jobs for a change we know is not likely to affect them. This is especially important if we have code in the repo that is not depending on each other - for example, our main application in one place and some landing pages in other folders.
-
-after changes are merged to master/main, we want to build everything no matter if it was changed or not. In this way, our main branch is indeed continuously integrated, and we keep on checking on even less commonly changed parts of the project.
+Gitlab handles testing and deploying of the website, and building and submiting the application to the corresponsing app stores.
+The project is structured as a Mono repo, this means that the entirety of the project is in this git repo. The CI/CD works with parent/children `.gitlab-ci.yml` files, this allows us to test and deploy the website and backend seperate from the app. Both the backend and the app are only build if there are changes in their folders, otherwise it is useless to build the app in expo(which takes about 20 minutes). One the app is build it is automatically submitted to the app stores. As soon as you publish(making it available for people to download) an app in the stores YOU HAVE TO UPDATE THE version of the app in the app.json file otherwise you will not be able to submit it successfully. If you mess this up look up how to change the version of a build using eas build:version:set or change the version and rebuild the app. 
