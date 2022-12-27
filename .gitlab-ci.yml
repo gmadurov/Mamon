@@ -63,6 +63,9 @@ deploy_development:
   when: on_success
   only:
     - development
+  rules:
+    - changes:
+      - backend/*
 
 deploy_production:
   extends: .deploy_to_metis
@@ -74,6 +77,9 @@ deploy_production:
   when: on_success
   only:
     - master
+  rules:
+    - changes:
+      - backend/*
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -90,12 +96,18 @@ eas-build-ios:
   script:
     - apk add --no-cache bash
     - npx eas-cli build --platform ios --non-interactive 
+  rules:
+    - changes:
+      - app/*
 
 eas-build-android:
   stage: build
   script:
     - apk add --no-cache bash
     - npx eas-cli build --platform android --non-interactive
+  rules:
+    - changes:
+      - app/*
 
 eas-submit-ios:
   stage: submit
@@ -103,9 +115,15 @@ eas-submit-ios:
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform ios --latest --non-interactive
+  rules:
+    - changes:
+      - app/*
 eas-submit-android:
   stage: submit
   needs: [eas-build-android]
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform android --latest --non-interactive
+  rules:
+    - changes:
+      - app/*
