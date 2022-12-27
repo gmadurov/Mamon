@@ -33,6 +33,7 @@ stages:
     - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
 
 
+
 tests:
   stage: test
   image: tiangolo/docker-with-compose
