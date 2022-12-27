@@ -9,14 +9,10 @@ variables:
   SSH_KEY: $METIS2_SSH_PRIVATE_KEY
   EAS_NO_VCS: 1
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .npm
-
 stages:
   - test
   - deploy
+  - submit
 
 .deploy_to_metis: &deploy_to_metis
   before_script:
@@ -56,30 +52,6 @@ tests:
     changes:
       - backend/*
 
-eas-build-ios:
-  stage: deploy
-  before_script:
-    - npm ci --cache .npm
-  script:
-    - cd app
-    - apk add --no-cache bash
-    - npx eas-cli build --platform ios --non-interactive --auto-submit
-  # only:
-  #   changes:
-  #     - app/*
-
-eas-build-android:
-  stage: deploy
-  before_script:
-    - npm ci --cache .npm
-  script:
-    - cd app
-    - apk add --no-cache bash
-    - npx eas-cli build --platform android --non-interactive 
-  # only:
-  #   changes:
-  #     - app/*
-
 deploy_development:
   extends: .deploy_to_metis
   stage: deploy
@@ -89,6 +61,7 @@ deploy_development:
   when: on_success
   only:
     - development
+  needs: [tests]
 
 deploy_production:
   extends: .deploy_to_metis
@@ -99,3 +72,39 @@ deploy_production:
   when: on_success
   only:
     - master
+  needs: [tests]
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+    # or with yarn:
+    #- .yarn
+
+before_script:
+  - npm ci --cache .npm
+  
+eas-build-ios:
+  stage: build
+  script:
+    - apk add --no-cache bash
+    - npx eas-cli build --platform ios --non-interactive 
+
+eas-build-android:
+  stage: build
+  script:
+    - apk add --no-cache bash
+    - npx eas-cli build --platform android --non-interactive
+
+eas-submit-ios:
+  stage: submit
+  needs: [eas-build-ios]
+  script: 
+    - apk add --no-cache bash
+    - npx eas-cli submit --platform ios --latest --non-interactive
+eas-submit-android:
+  stage: submit
+  needs: [eas-build-android]
+  script: 
+    - apk add --no-cache bash
+    - npx eas-cli submit --platform android --latest --non-interactive
