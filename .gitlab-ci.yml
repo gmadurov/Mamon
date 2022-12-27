@@ -11,8 +11,8 @@ variables:
 
 stages:
   - test
-  - deploy
   - build
+  - deploy
   - submit
 
 .deploy_to_metis: &deploy_to_metis
@@ -34,6 +34,12 @@ stages:
     - ssh $METIS run $APP python backend/manage.py migrate
     # update static files
     - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
+
+.expo: &expo
+  before_script:
+    - npm ci --cache .npm
+  script:
+    - apk add --no-cache bash
 
 tests:
   stage: test
@@ -82,11 +88,8 @@ cache:
 
 eas-build-ios:
   stage: build
-  before_script:
-  - npm ci --cache .npm
-  
+  extends: .expo
   script:
-    - apk add --no-cache bash
     - npx eas-cli build --platform ios --non-interactive 
   # rules:
   #   - changes:
@@ -94,11 +97,8 @@ eas-build-ios:
 
 eas-build-android:
   stage: build
-  before_script:
-  - npm ci --cache .npm
-  
+  extends: .expo  
   script:
-    - apk add --no-cache bash
     - npx eas-cli build --platform android --non-interactive
   # rules:
   #   - changes:
@@ -107,11 +107,8 @@ eas-build-android:
 eas-submit-ios:
   stage: submit
   needs: [eas-build-ios]
-  before_script:
-  - npm ci --cache .npm
-  
+  extends: .expo
   script: 
-    - apk add --no-cache bash
     - npx eas-cli submit --platform ios --latest --non-interactive
   # rules:
   #   - changes:
@@ -120,11 +117,8 @@ eas-submit-ios:
 eas-submit-android:
   stage: submit
   needs: [eas-build-android]
-  before_script:
-  - npm ci --cache .npm
-  
+  extends: .expo
   script: 
-    - apk add --no-cache bash
     - npx eas-cli submit --platform android --latest --non-interactive
   # rules:
   #   - changes:
