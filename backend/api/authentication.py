@@ -1,14 +1,18 @@
 from datetime import timedelta
+import os
 
 #### AUTHENTICATION
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000",
 # ]
 
-
+JWT_KEY = os.environ.get("JWT_KEY","secret")
 CORS_ALLOW_ALL_ORIGINS = True
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "client.authentication.ClientAuthentication",
+    ),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 SIMPLE_JWT = {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mamon",
     "slug": "mamon-gus",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "owner": "gusmadvol",
     "icon": "./src/assets/pwa-icons/manifest-icon-512.png",
     "userInterfaceStyle": "light",

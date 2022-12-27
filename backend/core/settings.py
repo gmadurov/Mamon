@@ -27,15 +27,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 # set to false before uploading
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ.get("DEBUG") == "True" else False
-LOCAL = False if os.environ.get("LOCAL") == "False" else True
+DEBUG = True if os.environ.get("DEBUG", '') == "True" else False
+LOCAL = False if os.environ.get("LOCAL", '') == "False" else True
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", 'secret_key')
 
-ALLOWED_HOSTS = ["localhost", "mamon.esrtheta.nl", "10.0.2.2", ".esrtheta.nl"]
-
-JWT_KEY = os.environ.get("JWT_KEY")
+ALLOWED_HOSTS = ["localhost", "mamon.esrtheta.nl", "10.0.2.2", ".esrtheta.nl", "host.docker.internal"]
 
 # Application definition
 
@@ -46,6 +44,7 @@ INSTALLED_APPS = [
     "purchase.apps.PurchaseConfig",
     "rest_framework_simplejwt",
     "users.apps.UsersConfig",
+    "client.apps.ClientConfig",
     "rest_framework",
     "corsheaders",
     "colorfield",
@@ -75,7 +74,9 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
-from api.authentication import CORS_ALLOW_ALL_ORIGINS, REST_FRAMEWORK, SIMPLE_JWT
+from api.authentication import CORS_ALLOW_ALL_ORIGINS, REST_FRAMEWORK, SIMPLE_JWT, JWT_KEY
+
+JWT_KEY = JWT_KEY
 
 # CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGINS
 CORS_ALLOW_ALL_ORIGINS = CORS_ALLOW_ALL_ORIGINS
@@ -208,9 +209,9 @@ MANAGERS = [
 CSRF_TRUSTED_ORIGINS = ["https://*.esrtheta.nl", "http://localhost:8000"]
 
 
-MOLLIE_API_KEY = os.environ.get("MOLLIE_API_KEY")
-MOLLIE_PARTNER_ID = os.environ.get("MOLLIE_PARTNER_ID")
-MOLLIE_PROFILE_ID = os.environ.get("MOLLIE_PROFILE_ID")
+MOLLIE_API_KEY = os.environ.get("MOLLIE_API_KEY", '')
+MOLLIE_PARTNER_ID = os.environ.get("MOLLIE_PARTNER_ID", '')
+MOLLIE_PROFILE_ID = os.environ.get("MOLLIE_PROFILE_ID", '')
 try:
     mollie_client = Client()
     mollie_client.set_api_key(MOLLIE_API_KEY)

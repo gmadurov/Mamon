@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("", views.getRoutes, name="routes"),
     # User login ######################
-    path(r"login/", views.LoginAllUsers),
+    path("login/", views.LoginAllUsers),
     # Products ###############################
     path("product/", views_products.showProducts),
     path("product/<str:pk>", views_products.showProduct),
@@ -25,6 +25,7 @@ urlpatterns = [
     path("holder/<str:pk>/cards", views_holders.showHolderCards),
     # WalletUpgrades ###############################
     path("walletupgrade/", views_holders.handle_WalletUpgrades),
+    path("walletupgrade/password/", views_holders.handle_WalletUpgradesPassword),
     # CARDS ######################
     path("cards/", views_holders.handle_Cards),
     path("cards/<str:pk>", views_holders.handle_Card),
@@ -40,4 +41,5 @@ urlpatterns = [
     path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
     # Swagger ################################
     path("apidocs/", TemplateView.as_view(template_name="swagger-ui.html", extra_context={"schema_url": "routes"}), name="swagger-ui"),
+    path("printme/", views.printme),
 ]

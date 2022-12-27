@@ -29,7 +29,6 @@ services:
       - JWT_KEY=qwerty
       - LEDENBASE_TOKEN=$LEDENBASE_TOKEN
       - LEDENBASE_URL=$LEDENBASE_URL
-      - SECRET_KEY=$SECRET_KEY
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
       - DEBUG=True
       - LOCAL=$LOCAL

@@ -124,6 +124,9 @@ class WalletUpgradesSerializer(serializers.ModelSerializer):
         model = WalletUpgrades
         fields = "__all__"
 
+    holder = SimpleHolderSerializer()
+    seller = PersonelSerializer(read_only=True)
+
 
 class CardSerializer(serializers.ModelSerializer):
     holder = HolderSerializer()
@@ -214,4 +217,4 @@ class HappenSerializer(serializers.ModelSerializer):
     opening_date = serializers.DateTimeField()
     closing_date = serializers.DateTimeField()
     active = serializers.BooleanField(read_only=True)
-    participants = HapOrderHolderSerializer(many=True, source="haporder_set")
+    participants = HapOrderHolderSerializer(many=True, source="haporder_set", required=False)
