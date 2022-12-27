@@ -56,16 +56,17 @@ tests:
 deploy_development:
   extends: .deploy_to_metis
   stage: deploy
+  needs: [tests]
   variables:
     APP: "staging-mamon"
     BRANCH: "master"
   when: on_success
   only:
     - development
-  needs: [tests]
 
 deploy_production:
   extends: .deploy_to_metis
+  needs: [tests]
   variables:
     APP: "mamon"
     BRANCH: "master"
@@ -73,7 +74,6 @@ deploy_production:
   when: on_success
   only:
     - master
-  needs: [tests]
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
