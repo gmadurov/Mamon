@@ -12,12 +12,6 @@ stages:
   - test
   - deploy
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .npm
-
-
 .deploy_to_metis: &deploy_to_metis
   before_script:
     - apk add git openssh
@@ -38,11 +32,6 @@ cache:
     # update static files
     - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
 
-.expo: &expo
-  before_script:
-    - npm ci --cache .npm
-  script:
-    - apk add --no-cache bash
 
 tests:
   stage: test

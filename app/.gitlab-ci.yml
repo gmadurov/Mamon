@@ -7,17 +7,14 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .npm
-    # or with yarn:
-    #- .yarn
 
 stages:
   - build
   - submit
 
 before_script:
+  - cd app
   - npm ci --cache .npm
-  # or with yarn:
-  #- yarn install --cache-folder .yarn
 
 eas-build-ios:
   stage: build
