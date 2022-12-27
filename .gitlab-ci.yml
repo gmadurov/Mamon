@@ -12,6 +12,7 @@ variables:
 stages:
   - test
   - deploy
+  - build
   - submit
 
 .deploy_to_metis: &deploy_to_metis
