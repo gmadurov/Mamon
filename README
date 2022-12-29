@@ -5,7 +5,7 @@
 This is the Mono Repo for the mamon application and backend. This readme gives you a general overview of the whole project(I think), further information is available in the backend/README and the app/README files, depending on what you want to know/what you want to develop. If there is anything that is unclear please feel free to text me and let me know (my contact is under the authors section futher down).
 
 ## Contributing
-If you commit to main it will release the CI/CD runner which builds the application and releases it to the app store, therefore we only do merge requests. that way be build the app only a few times with expo rather every time we commit something.
+If you commit to master it will release the CI/CD runner which builds the application and releases it to the app store, therefore we only do merge requests. that way be build the app only a few times with expo rather every time we commit something.
 
 So, if you want to add something you build it locally and create a branch with the title as the main thing you are adding. In this merge request you specify specifically what you are trying to do and how you are trying to do it if it is not self explanatory!
 

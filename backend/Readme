@@ -207,7 +207,7 @@ git remote add metis metis:<app-name-
 Then we will have to do a couple of steps on the server before we can push the backend, but when we do this is the comman
 
 ```
-git push metis main
+git push metis master
 ```
 
 ### Metis server

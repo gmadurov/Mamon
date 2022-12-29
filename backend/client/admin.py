@@ -19,10 +19,15 @@ class ClientApplicationAdmin(admin.ModelAdmin):
     list_display = ['name', 'JWT']
     fieldsets = [
         ('Client applicatie',
-            {'fields': ['name', 'identifier', 'paths']}
+            {'fields': ['name', 'identifier', 'paths', 'user']}
         )
     ]
-    readonly_fields = ['identifier']
+    def get_readonly_fields(self, request, obj) :
+        if obj and not request.user.is_superuser:
+            return ['identifier', 'user']
+        else:
+            return ['identifier']
+
     inlines = [ClientApplicationAdministratorInline]
 
 admin.site.register(ClientApplication, ClientApplicationAdmin)

@@ -83,7 +83,7 @@ This app uses [React Native Paper](https://callstack.github.io/react-native-pape
 
 ## Test and Deploy
 
-The app is build in expo and submitted to the app stores every time something is commited to the main branch.
+The app is build in expo and submitted to the app stores every time something is commited to the master branch.
 
 ## Installation
 
@@ -101,7 +101,7 @@ npx expo start
 
 ## Contributing
 
-If you commit to main it will release the CI/CD runner which builds the application and releases it to the app store, therefore we only do merge requests. that way be build the app only a few times with expo rather every time we commit something.\ 
+If you commit to master it will release the CI/CD runner which builds the application and releases it to the app store, therefore we only do merge requests. that way be build the app only a few times with expo rather every time we commit something.\ 
 
 So, if you want to add something you build it locally and create a branch with the title as the main thing you are adding. In this merge request you specify specifically what you are trying to do and how you are trying to do it if it is not self explanatory!
 

@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.safestring import mark_safe
 import jwt
 from core.settings import JWT_KEY
+from users.models import User
 
 # Create your models here.
 
@@ -16,7 +17,8 @@ class ClientApplication(models.Model):
     name = models.CharField(max_length=255, blank=False)
 
     identifier = models.UUIDField(default=uuid4, unique=True, editable=False)
-
+    # client_user is the user related to the client application. This is the user that will be used to authenticate the client application. This user will be used to create the JWT token.
+    user = models.ForeignKey(User, verbose_name="client user", related_name="main_client_applications", on_delete=models.CASCADE)
     paths = models.TextField(
         "paths",
         blank=False,
@@ -27,16 +29,19 @@ class ClientApplication(models.Model):
 
     def JWT(self):
         try:
-            encoded_jwt = str(jwt.encode({"IDENTIFIER": str(self.identifier), "PATHS": self.paths.replace("\n", "").split(",")}, JWT_KEY, algorithm="HS256"))[2:-1]
+            encoded_jwt = str(
+                jwt.encode(
+                    {"IDENTIFIER": str(self.identifier), "PATHS": self.paths.replace("\n", "").split(","), "USER": self.user.id},
+                    JWT_KEY,
+                    algorithm="HS256",
+                )
+            )[2:-1]
 
             return mark_safe(f'<input readOnly="readOnly" type="text" style="width:600px;" value="{encoded_jwt}"/>')
         except TypeError:
             return ""
 
     JWT.short_description = "JWT"
-
-
-from users.models import User
 
 
 class ClientApplicationAdministrator(models.Model):
