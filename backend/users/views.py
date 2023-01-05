@@ -90,13 +90,13 @@ def loginAllUsers(request, username=None, password=None, api=False):
                 f"{LEDENBASE_URL}/personen/{json.loads(lid_token).get('token')}/",
                 headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
             )
-            ledenbase_lid = json.loads(person_res.text)
+            ledenbase_lid: dict = json.loads(person_res.text)
             (user, created,) = User.objects.get_or_create(
                 username=username,
                 # user purposely doesnt have a password set here to make sure it
             )
             user.first_name = ledenbase_lid.get("voornaam")
-            user.last_name = ledenbase_lid.get("achternaam")
+            user.last_name = ledenbase_lid.get("tussenvoegsel") + ledenbase_lid.get("achternaam")
             user.is_superuser = ledenbase_lid.get("is_administrator")
             if not user.is_staff and ledenbase_lid.get("is_administrator"):
                 user.is_staff = True

@@ -53,7 +53,7 @@ def handle_WalletUpgrades(request):
         return Response(serializer.data)
     if request.method == "POST":
         data = request.data
-        print(data, request.user)
+        # print(data, request.user)
         holder = get_object_or_404(Holder, id=int(data.get("holder")["id"]))
         personel = get_object_or_404(Personel, user=request.user)
         serializer = WalletUpgradesSerializer(data=data)
