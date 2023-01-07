@@ -90,14 +90,14 @@ deploy_production:
 
 stop_production:
   stage: deploy
-  extends: .deploy_to_metis
+  extends: .stop_deployment
   variables:
     APP: "mamon"
   when: manual
-  
+
 stop_staging:
   stage: deploy
-  extends: .deploy_to_metis
+  extends: .stop_deployment
   variables:
     APP: "staging-mamon"
   when: manual
