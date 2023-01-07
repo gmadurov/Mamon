@@ -31,6 +31,19 @@ stages:
     - ssh $METIS run $APP python backend/manage.py migrate
     # update static files
     - ssh $METIS run $APP python backend/manage.py collectstatic --noinput
+.stop_deployment: &stop_deployment
+  before_script:
+    - apk add git openssh
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo $METIS_IP
+    - ssh-keyscan -H $METIS_IP >> ~/.ssh/known_hosts
+  script:
+    - echo "stop deployment in metis"
+    - METIS="dokku@$METIS_IP"
+    # update database migrations
+    - ssh $METIS ps:stop $APP
 
 tests:
   stage: test
@@ -46,7 +59,7 @@ tests:
     - docker-compose run web python manage.py test
     # clear all containers started by the tests
     - docker-compose down -v
- 
+
 deploy_development:
   extends: .deploy_to_metis
   stage: deploy
@@ -74,3 +87,17 @@ deploy_production:
   environment:
     name: production
     url: https://mamon.esrtheta.nl
+
+stop_production:
+  stage: deploy
+  extends: .deploy_to_metis
+  variables:
+    APP: "mamon"
+  when: manual
+  
+stop_staging:
+  stage: deploy
+  extends: .deploy_to_metis
+  variables:
+    APP: "staging-mamon"
+  when: manual
