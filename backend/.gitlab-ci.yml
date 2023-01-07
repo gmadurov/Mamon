@@ -57,6 +57,9 @@ deploy_development:
   when: on_success
   only:
     - development
+  environment:
+    name: staging
+    url: https://staging-mamon.esrtheta.nl
 
 deploy_production:
   extends: .deploy_to_metis
@@ -68,3 +71,6 @@ deploy_production:
   when: on_success
   only:
     - master
+  environment:
+    name: production
+    url: https://mamon.esrtheta.nl
