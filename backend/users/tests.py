@@ -56,11 +56,43 @@ class MolliTestCase(BaseCase):
     def setUp(self):
         super().setUp()
         self.payment_1 = MolliePayments.objects.create(holder=self.holder_1, amount=2020_4, comment="Django tests 1", payment_id=1)
-        self.payment_2 = MolliePayments.objects.create(holder=self.holder_2, amount=68001, comment="Django tests 2", payment_id=2)
-        self.payment_3 = MolliePayments.objects.create(holder_id=self.holder_3.id, amount=23788, comment="Django tests 3", payment_id=3)
+        self.payment_2 = MolliePayments.objects.create(holder=self.holder_2, amount=6_8_001, comment="Django tests 2", payment_id=2)
+        self.payment_3 = MolliePayments.objects.create(holder_id=self.holder_3.id, amount=23_7_88, comment="Django tests 3", payment_id=3)
 
     def test_amounts(self):
         self.assertEqual(self.payment_1.amount, 2020_4)
-        self.assertEqual(self.payment_2.amount, 68001)
-        self.assertEqual(self.payment_3.amount, 23788)
+        self.assertEqual(self.payment_2.amount, 6_8_001)
+        self.assertEqual(self.payment_3.amount, 23_7_88)
 
+
+class WalletUpgradesTestCase(BaseCase):
+    def setUp(self):
+        super().setUp()
+        self.wallet_upgrade_1 = WalletUpgrades.objects.create(
+            holder=self.holder_1, seller=self.personel_tapper, amount=2020_4, comment="Django tests 1", pin=True
+        )
+        self.wallet_upgrade_2 = WalletUpgrades.objects.create(
+            holder=self.holder_2, seller=self.personel_tapper, amount=6_8_001, comment="Django tests 2", cash=True
+        )
+        self.wallet_upgrade_3 = WalletUpgrades.objects.create(
+            holder=self.holder_3,
+            seller=self.personel_tapper,
+            amount=23_7_88,
+            comment="Django tests 3",
+            pin=True,
+        )
+
+    def test_attributes(self):
+        self.assertEqual(self.wallet_upgrade_1.amount, 2020_4)
+        self.assertEqual(self.wallet_upgrade_2.amount, 6_8_001)
+        self.assertEqual(self.wallet_upgrade_3.amount, 23_7_88)
+        self.assertEqual(self.wallet_upgrade_1.seller, self.personel_tapper)
+        self.assertEqual(self.wallet_upgrade_2.seller, self.personel_tapper)
+        self.assertEqual(self.wallet_upgrade_3.seller, self.personel_tapper)
+
+    def test_upgraded_stands(self):
+        self.assertEqual(self.holder_1.stand, 2020_4)
+        self.assertEqual(self.holder_2.stand, 6_8_001)
+        self.assertEqual(self.holder_3.stand, 23_7_88)
+
+    

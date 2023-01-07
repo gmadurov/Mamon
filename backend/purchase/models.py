@@ -88,9 +88,13 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     history = HistoricalRecords()
-
+    
     def __str__(self):
         return str(self.quantity) + " " + str(self.product)
+
+    @property
+    def cost(self):
+        return self.quantity * self.product.price
 
 
 class Report(models.Model):
