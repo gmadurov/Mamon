@@ -61,3 +61,8 @@ This file is responsible for the building and submiting of the application to th
 in the .env file you can define local or secret variables, that shouldn't be displayed in your code.
 
 pipfile.lock: do not touch, specification of used packages in the project.
+
+
+## UML Graph
+
+![MamonUML](backend/MamonUML.png)

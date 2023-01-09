@@ -257,3 +257,7 @@ Once the app has been deployed to the server you can deploy it using GitLab's CI
 # CI/CD
 
 GitLabs CI/CD handles testing and deploying the backend to metis. It will test and deploy the website to `mamon.esrtheta.nl` everytime something is merged to master and will deploy to `staging-mamon.esrtheta.nl` everytime something is merged to development, if there is change within the backend folder. Look at the .gitlab-ci.yml file to see how it happens.
+
+## UML Graph
+
+![MamonUML](backend/MamonUML.png)
