@@ -260,4 +260,4 @@ GitLabs CI/CD handles testing and deploying the backend to metis. It will test a
 
 ## UML Graph
 
-![MamonUML](backend/MamonUML.png)
+![MamonUML](MamonUML.png)
