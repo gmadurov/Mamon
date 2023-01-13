@@ -9,35 +9,35 @@ cache:
     - .npm
 
 stages:
-  # - build
+  - build
   - submit
 
 before_script:
   - cd app
   - npm ci --cache .npm
 
-# eas-build-ios:
-#   stage: build
-#   script:
-#     - apk add --no-cache bash
-#     - npx eas-cli build --platform ios --non-interactive 
+eas-build-ios:
+  stage: build
+  script:
+    - apk add --no-cache bash
+    - npx eas-cli build --platform ios --non-interactive 
 
-# eas-build-android:
-#   stage: build
-#   script:
-#     - apk add --no-cache bash
-#     - npx eas-cli build --platform android --non-interactive
+eas-build-android:
+  stage: build
+  script:
+    - apk add --no-cache bash
+    - npx eas-cli build --platform android --non-interactive
 
 eas-submit-ios:
   stage: submit
-  # needs: [eas-build-ios]
+  needs: [eas-build-ios]
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform ios --latest --non-interactive
     
 eas-submit-android:
   stage: submit
-  # needs: [eas-build-android]
+  needs: [eas-build-android]
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform android --latest --non-interactive
