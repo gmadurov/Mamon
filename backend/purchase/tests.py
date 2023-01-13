@@ -1,3 +1,4 @@
+import unittest
 from users.tests import BaseCase
 from .models import Order, Product, Purchase
 from users.models import User, Personel
@@ -8,6 +9,10 @@ from users.models import User, Personel
 class PurchaseTest(BaseCase):
     def setUp(self):
         super().setUp()
+        # add standen to holders
+        self.holder_1.stand = 1000
+        self.holder_1.save()
+
         # creating products
         self.product_1 = Product.objects.create(name="product_1", price=1.00)
         self.product_2 = Product.objects.create(name="product_2", price=2.00)
@@ -22,8 +27,10 @@ class PurchaseTest(BaseCase):
         self.order_prod_40 = Order.objects.create(product=self.product_40, quantity=2)
         self.order_prod_50 = Order.objects.create(product=self.product_50, quantity=1)
 
-        # creating purchases
+        # creating 
+        print('start', self.holder_1.stand)
         self.purchase_1 = Purchase.objects.create(buyer=self.holder_1, seller=self.personel_tapper)
+        print('finish', self.holder_1.stand)
         self.purchase_3 = Purchase.objects.create(buyer=self.holder_1, seller=self.personel_website)
         self.purchase_2 = Purchase.objects.create(buyer=self.holder_2, seller=self.personel_praeses_imperfectus)
         self.purchase_40 = Purchase.objects.create(buyer=self.holder_3, seller=self.personel_tapper)
@@ -40,6 +47,7 @@ class PurchaseTest(BaseCase):
         self.purchase_2_orders.orders.set([self.order_prod_1, self.order_prod_2])
         self.purchase_3_orders.orders.set([self.order_prod_1, self.order_prod_2, self.order_prod_3])
         self.purchase_5_orders.orders.set([self.order_prod_1, self.order_prod_2, self.order_prod_3, self.order_prod_40, self.order_prod_50])
+
 
     def test_product_name(self):
         product_1 = Product.objects.get(id=self.product_1.id)
@@ -79,3 +87,6 @@ class PurchaseTest(BaseCase):
         self.assertEqual(purchase_2_orders.total, 7.00)
         self.assertEqual(purchase_3_orders.total, 16.00)
         self.assertEqual(purchase_5_orders.total, 146.00)
+
+    def test_standed(self):
+        print('fell', self.holder_1.stand)

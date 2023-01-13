@@ -52,22 +52,13 @@ class Category(models.Model):
 
 
 class Purchase(models.Model):
-    buyer = models.ForeignKey(
-        Holder,
-        on_delete=models.SET(Holder),
-        related_name="purchases",
-    )
-    seller = models.ForeignKey(
-        Personel,
-        on_delete=models.SET(Personel),
-        related_name="sold",
-    )
+    buyer = models.ForeignKey(Holder, on_delete=models.SET(Holder), related_name="purchases")
+    seller = models.ForeignKey(Personel, on_delete=models.SET(Personel), related_name="sold")
     balance = models.BooleanField(default=False)
     cash = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
-
     orders = models.ManyToManyField("Order", related_name="ordered")
-
+    
     created = models.DateTimeField(auto_now_add=True)
     remaining_after_purchase = models.FloatField(default=0)
     history = HistoricalRecords()
@@ -88,7 +79,7 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     history = HistoricalRecords()
-    
+
     def __str__(self):
         return str(self.quantity) + " " + str(self.product)
 
