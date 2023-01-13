@@ -30,14 +30,14 @@ before_script:
 
 eas-submit-ios:
   stage: submit
-  needs: [eas-build-ios]
+  # needs: [eas-build-ios]
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform ios --latest --non-interactive
     
 eas-submit-android:
   stage: submit
-  needs: [eas-build-android]
+  # needs: [eas-build-android]
   script: 
     - apk add --no-cache bash
     - npx eas-cli submit --platform android --latest --non-interactive
