@@ -1,23 +1,36 @@
-{% extends 'main.html' %} {% load pagination_tags %} {% block content %}{% comment %} {% endcomment %} {% comment %} create a
-from with date inputs called start_date and end_date {% endcomment %}
+{% extends 'main.html' %} {% load pagination_tags %} {% block content %}
 <div class="columns">
   <div class="column is-half">
     <form action="" method="GET" class="columns">
       <div class="column is-half">
         <label for="start_date">Start Date</label>
-        <input type="datetime-local" name="start_date" id="start_date" class="input" value="{{start_date}}" />
+        <input
+          type="datetime-local"
+          name="start_date"
+          id="start_date"
+          class="input"
+          required 
+          value="{{ start_date}}"
+        />
       </div>
       <div class="column is-half">
         <label for="end_date">End Date</label>
-        {% comment %} auto add today date and date a month ago {% endcomment %}
-        <input class="input" type="datetime-local" name="end_date" id="end_date" value="{{end_date}}" />
-        <input class="button is-success" type="submit" value="Submit" style="align: riht" />
+        <input
+          class="input"
+          type="datetime-local"
+          name="end_date"
+          id="end_date"
+          required 
+          value="{{ end_date }}"
+        />
+        <input class="button is-success" type="submit" value="Submit" style="align: right" />
       </div>
     </form>
-     {% comment %} {% endcomment %} {% comment %}fdsfsfdsdffdsfffffffdf {% endcomment %} {% if products_quant %}
-      <h1 class="title">Producten</h1>
-  {%include 'pagination.html' with pageName='product_page' queryset=products_quant custom_range=custom_range_products_quant %}
-    <table class="table">
+
+    {% if products_quant %}
+    <h1 class="title">Producten</h1>
+    {%include 'pagination.html' with pageName='product_page' queryset=products_quant custom_range=custom_range_products_quant%}
+    <table class="table is-fullwidth">
       <tr>
         <th>Product</th>
         <th>Quantity</th>
@@ -25,17 +38,16 @@ from with date inputs called start_date and end_date {% endcomment %}
       </tr>
       {% for product, quant in products_quant %}
       <tr>
-        <td><a href='{% url 'overviewProduct' product.id %}?{{request.GET.urlencode}}'>{{product.name}}</a></td>
+        <td><a href="{% url 'overviewProduct' product.id %}?{{request.GET.urlencode}}">{{product.name}}</a></td>
         <td>{{quant}}</td>
         <td>€{% widthratio quant 1 product.price %}</td>
       </tr>
       {% endfor %}
     </table>
-    {% endif %}
-    {% if purchases%} {% comment %} {% endcomment %} {% comment %} {% endcomment %} {% comment %} dfsfsdfdsds{% endcomment %}
+    {% endif %} {% if purchases%}
     <h1 class="title">Purchases</h1>
     {% include 'pagination.html' with pageName='purchase_page' queryset=purchases custom_range=custom_range_purchases %}
-    <table class="table">
+    <table class="table is-fullwidth">
       <tr>
         <th>Order Date</th>
         <th>Price</th>
@@ -57,11 +69,11 @@ from with date inputs called start_date and end_date {% endcomment %}
   {% comment %} make table for products {% endcomment %}
 
   <div class="column">
-    <table class="table">
+    <table class="table is-fullwidth">
       <tr>
-        <th>drankafname bezoekerspassen</th>
-        <th>drank/koek/snoep bar</th>
-        <th>refund bar (rectificaties)</th>
+        <th title='give a description of what each of these potjes is and what it holds to Gustavo'>drankafname bezoekerspassen</th>
+        <th title='give a description of what each of these potjes is and what it holds to Gustavo'>drank/koek/snoep bar</th>
+        <th title='give a description of what each of these potjes is and what it holds to Gustavo'>refund bar (rectificaties)</th>
       </tr>
       <tr>
         <td>{{bezoekers_pasen}}</td>
@@ -70,32 +82,32 @@ from with date inputs called start_date and end_date {% endcomment %}
       </tr>
     </table>
     <table class="table">
-      <tr>
+      <tr title='give a description of what each of these potjes is and what it holds to Gustavo'>
         <th>Total wallet upgrade</th>
         <td>{{walletUpgrades}}</td>
         {% comment %} all the money that has entered according to wallet upgrades {% endcomment %}
       </tr>
-      <tr>
+      <tr title='give a description of what each of these potjes is and what it holds to Gustavo'>
         <th>potje 7111 (PIN)</th>
         <td>{{totalGepind}}</td>
         {% comment %} all the purchases that were paid by card {% endcomment %}
       </tr>
-      <tr>
+      <tr title='give a description of what each of these potjes is and what it holds to Gustavo'>
         <th>potje 7400 (PIN hap)</th>
         <td>{{happenPin}}</td>
         {% comment %} all the purchases of hap that were paid by card{% endcomment %}
       </tr>
-      <tr>
+      <tr title='give a description of what each of these potjes is and what it holds to Gustavo'>
         <th>Potje 7400 (Cash hap)</th>
         <td>{{happenCash}}</td>
         {% comment %} all the happen that were paid by cash {% endcomment %}
       </tr>
-      <tr>
+      <tr title='give a description of what each of these potjes is and what it holds to Gustavo'>
         <th>Potje 3400 (Handelswaar)*</th>
         <td>{{handelswaar}}</td>
         {% comment %} all the bestuur kamer catergories {% endcomment %}
       </tr>
-      <tr>
+      <tr title='give a description of what each of these potjes is and what it holds to Gustavo'>
         <th>potje 7112 (cash) *</th>
         <td>{{totalGecashed}}</td>
         {% comment %} all the purchases that were paid by cash {% endcomment %}
