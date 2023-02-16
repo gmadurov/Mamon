@@ -22,7 +22,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
     path("", include("users.urls")),
-    path("", include("purchase.urls")),  # this passes all paths under purchases/**/ down to the specified urls.py
+    path("purchases/", include("purchase.urls")),  # this passes all paths under purchases/**/ down to the specified urls.py
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
