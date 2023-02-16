@@ -4,19 +4,15 @@
     
       <a class="pagination-previous"
         href="?{{ request|req_page:pageName|page_num:queryset.previous_page_number}}"
-        data-page="{{queryset.previous_page_number}}">&#10094; Previous</a>
+        data-page="{{queryset.previous_page_number}}">&#10094; Vorig</a>
     
     {% else %} {% comment %} {{request.GET.urlencode}}& {% endcomment %}
     <a class="pagination-previous is-disabled">
-      &#10094; Previous
+      &#10094; Vorig
     </a>
     {% endif %}
     
-    {% if queryset.has_next %}
-      <a class="pagination-next" href="?{{request|req_page:pageName|page_num:queryset.next_page_number}}" data-page="{{queryset.next_page_number}}">Next &#10095</a>
-    {% else %}
-    <a class="pagination-next is-disabled">Next &#10095</a>
-    {% endif %}
+    
 
     <ul class="pagination-list">
 
@@ -33,5 +29,10 @@
         {% endif %}
        {% endfor %} 
     </ul>
+    {% if queryset.has_next %}
+      <a class="pagination-next" href="?{{request|req_page:pageName|page_num:queryset.next_page_number}}" data-page="{{queryset.next_page_number}}">Volgende &#10095</a>
+    {% else %}
+    <a class="pagination-next is-disabled">Volgende &#10095</a>
+    {% endif %}
 </nav>
 {% endif %}

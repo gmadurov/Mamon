@@ -1,24 +1,21 @@
 {% extends 'main.html'%}{% load purchase_tags %} {% block content %} {% if products%}
 <div>
-  <table class="table">
+  <h1 class="title" style="text-align: center">Producten</h1>
+  <table class="table" style="text-align: center">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Description</th>
+        <th>Producten</th>
+        <th>Prijs</th>
+        <th>Hoeveelheid besteld</th>
       </tr>
     </thead>
     <tbody>
       {% for product in products %}
       <tr>
-        <td>{{ product.id }}</td>
         <td>
           <a href="{% url 'product' product.id %}">{{ product.name }}</a>
         </td>
         <td>€{{ product.price }}</td>
-        <td>{{ product.description }}</td>
-
         <td>{{quantity|get_item:product.id }}</td>
       </tr>
       {% endfor %}

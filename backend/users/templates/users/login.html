@@ -1,5 +1,4 @@
-{% extends 'main.html'%} {% block content%} {% if page == 'register' %}
-{%comment %}
+{% extends 'main.html'%} {% block content%} {% if page == 'register' %} {%comment %}
 <div class="auth">
   <div class="card">
     <div class="auth__header text-center">
@@ -35,42 +34,30 @@
     </div>
   </div>
 </div>
-{% endcomment %} {% else %}
-
-<div class="column is-3 is-centered is-offset-4">
+{% endcomment %} {% else %} {% comment %} center this div {% endcomment %}
+<div
+  style="
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    margin-top: 50px ;
+  "
+>
+  {% comment %} class="column is-3-desktop is-two-thirds-mobile is-centered" {% endcomment %}
   <div class="card">
     <h3 class="title">Login</h3>
     <form action="" method="POST" class="card-content">
       {% csrf_token %}
 
       <div class="field">
-        <p class="control has-icons-left has-icons-right">
-          <input
-            class="input"
-            type="username"
-            placeholder="Username"
-            type="text"
-            name="username"
-          />
-          <span class="icon is-small is-left">
-            <i class="fas fa-envelope"></i>
-          </span>
-          <span class="icon is-small is-right">
-            <i class="fas fa-check"></i>
-          </span>
+        <p class="control">
+          <input class="input" type="username" placeholder="Username" type="text" name="username" />
         </p>
       </div>
       <div class="field">
-        <p class="control has-icons-left">
-          <input
-            class="input"
-            type="password"
-            placeholder="Password"
-            name="password"
-          />
-          <span class="icon is-small is-left">
-            <i class="fas fa-lock"></i>
-          </span>
+        <p class="control">
+          <input class="input" type="password" placeholder="Password" name="password" />
         </p>
       </div>
       <div class="field">

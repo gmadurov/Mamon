@@ -1,38 +1,32 @@
 {% if request.user.is_authenticated %}{% load auth_tags %}
 
 <nav
-class="navbar columns is-offset-2 column is-two-thirds"
-role="navigation"
-aria-label="main navigation"
-style="background-color: #edeff1"
+  class="navbar columns is-offset-2 column is-two-thirds"
+  role="navigation"
+  aria-label="main navigation"
+  style="background-color: #edeff1"
 >
-<div class="navbar-brand">
-  {% comment %}
-  <a class="navbar-item" href="https://bulma.io">
-    <img src="" width="112" height="28" />
-    </a>
-    {% endcomment %}
-    
-    <a
-    role="button"
-    class="navbar-burger"
-    aria-label="menu"
-    aria-expanded="false"
-    data-target="navbarBasicExample"
-
-    >
-    <span aria-hidden="true"></span>
-    <span aria-hidden="true"></span>
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
-  {% if request.user|has_group:'Tapper' %}
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
-      <a class="navbar-item" href={% url 'barcycles' %} > Bar Cycles </a>
-      <a class="navbar-item" href={% url 'overview' %} > Overview </a>
-      <a class="navbar-item" href={% url 'app' %}> App</a>
-      {% comment %} <div class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link"> Producten </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
+        </div>
+      </div>
+      <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
+      {% if request.user|has_group:'Bestuur' %}
+      <a class="navbar-item" href="{% url 'barcycles' %}"> Bar Cycles </a>
+      <a class="navbar-item" href="{% url 'overview' %}"> Overview </a>
+      <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Products </a>
         <div class="navbar-dropdown">
           <a class="navbar-item" href='{% url "products"%}'> All products </a>
@@ -41,49 +35,36 @@ style="background-color: #edeff1"
           <a class="navbar-item"> Categories </a>
           <a class="navbar-item"> Create Categories</a>
         </div>
-      </div> {% endcomment %}
-      {% comment %} <div class="navbar-item has-dropdown is-hoverable">
+      </div>
+      <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Users </a>
-        
         <div class="navbar-dropdown">
           <a class="navbar-item"> Overview Users </a>
           <hr class="navbar-divider" />
           <a class="navbar-item"> Create User </a>
         </div>
-      </div> {% endcomment %}
-    </div>
-    {% else %}
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start">
-        <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link"> Producten </a>
-          
-          <div class="navbar-dropdown">
-            <a class="navbar-item" href='{% url "products"%}'> Alle Producten </a>
-          </div>
-
       </div>
-      <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
-
+      {% endif %}
     </div>
-    {% endif %}
     <div class="navbar-end">
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">(€{{request.user.holder.stand}}) {{request.user.holder.name}} </a>
         <div class="navbar-dropdown">
           {% if request.user.is_superuser or request.user.is_staff %}
-          <a class="navbar-item" href="/admin/"/> Admin </a>
+          <a class="navbar-item" href="/admin/"> Admin </a>
+          {% comment %}
           <hr class="navbar-divider" />
-          {% endif %}
-          
+          {% endcomment %} {% endif %}
+
           <a class="navbar-item" href="{% url 'userHome' %}"> Home </a>
           <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
           <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
-          {% comment %} <hr class="navbar-divider" />
-          <a class="navbar-item"> View Profile </a>
-          <a class="navbar-item"> Edit Profile </a> {% endcomment %}
+          {% comment %}
           <hr class="navbar-divider" />
+          <a class="navbar-item"> View Profile </a>
+          <a class="navbar-item"> Edit Profile </a> {% endcomment %} {% comment %}
+          <hr class="navbar-divider" />
+          {% endcomment %}
           <a class="navbar-item" href="{% url 'logout' %}"> Log Out </a>
         </div>
       </div>
@@ -91,27 +72,22 @@ style="background-color: #edeff1"
   </div>
 </nav>
 
-{% endif %}
-
 <script type="text/javascript">
-  document.addEventListener('DOMContentLoaded', () => {
-    const $navbarBurgers = Array.prototype.slice.call(
-      document.querySelectorAll('.navbar-burger'),
-      0
-      );
-      
+  document.addEventListener("DOMContentLoaded", () => {
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll(".navbar-burger"), 0);
+
     if ($navbarBurgers.length > 0) {
-      $navbarBurgers.forEach(el => {
-        el.addEventListener('click', () => {
+      $navbarBurgers.forEach((el) => {
+        el.addEventListener("click", () => {
           const target = el.dataset.target;
           const $target = document.getElementById(target);
-          
-          el.classList.toggle('is-active');
-          $target.classList.toggle('is-active');
+
+          el.classList.toggle("is-active");
+          $target.classList.toggle("is-active");
         });
       });
     }
   });
 </script>
 
-{% comment %} create a function to hide the dropdown {% endcomment %}
+{% endif %} {% comment %} create a function to hide the dropdown {% endcomment %}
