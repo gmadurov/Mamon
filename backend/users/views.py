@@ -44,19 +44,6 @@ def showUsers(request):
     return render(request)
 
 
-@login_required(login_url="login")
-def home(request):
-    user = Holder.objects.get(user=request.user)
-    purchases = user.purchases.all()
-    custom_range, purchases = paginateObjects(request, list(purchases), 10, "purchase_page")
-    content = {
-        "user": user,
-        "purchases": purchases,
-        "custom_range": custom_range,
-    }
-    return render(request, "users/home.html", content)
-
-
 def loginAllUsers(request, username=None, password=None, api=False):
     """this function will loging and update all users, it will return the user and the status code
     it will first try to authenticate the user with the django auth system,
@@ -192,28 +179,3 @@ def mollieWebhook(request, *args, **kwargs):
         messages.error(request, "Payment was not succesful")
     return redirect("userHome")
 
-
-@login_required(login_url="login")
-def paymentUpgrade(request):
-    form = MolliePaymentsForm()
-    if request.method == "POST":
-        form = MolliePaymentsForm(request.POST)
-        if form.is_valid():
-            molliePayment = form.save(commit=False)
-            molliePayment.holder = request.user.holder
-            body = {
-                "amount": {"currency": "EUR", "value": f"{molliePayment.amount:.2f}"},
-                "description": f"Mamon | Wallet Opwarderen  €{molliePayment.amount:.2f}",
-                "redirectUrl": request.build_absolute_uri(reverse("mollie-return", args=[str(molliePayment.identifier)])),
-                "webhookUrl": request.build_absolute_uri(reverse("mollie-webhook", args=[str(molliePayment.identifier)])),
-                "method": ["applepay", "creditcard", "ideal"],
-                "metadata": {"identifier": str(molliePayment.identifier)},
-            }
-            payment = mollie_client.payments.create(body)
-            molliePayment.payment_id = payment.id
-            molliePayment.expiry_date = payment.get("expiresAt")
-            molliePayment.save()
-            return redirect(payment.checkout_url)
-
-    content = {"form": form}
-    return render(request, "users/paymentUpgrade.html", content)

@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Order, Product, Barcycle, Category, Purchase
 
 # Create your views here.
+"""This page is for what the bestuur sees it is overview info"""
 
 
 @login_required(login_url="login")
@@ -138,8 +139,42 @@ def showBarcycles(request):
 
 def showBarcycle(request, pk):
     barcycle = Barcycle.objects.get(id=pk)
-    content = {"barcycle": barcycle}
+    purchases = barcycle.purchases
+    print(purchases)
+    #  get all the products that has been bought in the purchases
+    products = [prod.product for pur in purchases for prod in pur.orders.all()]
+    products_quant = {
+        prod: purchases.filter(orders__product=prod).aggregate(Sum("orders__quantity")).get("orders__quantity__sum") or 0 for prod in products
+    }.items()
+
+    # get sum of all holder stands
+    holder_stands = Holder.objects.all().aggregate(Sum("stand")).get("stand__sum")
+    barWinst = sum([pur.total for pur in purchases])
+    totalGepind = sum([pur.total for pur in purchases.filter(pin=True)])
+    totalGecashed = sum([pur.total for pur in purchases.filter(cash=True)])
+    bezoekers_pasen = sum([pur.total for pur in purchases.filter(buyer__user__groups__name__in=["Bezoekers"])])
+    handelswaar = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Handelswaar"])])
+    happenPin = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Happen"], pin=True)])
+    happenCash = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Happen"], cash=True)])
+    custom_range_products_quant, products_quant = paginateObjects(request, list(products_quant), 10, "product_page")
+    custom_range_purchases, purchases = paginateObjects(request, purchases, 10, "purchase_page")
+    content = {
+        "purchases": purchases,
+        "products_quant": products_quant,
+        "holder_stands": holder_stands,
+        "barWinst": barWinst,
+        "totalGepind": totalGepind,
+        "totalGecashed": totalGecashed,
+        "bezoekers_pasen": bezoekers_pasen,
+        "handelswaar": handelswaar,
+        "happenPin": happenPin,
+        "happenCash": happenCash,
+        "custom_range_purchases": custom_range_purchases,
+        "custom_range_products_quant": custom_range_products_quant,
+        "barcycle": barcycle,
+    }
     return render(request, "purchase/barcycle.html", content)
+
 
 def showUpgrades(request):
     return redirect("https://expo.dev/accounts/gusmadvol/projects/mamon-gus/builds/ceadb199-b637-4596-b702-a8fba62e1880")
