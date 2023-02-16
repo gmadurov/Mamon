@@ -7276,6 +7276,14 @@
     }
 },
 {
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "Bestuur",
+        "permissions": []
+    }
+},
+{
     "model": "auth.user",
     "pk": 1,
     "fields": {
