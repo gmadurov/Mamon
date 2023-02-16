@@ -66,3 +66,6 @@ pipfile.lock: do not touch, specification of used packages in the project.
 ## UML Graph
 
 ![MamonUML](backend/MamonUML.png)
+
+
+## Plan for implementation 

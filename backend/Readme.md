@@ -126,7 +126,7 @@ VS-code lets you chose which python enviroment you are working in, this enables 
 I would use PipEnv to do this as i think it has the best/easiest commands to learn to use. Follow the steps below to see how to install and initialize the pipenv virtual enviroment. This is only for backend/python environment, the reason VS-code doesnt automatically recognise the modules you've installed is that we use docker and the modules are installed in the docker container (which vs code doesnt have access to).
 
 ```
-pip install pipenv          # sometimes doesn't work. depends on cumputer setting but you can figure this out.
+pip install pipenv          # sometimes doesn't work. depends on computer setting but you can figure this out.
 pipenv install
 
 ```
