@@ -53,6 +53,7 @@ class Personel(models.Model):
         blank=True,
         default="personel/user-default.jpg",
     )
+    active = models.BooleanField(default=True)
     history = HistoricalRecords()
 
     @property

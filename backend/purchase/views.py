@@ -1,8 +1,9 @@
 import datetime
+from users.forms import PersonelForm
 from purchase.forms import ProductForm
 from django.contrib import messages
 
-from users.models import Holder, WalletUpgrades
+from users.models import Holder, Personel, WalletUpgrades
 from purchase.utils import paginateObjects
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render, redirect
@@ -186,26 +187,39 @@ def showUpgrades(request):
     return redirect("https://expo.dev/accounts/gusmadvol/projects/mamon-gus/builds/ceadb199-b637-4596-b702-a8fba62e1880")
 
 
-def product_form(request, pk=None):
-    if pk:
-        product = get_object_or_404(Product, pk=pk)
-        form = ProductForm(instance=product)
-        if request.method == "POST":
-            form = ProductForm(data=request.POST, instance=product)
-            if form.is_valid():
-                product = form.save()
-                return redirect("product", pk=product.pk)
-            else:
-                messages.error(request, form.errors)
-    else:
-        form = ProductForm()
-        if request.method == "POST":
-            form = ProductForm(data=request.POST)
-            if form.is_valid():
-                product = form.save()
-                return redirect("product", pk=product.pk)
-            else:
-                messages.error(request, form.errors)
+# idk if this should be implemented
+# def product_edit(request, pk=None):
+#     product = get_object_or_404(Product, pk=pk)
+#     if request.method == "POST":
+#         form = ProductForm(data=request.POST, instance=product)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("product", pk=pk)
+#         else:
+#             messages.error(request, form.errors)
+#     else:
+#         form = ProductForm(instance=product)
+#     return render(request, "purchase/product_form.html", {"form": form})
+
+
+def toggle_product_activity(request, pk=None):
+    product = get_object_or_404(Product, pk=pk)
+    product.active = not product.active
+    product.save()
+    # return to last page
+    return redirect(request.META.get("HTTP_REFERER"))
+
+
+@login_required
+def product_create(request):
+    form = ProductForm()
+    if request.method == "POST":
+        form = ProductForm(data=request.POST)
+        if form.is_valid():
+            product = form.save()
+            return redirect("product", pk=product.pk)
+        else:
+            messages.error(request, form.errors)
     return render(request, "purchase/product_form.html", {"form": form})
 
 
@@ -227,7 +241,6 @@ def dailyOverview(request):
     products_quant = {
         prod: purchases.filter(orders__product=prod).aggregate(Sum("orders__quantity")).get("orders__quantity__sum") or 0 for prod in products
     }
-    print(mode)
     if mode == "days":
         date_range = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
         quantities = {
@@ -251,8 +264,6 @@ def dailyOverview(request):
             for year in range(start_date.year, end_date.year + 1)
             for month in range(start_date.month if year == start_date.year else 1, end_date.month + 1 if year == end_date.year else 13)
         ]
-        print(date_range)
-
         quantities = {
             prod.id: (
                 prod,
@@ -280,3 +291,48 @@ def dailyOverview(request):
         "mode": mode,
     }
     return render(request, "purchase/daily_overview.html", content)
+
+
+# def category_create(request):
+#     form = CategoryForm()
+#     if request.method == "POST":
+#         form = CategoryForm(data=request.POST)
+#         if form.is_valid():
+#             category = form.save()
+#             return redirect("category", pk=category.pk)
+#         else:
+#             messages.error(request, form.errors)
+#     return render(request, "purchase/category_form.html", {"form": form})
+
+
+def userOverview(request):
+    users = Personel.objects.all()
+    content = {
+        "users": users,
+    }
+    return render(request, "purchase/user_overview.html", content)
+
+
+def userEdit(request, pk):
+    user = Personel.objects.get(id=pk)
+    form = PersonelForm(instance=user)
+    if request.method == "POST":
+        form = PersonelForm(data=request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect("personelOverview")
+        else:
+            messages.error(request, form.errors)
+    content = {
+        "user": user,
+        "form": form,
+    }
+    return render(request, "purchase/user_form.html", content)
+
+
+def togglePersonelActive(request, pk=None):
+    personel = get_object_or_404(Personel, pk=pk)
+    personel.active = not personel.active
+    personel.save()
+    # return to last page
+    return redirect(request.META.get("HTTP_REFERER"))

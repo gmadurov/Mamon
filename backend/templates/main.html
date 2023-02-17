@@ -2,20 +2,20 @@
 <html>
   {% load static %}
   <head>
+    {% comment %}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    {% endcomment %}
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <title>Mamon | {% block title %}{% endblock title %}</title>
+    <title>Mamon {% block title %}{% endblock title %}</title>
     <meta name="csrf-param" content="authenticity_token" />
     <meta
       name="csrf-token"
       content="AfDAD+MppIohg45k1osDsFKHghgG+Fs3SjqpgL3P/OBWaEzK0h3rW5obKb/IiQl92N1HIczaZDptJBl2Av/TCA=="
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    {% comment %}
-    <link rel="stylesheet" href="{% static 'css/main.css'%}" />
-    {% endcomment %}
   </head>
   <body style="background-color: #edeff1">
     {% block navbar %}{% include 'navbar.html' %}{% endblock navbar %} {% if messages %}

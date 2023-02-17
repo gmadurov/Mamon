@@ -1,0 +1,8 @@
+{% extends 'main.html' %} {% block title %}Category Aanmaken{% endblock %} {% block content %} {% block head %}{{ form.media}}{% endblock head %}
+<div class="">
+  <form action="" method="POST">
+    {% csrf_token %} {{form.as_p}}
+    <button type="submit" class="btn btn-primary">Aanmaken</button>
+  </form>
+</div>
+{% endblock %}

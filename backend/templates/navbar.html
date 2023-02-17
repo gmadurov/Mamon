@@ -19,29 +19,25 @@
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Producten </a>
         <div class="navbar-dropdown">
-          <a class="navbar-item" href="{% url 'products'%}"> Alle Producten </a>
+          <a class="navbar-item" href="{% url 'products'%}"> Mijn Producten </a>
         </div>
       </div>
       <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
       {% if request.user|has_group:'Bestuur' %}
-      <a class="navbar-item" href="{% url 'barcycles' %}"> Bar Cycles </a>
-      <a class="navbar-item" href="{% url 'overview' %}"> Overview </a>
       <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link"> Products </a>
+        <a class="navbar-link"> Overzicht </a>
         <div class="navbar-dropdown">
-          <a class="navbar-item" href='{% url "products"%}'> All products </a>
-          <a class="navbar-item"> Create Unit </a>
+          <a class="navbar-item" href="{% url 'overview' %}"> Overview </a>
+          <a class="navbar-item" href="{% url 'barcycles' %}"> Bar Cycles </a>
+          <a class="navbar-item" href="{% url 'daily overview' %}"> Dagelijks Overview </a>
           <hr class="navbar-divider" />
-          <a class="navbar-item"> Categories </a>
-          <a class="navbar-item"> Create Categories</a>
-        </div>
-      </div>
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link"> Users </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item"> Overview Users </a>
+          <a class="navbar-item" href="{% url 'products overview'%}"> Alle Producten </a>
+          <a class="navbar-item" href="{% url 'product creation' %}"> Product Aanmaken </a>
           <hr class="navbar-divider" />
-          <a class="navbar-item"> Create User </a>
+          <a class="navbar-item" href="{% url 'personelOverview' %}"> Overzicht Personnel </a>
+          {% comment %}<a class="navbar-item"> Categorien </a>
+          <a class="navbar-item" href="{% url 'category creation' %}"> Categorie Aanmaken </a> {% endcomment %}
+          <hr class="navbar-divider" />
         </div>
       </div>
       {% endif %}

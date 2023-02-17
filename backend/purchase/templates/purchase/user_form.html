@@ -1,0 +1,9 @@
+{% extends 'main.html' %} {% block content %}
+<div class="">
+  <form action="" method="POST">
+    {% csrf_token %} {{form.as_p}}
+    <img src="{{user.image_url}}" alt="avatar not available" class='image is-128x128'>
+    <button type="submit" class="button is-success">Save</button>
+  </form>
+</div>
+{% endblock content %}
