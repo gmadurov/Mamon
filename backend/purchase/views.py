@@ -1,9 +1,11 @@
 import datetime
+from purchase.forms import ProductForm
+from django.contrib import messages
 
 from users.models import Holder, WalletUpgrades
 from purchase.utils import paginateObjects
 from django.db.models import Sum
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Order, Product, Barcycle, Category, Purchase
 
@@ -47,8 +49,10 @@ def showProducts(request):
 @login_required(login_url="login")
 def showProductOverviews(request, pk):
     product = Product.objects.get(id=pk)
-    start_date = request.GET.get("start_date") or (datetime.datetime.today() - datetime.timedelta(days=30))
-    end_date = request.GET.get("end_date") or (datetime.datetime.today())
+    start_date = datetime.datetime.strptime(
+        request.GET.get("start_date", (datetime.datetime.today() - datetime.timedelta(days=30)).strftime("%Y-%m-%dT%H:%M")), "%Y-%m-%dT%H:%M"
+    )
+    end_date = datetime.datetime.strptime((request.GET.get("end_date", (datetime.datetime.today()).strftime("%Y-%m-%dT%H:%M"))), "%Y-%m-%dT%H:%M")
 
     #   find how many of each product a request user has bought
     purchases = Purchase.objects.filter(
@@ -76,8 +80,10 @@ def showProduct(request, pk):
 @login_required(login_url="login")
 def showOverview(request):
     # get puchased in a certain time period specified by a forms in the request
-    start_date = request.GET.get("start_date") or (datetime.datetime.today() - datetime.timedelta(days=30))
-    end_date = request.GET.get("end_date") or (datetime.datetime.today())
+    start_date = datetime.datetime.strptime(
+        request.GET.get("start_date", (datetime.datetime.today() - datetime.timedelta(days=30)).strftime("%Y-%m-%dT%H:%M")), "%Y-%m-%dT%H:%M"
+    )
+    end_date = datetime.datetime.strptime((request.GET.get("end_date", (datetime.datetime.today()).strftime("%Y-%m-%dT%H:%M"))), "%Y-%m-%dT%H:%M")
 
     purchases = Purchase.objects.filter(
         created__gte=start_date,
@@ -108,8 +114,8 @@ def showOverview(request):
     content = {
         "purchases": purchases,
         "products_quant": products_quant,
-        "start_date": start_date,
-        "end_date": end_date,
+        "start_date": start_date.strftime("%Y-%m-%dT%H:%M"),
+        "end_date": end_date.strftime("%Y-%m-%dT%H:%M"),
         "holder_stands": holder_stands,
         "barWinst": barWinst,
         "walletUpgrades": walletUpgrades,
@@ -178,3 +184,99 @@ def showBarcycle(request, pk):
 
 def showUpgrades(request):
     return redirect("https://expo.dev/accounts/gusmadvol/projects/mamon-gus/builds/ceadb199-b637-4596-b702-a8fba62e1880")
+
+
+def product_form(request, pk=None):
+    if pk:
+        product = get_object_or_404(Product, pk=pk)
+        form = ProductForm(instance=product)
+        if request.method == "POST":
+            form = ProductForm(data=request.POST, instance=product)
+            if form.is_valid():
+                product = form.save()
+                return redirect("product", pk=product.pk)
+            else:
+                messages.error(request, form.errors)
+    else:
+        form = ProductForm()
+        if request.method == "POST":
+            form = ProductForm(data=request.POST)
+            if form.is_valid():
+                product = form.save()
+                return redirect("product", pk=product.pk)
+            else:
+                messages.error(request, form.errors)
+    return render(request, "purchase/product_form.html", {"form": form})
+
+
+@login_required
+def dailyOverview(request):
+    mode = request.GET.get("mode", "days")
+    category = int(request.GET.get("category", 0))
+    start_date = datetime.datetime.strptime(
+        request.GET.get("start_date", (datetime.datetime.today() - datetime.timedelta(days=30)).strftime("%Y-%m-%dT%H:%M")), "%Y-%m-%dT%H:%M"
+    )
+    end_date = datetime.datetime.strptime((request.GET.get("end_date", (datetime.datetime.today()).strftime("%Y-%m-%dT%H:%M"))), "%Y-%m-%dT%H:%M")
+
+    categories = Category.objects.all()
+    purchases = Purchase.objects.filter(
+        created__gte=start_date,
+        created__lte=end_date,
+    )
+    products = [prod.product for pur in purchases for prod in pur.orders.all()] if category == 0 else categories.get(id=category).products.all()
+    products_quant = {
+        prod: purchases.filter(orders__product=prod).aggregate(Sum("orders__quantity")).get("orders__quantity__sum") or 0 for prod in products
+    }
+    print(mode)
+    if mode == "days":
+        date_range = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+        quantities = {
+            prod.id: (
+                prod,
+                [
+                    purchases.filter(orders__product=prod, created__day=day.day, created__month=day.month, created__year=day.year)
+                    .aggregate(Sum("orders__quantity"))
+                    .get("orders__quantity__sum")
+                    or 0
+                    for day in date_range
+                ],
+                products_quant[prod],
+            )
+            for prod in products
+        }.values()
+    else:
+        # create a date_range for each month between start_date and end_date
+        date_range = [
+            datetime.datetime(year=year, month=month, day=1)
+            for year in range(start_date.year, end_date.year + 1)
+            for month in range(start_date.month if year == start_date.year else 1, end_date.month + 1 if year == end_date.year else 13)
+        ]
+        print(date_range)
+
+        quantities = {
+            prod.id: (
+                prod,
+                [
+                    purchases.filter(orders__product=prod, created__month=day.month, created__year=day.year)
+                    .aggregate(Sum("orders__quantity"))
+                    .get("orders__quantity__sum")
+                    or 0
+                    for day in date_range
+                ],
+                products_quant[prod],
+            )
+            for prod in products
+        }.values()
+
+    # for each day in date_range get the total amount of products sold
+    content = {
+        "purchases": purchases,
+        "start_date": start_date.strftime("%Y-%m-%dT%H:%M"),
+        "end_date": end_date.strftime("%Y-%m-%dT%H:%M"),
+        "quantities": quantities,
+        "date_range": date_range,
+        "categories": categories,
+        "category": category,
+        "mode": mode,
+    }
+    return render(request, "purchase/daily_overview.html", content)

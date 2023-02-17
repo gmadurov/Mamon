@@ -1,0 +1,77 @@
+{% extends 'main.html' %} {% load pagination_tags %} {% block content %}
+<div class="column is-two-thirds">
+  <div class="column is-half is-offset-3">
+    <form action="" method="GET" class="columns">
+      <div class="column is-half">
+        <label for="start_date">Start Date</label>
+        <input type="datetime-local" name="start_date" id="start_date" class="input" required value="{{start_date}}" />
+        <label for="end_date">End Date</label>
+        <input class="input" type="datetime-local" name="end_date" id="end_date" required value="{{ end_date }}" />
+      </div>
+      <div class="column is-half">
+        <label for="category">Category</label>
+        <div class="select">
+          <select name="category" id="category">
+            <option value="0">All</option>
+            {% for cat in categories %} {% if cat.id == category %}
+            <option value="{{cat.id}}" selected>{{cat.name}}</option>
+            {% else %}
+            <option value="{{cat.id}}">{{cat.name}}</option>
+            {% endif %} {% endfor %}
+          </select>
+        </div>
+        <div class="control">
+          <label class="radio">
+            {% if mode == 'days' %}<input type="radio" name="mode" checked value="days" /> {% else %}<input
+              type="radio"
+              name="mode"
+              checked
+              value="days"
+            />
+            {% endif %}Per Dag
+          </label>
+          <label class="radio">
+            {% if mode == 'months' %}<input type="radio" name="mode" checked value="months" />{% else %}
+            <input type="radio" name="mode" value="months" />
+            {% endif %}Per Maand
+          </label>
+        </div>
+        <input class="button is-success" type="submit" value="Submit" style="align: right" />
+      </div>
+    </form>
+  </div>
+  <div class="column is-two-thids">
+    <div class="table-container">
+      {% if quantities %}
+      <table class="table is-narrow">
+        <thead>
+          <tr>
+            <th>Producten</th>
+            {% if mode == 'days' %} {% for day in date_range %}
+            <th>{{day|date:' D d/m'}}</th>
+            {% endfor %} {% elif mode == 'months'%} {% for day in date_range %}
+            <th>{{day|date:'m M'}}</th>
+            {% endfor %} {% endif %}
+            <th>Total verkocht</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product, sales, total in quantities %}
+          <tr>
+            <td>{{product.name}}</td>
+            {% for tot_sales in sales %}
+            <td>{{tot_sales}}</td>
+            {% endfor %}
+            <td>{{total}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h1 class='title is-3 ' style='text-align: center'>Geen resultaten gevonden</h1>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
