@@ -25,11 +25,13 @@ export enum Refund {
 }
 export type WalletUpgrade = {
   comment?: string;
-  seller?: User;
+  personel?: {
+    username: string;
+    password: string;
+  };
   holder: Holder;
   refund: Refund;
   amount: number;
-  password?: string;
 };
 
 type Props = NativeStackScreenProps<DrawerParamList, "WalletUpgrateScreen">;
@@ -42,24 +44,24 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
   const [searchTapper, setSearchTapper] = useState(false);
   const [searchHolder, setSearchHolder] = useState(false);
   const [token, setToken] = useState('')
+  const { setBottomSearch } = useContext(FullContext);
+
 
   const [wallet, setWallet] = useState<WalletUpgrade>({
-    seller: {} as User,
-    holder: {} as Holder,
     refund: Refund.notRefunc,
     amount: 0,
-    password: "",
     comment: "",
   } as WalletUpgrade);
   useEffect(() => {
-    setWallet({ ...wallet, seller: seller });
+    setWallet({ ...wallet, personel: { password: wallet.personel?.password || '', username: seller.username } });
   }, [seller]);
+  useEffect(() => {
+    setWallet({ ...wallet, holder: buyer });
+  }, [buyer]);
   async function SubmitWalletUpgrade(paymentMethod: string) {
-    let url, config
+    let config
     if (token) {
-      url = `/api/walletupgrade/`
-      delete wallet.password
-      delete wallet.seller
+      delete wallet.personel
       config = {
         method: "POST",
         body: JSON.stringify({ ...wallet, [paymentMethod]: true }),
@@ -69,14 +71,13 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
         },
       }
     } else {
-      url = `/api/walletupgrade/password/`
       config = {
         method: "POST",
         body: JSON.stringify({ ...wallet, [paymentMethod]: true }),
       }
     }
-    let { res, data } = await ApiRequest<WalletUpgrade>(url, config);
-    console.log(data)
+    let { res, data } = await ApiRequest<WalletUpgrade>(`/api/walletupgrades/`, config);
+    // console.log(data)
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Wallet Upgrade was successful`,
@@ -91,7 +92,7 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
       setWallet({
         refund: Refund.notRefunc,
         amount: 0,
-        password: "",
+        personel: { password: "", username: "" },
       } as WalletUpgrade);
       setSeller({} as User);
       setBuyer({} as Holder);
@@ -125,7 +126,12 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
         <Appbar.Header style={{ backgroundColor: GlobalStyles.colors.primary1 }}>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="Wallet Upgrade" style={{ alignItems: "center" }} />
-          <Appbar.Action icon={!showPassword ? "eye" : "eye-off"} onPress={() => setShowPassword((nu) => !nu)} />
+          {NfcProxy.enabled && NfcProxy.supported &&
+            <>
+              <Appbar.Action icon={!showPassword ? "eye" : "eye-off"} onPress={() => setShowPassword((nu) => !nu)} />
+              <Appbar.Action icon={"account-box"} onPress={() => setBottomSearch(nu => !nu)} />
+            </>}
+
         </Appbar.Header>
       ),
     });
@@ -137,24 +143,16 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     };
   }, [navigation, showPassword]);
   async function searchTapperNFC() {
+    // console.log(await AsyncStorage.getItem('0410308AC85E80'))
     setSearchHolder(false);
     setSearchTapper((nu) => !nu);
     let tag: TagEventLocal | null = null;
     if ((NfcProxy.enabled && NfcProxy.supported)) {
       try {
         tag = await NfcProxy.readTag();
-        // showMessage({
-        //   message: `Card ${tag?.id} scanned`,
-        //   type: "info",
-        //   floating: true,
-        //   hideStatusBar: true,
-        //   autoHide: true,
-        //   duration: 500,
-        //   position: "bottom",
-        // });
         // tag = { id: "0410308AC85E80" }; //for testing locally
-        const token_local = await AsyncStorage.getItem(`card_${tag.id as string}`) || ''
-        setToken(token_local);
+        const token_local: AuthToken = JSON.parse(await AsyncStorage.getItem(`${tag?.id as string}`) || '{}')
+        setToken(token_local.access);
         return true
       } catch (e) {
         await NfcProxy.stopReading();
@@ -238,20 +236,20 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
   function isDisabled() {
     if (!showPassword ? [undefined, null, "" as Refund].includes(wallet.refund) ||
       wallet.amount <= 0 || [undefined, null, NaN].includes(wallet.holder?.id) ||
-      (![undefined, {} as User].includes(wallet.seller) &&
-        ![undefined, null, ""].includes(wallet.password)) || token === '' ||
+      (![undefined, null, ""].includes(wallet.personel?.username) &&
+        ![undefined, null, ""].includes(wallet.personel?.password)) || token === '' ||
       wallet.refund === Refund.refund && wallet.comment === '' : [undefined, null, "" as Refund].includes(wallet.refund) ||
       [undefined, null, NaN].includes(wallet.amount) ||
-      [undefined, null, ""].includes(wallet.password) ||
-      [undefined, {} as User].includes(wallet.seller) ||
-      [undefined, null, ""].includes(wallet.holder?.name) ||
+      [undefined, null, ""].includes(wallet.personel?.password) ||
+      [undefined, null, ""].includes(wallet.personel?.username) ||
+      [undefined, null, NaN].includes(wallet.holder?.id) ||
     wallet.refund === Refund.refund && wallet.comment === ''
     ) { return true }
     else { return false }
   }
   return (
     <>
-      <ScrollView>
+      <ScrollView style={{ flex: 1 }}>
         <TouchableRipple onPress={() => setWallet({ ...wallet, refund: Refund.refund })}>
           <View style={styles.row}>
             <Text>Refund</Text>
@@ -274,46 +272,51 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
           </View>
         </TouchableRipple>
         <Divider />
-        {showPassword ? (
+        {showPassword || !(NfcProxy.enabled && NfcProxy.supported) ? (
           <>
             <PersonelView />
             <TextInput
               label="Tapper Wachtwoord"
               secureTextEntry
-              value={wallet.password ? wallet.password : ""}
-              onChangeText={(text) => setWallet({ ...wallet, password: text })}
+              value={wallet.personel?.password ? wallet.personel?.password : ""}
+              onChangeText={(text) => setWallet({ ...wallet, personel: { username: wallet.personel?.username || "", password: text } })}
             />
             <View style={{ flexDirection: "row", flex: 1, justifyContent: "center" }}>
-              <Button
+              {NfcProxy.enabled && NfcProxy.supported ? <Button
                 onPress={searchHolderNFC}
                 mode={"contained"}
-                style={{
-                  backgroundColor: GlobalStyles.colors.thetaGeel,
-                }}
+                buttonColor={GlobalStyles.colors.thetaGeel}
+                textColor={GlobalStyles.colors.thetaBrown}
               >
-                {wallet.holder?.id ? wallet.holder.name : !searchHolder ? "Scan NFC en Zoek op Gebruiker" : 'Scanning...'}
-              </Button>
+                {wallet.holder?.id ? wallet.holder.name : !searchHolder ? "Scan NFC voor Gebruiker" : 'Scanning...'}
+              </Button> :
+                <Button
+                  onPress={() => setBottomSearch(nu => !nu)}
+                  mode={"contained"}
+                  buttonColor={GlobalStyles.colors.thetaGeel}
+                  textColor={GlobalStyles.colors.thetaBrown}
+                >
+                  {wallet.holder?.id ? wallet.holder.name : 'Zoek Gebruiker'}
+                </Button>}
             </View>
           </>
         ) : (
           <View style={{ flexDirection: "row", flex: 1, justifyContent: "center" }}>
             <Button
               onPress={searchTapperNFC}
-              style={{
-                backgroundColor: GlobalStyles.colors.thetaBrown,
-              }}
+              textColor={GlobalStyles.colors.thetaGeel}
+              buttonColor={GlobalStyles.colors.thetaBrown}
               mode={"contained"}
             >
-              {token ? "Tapper Selected" : !searchTapper ? "Scan NFC en Zoek op Tapper" : "Scanning..."}
+              {token ? "Tapper Selected" : !searchTapper ? "Scan NFC voor Tapper" : "Scanning..."}
             </Button>
             <Button
               onPress={searchHolderNFC}
               mode={"contained"}
-              style={{
-                backgroundColor: GlobalStyles.colors.thetaGeel,
-              }}
+              buttonColor={GlobalStyles.colors.thetaGeel}
+              textColor={GlobalStyles.colors.thetaBrown}
             >
-              {wallet.holder?.id ? wallet.holder.name : !searchHolder ? "Scan NFC en Zoek op Gebruiker" : 'Scanning...'}
+              {wallet.holder?.id ? wallet.holder.name : !searchHolder ? "Scan NFC voor Gebruiker" : 'Scanning...'}
             </Button>
           </View>
         )}

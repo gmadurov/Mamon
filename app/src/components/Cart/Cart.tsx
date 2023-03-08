@@ -40,7 +40,7 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
-      if (buyer?.stand > total && total > 0.5 && seller.user_id) {
+      if (buyer?.stand > total && total > 0.5 && seller.id) {
         setDisabled(!true);
       } else {
         setDisabled(!false);
@@ -92,7 +92,7 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
             </TouchableRipple>
           </>
         )}
-        {buyer.id && seller.user_id && total > 0 && (
+        {buyer.id && seller.id && total > 0 && (
           <TouchableRipple // was View
             onPress={() => {
               buy("balance");

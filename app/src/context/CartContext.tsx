@@ -90,7 +90,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         quantity: order.quantity,
         product: order.id,
       })),
-      seller: seller.user_id,
+      seller: seller.id,
       balance: payment === "balance" ? true : false,
       cash: payment === "cash" ? true : false,
       pin: payment === "pin" ? true : false,

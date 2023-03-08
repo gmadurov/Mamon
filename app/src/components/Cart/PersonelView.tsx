@@ -26,7 +26,7 @@ const PersonelView = () => {
   const _getVisible = (name: string) => !!visible[name];
   async function LinkCard(user: User) {
     let tag: TagEventLocal | null = null
-    let token = await AsyncStorage.getItem("authToken" + user.user_id) || ''
+    let token = await AsyncStorage.getItem("authToken" + user.id) || ''
     // await AsyncStorage.setItem("card_0410308AC85E80", (JSON.parse(token) as AuthToken).access as string)
     if ((NfcProxy.enabled && NfcProxy.supported)) {
       // console.log("start nfc");
@@ -58,29 +58,29 @@ const PersonelView = () => {
     <ScrollView contentContainerStyle={styles.container} horizontal={true}>
       {users.map((user) => (
         <View
-          key={user.user_id}
+          key={user.id}
           style={[
             styles.item,
-            seller.user_id === user.user_id
+            seller.id === user.id
               ? { opacity: 1.0 }
               : { opacity: 0.5 },
           ]}
         >
           <Menu
-            visible={_getVisible("user" + user.user_id)}
-            onDismiss={() => _toggleMenu("user" + user.user_id)}
+            visible={_getVisible("user" + user.id)}
+            onDismiss={() => _toggleMenu("user" + user.id)}
             anchor={
               <TouchableRipple
                 onLongPress={() => {
-                  _toggleMenu("user" + user.user_id);
+                  _toggleMenu("user" + user.id);
                 }}
                 onPress={() => {
                   setSeller(user);
                 }}
               >
-                {!user?.image?.includes("default") ? (
+                {!user?.image_url?.includes("default") ? (
                   <Avatar.Image
-                    source={{ uri: baseUrl + user.image }}
+                    source={{ uri: user.image_url }}
                     size={avatarSize}
                   />
                 ) : (
