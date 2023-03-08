@@ -1,44 +1,41 @@
-from django.urls import path, re_path, include
+from django.urls import path
 
 # from django.conf.urls import url
 
 from . import views, views_holders, views_products, views_purchases, views_bar, views_hap
-from api.tokens import MyTokenObtainPairView, MyRefreshPairView
+from api.tokens import MyRefreshPairView
 from django.views.generic import TemplateView
 
 urlpatterns = [
     path("", views.getRoutes, name="routes"),
     # User login ######################
     path("login/", views.LoginAllUsers),
-    # Products ###############################
-    path("product/", views_products.showProducts),
-    path("product/<str:pk>", views_products.showProduct),
-    path("category/", views_products.cateories),
-    # Reports #############################
-    path("report/", views_bar.handle_report),
-    # Puchases #############################
-    path("purchase/", views_purchases.showPurchases),
-    path("purchase/<str:pk>", views_purchases.showPurchase),
-    # Holders ###############################
-    path("holder/", views_holders.showHolders),
-    path("holder/<str:pk>", views_holders.showHolder),
-    path("holder/<str:pk>/cards", views_holders.showHolderCards),
-    # WalletUpgrades ###############################
-    path("walletupgrade/", views_holders.handle_WalletUpgrades),
-    path("walletupgrade/password/", views_holders.handle_WalletUpgradesPassword),
-    # CARDS ######################
-    path("cards/", views_holders.handle_Cards),
-    path("cards/<str:pk>", views_holders.handle_Card),
-    # path("users/token/", MyTokenObtainPairView.as_view()),
     path("login/refresh/", MyRefreshPairView.as_view()),
     path("environment/<str:name>/", views.getEnvironment),
+    # Products ###############################
+    path("products/", views_products.ProductView.as_view()),
+    path("products/<str:pk>/", views_products.ProductView.as_view()),
+    path("categories/", views_products.CategoryView.as_view()),
+    # Reports #############################
+    path("reports/", views_bar.ReportView.as_view()),
+    # Puchases #############################
+    path("purchases/", views_purchases.PurchaseView.as_view()),
+    path("purchases/<str:pk>/", views_purchases.PurchaseView.as_view()),
+    # Holders ###############################
+    path("holders/", views_holders.HolderView.as_view()),
+    path("holders/<str:pk>/", views_holders.HolderView.as_view()),
+    # path("holders/<str:pk>/cards", views_holders.showHolderCards),
+    # WalletUpgrades ###############################
+    path("walletupgrades/", views_holders.WalletUpgradesView.as_view()),
+    # CARDS ######################
+    path("cards/", views_holders.CardView.as_view()),
+    path("cards/<str:pk>/", views_holders.CardView.as_view()),
     # Happens ###############################
-    path("happen/", views_hap.handleHaps),
-    path("happen/<str:pk>/", views_hap.handleHap),
-    path("happen/<str:pk>/pay/", views_hap.payHappen),
-    path("happen/<str:pk>/leden/", views_hap.registerHappen),
-    path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
-    path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.registerHappen),
+    path("happen/", views_hap.HapView.as_view()),
+    path("happen/<str:pk>/", views_hap.HapView.as_view()),
+    path("happen/<str:pk>/pay/", views_hap.HapPaymentView.as_view()),
+    path("happen/<str:pk>/leden/", views_hap.HapRegisterView.as_view()),
+    path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.HapRegisterView.as_view()),
     # Swagger ################################
     path("apidocs/", TemplateView.as_view(template_name="swagger-ui.html", extra_context={"schema_url": "routes"}), name="swagger-ui"),
     path("printme/", views.printme),

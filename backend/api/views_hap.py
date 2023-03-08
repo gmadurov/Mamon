@@ -1,76 +1,56 @@
-from .serializers import HapOrderHolderSerializer, HapPaymentHolderSerializer, HappenSerializer, HolderSerializer, SimpleHolderSerializer
-from users.views import loginAllUsers
-from purchase.models import Barcycle, Happen, Report
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from .views import DatabaseView
+from .serializers import HapOrderHolderSerializer, HapPaymentHolderSerializer, HappenSerializer, SimpleHolderSerializer
+from purchase.models import HapOrder, Happen
 from rest_framework.response import Response
-from users.models import Holder, Personel
+from users.models import Holder
+
+from rest_framework.views import APIView
 
 
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def handleHaps(request):
-    data = request.data
-    if request.method == "GET":
-        haps = Happen.objects.all()
-        serializer = HappenSerializer(haps, many=True)
-        return Response(serializer.data)
-    if request.method == "POST":
-        serializer = HappenSerializer(data=data, many=False)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response("error")
+class HapView(DatabaseView):
+    model = Happen
+    serializer = HappenSerializer
+    http_method_names = ["get", "post", "put", "delete"]
 
 
-@api_view(["GET", "PUT", "DELETE"])
-@permission_classes([IsAuthenticated])
-def handleHap(request, pk):
-    data = request.data
-    hap = Happen.objects.get(id=pk)
-    if request.method == "PUT":
-        hap = HappenSerializer(hap, data=data, many=False)
-        if hap.is_valid(raise_exception=True):
-            hap.save()
-            return Response(hap.data)
-    if request.method == "DELETE":
-        hap.delete()
-        return Response()
-    serializer = HappenSerializer(hap, many=False)
-    return Response(serializer.data)
+class HapRegisterView(APIView):
+    http_method_names = ["get", "post", "delete"]
 
-
-@api_view(["GET", "POST", "DELETE"])
-@permission_classes([IsAuthenticated])
-def registerHappen(request, pk, lid_id=None):
-    data = request.data
-    hap = Happen.objects.get(id=pk)
-    if request.method == "GET" and lid_id:
+    def get(self, request, pk, lid_id):
+        hap = Happen.objects.get(id=pk)
         if lid_id in list(hap.participants.all().values_list("ledenbase_id", flat=True)):
             return Response(True)
         else:
             return Response(False)
-    if request.method == "POST":
-        if lid_id and not data.get("holder", False):
-            data["holder"] = {"ledenbase_id": lid_id}
-        order = HapOrderHolderSerializer(data=data, many=False)
-        if order.is_valid(raise_exception=True):
-            order.save(happen=hap)
-            return Response(order.data)
-    if request.method == "DELETE" and lid_id:
+
+    def post(self, request, pk=None, lid_id=None):
+        data = request.data
+        pos_order = HapOrder.objects.filter(holder__ledenbase_id=data.get("holder", {}).get("ledenbase_id", lid_id), happen__id=pk)
+        if pos_order:
+            # make sure the user isnt already registered might cause problems with paying
+            return Response({"message": "Holder al ingeschreven voor dit hap, je moet eerst uitschijven en dan opnieuw probere"}, status=404)
+        else:
+            if lid_id and not data.get("holder", False):
+                data["holder"] = {"ledenbase_id": lid_id}
+            order = HapOrderHolderSerializer(data=data, many=False)
+            if order.is_valid(raise_exception=True):
+                order.save(happen=pk)
+                return Response(order.data)
+
+    def delete(self, request, pk, lid_id):
+        hap = Happen.objects.get(id=pk)
         if lid_id in list(hap.participants.all().values_list("ledenbase_id", flat=True)):
             hap.participants.remove(Holder.objects.get(ledenbase_id=lid_id))
             return Response({"message": "Holder uitgeschreven"})
         else:
-            return Response({"message": "Holder niet ingeschreven voor dit hap"}, status=404)
-    return Response({"message": "Error 404-hap"}, status=404)
+            return Response({"message": "Holder niet ingeschreven voor hap"}, status=404)
 
 
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def payHappen(request, pk):
-    hap = Happen.objects.get(id=pk)
-    if request.method == "GET":
+class HapPaymentView(APIView):
+    http_method_names = ["get", "post"]
+
+    def get(self, request, pk):
+        hap = Happen.objects.get(id=pk)
         notPayed = [
             haporder
             for haporder in hap.haporder_set.all()
@@ -79,7 +59,9 @@ def payHappen(request, pk):
         serialiser = HapPaymentHolderSerializer(hap.happayment_set.all(), many=True)
         failed = HapOrderHolderSerializer(notPayed, many=True)
         return Response({"payed": serialiser.data, "not_payed": failed.data})
-    if request.method == "POST":
+
+    def post(self, request, pk):
+        hap = Happen.objects.get(id=pk)
         failed = hap.pay()
         serialiser = HapPaymentHolderSerializer(hap.happayment_set.all(), many=True)
         failed = SimpleHolderSerializer(failed, many=True)

@@ -1,7 +1,7 @@
 import json
 import os
+from django.shortcuts import get_object_or_404
 
-import requests
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
@@ -9,6 +9,7 @@ from api.tokens import MyTokenObtainPairSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from users.views import loginAllUsers
+from django.db.models import Q
 import yaml
 
 API_URL = "/api/"
@@ -167,3 +168,76 @@ def getEnvironment(request, name):
 def printme(request):
     print(request.data)
     return Response(request.data)
+
+
+from rest_framework import serializers
+from rest_framework.views import APIView
+
+
+class DatabaseView(APIView):
+    """model = None \\
+    serializer: serializers.ModelSerializer = None \\
+    paginator = None\\
+    http_method_names = []"""
+
+    model = None
+    serializer: serializers.ModelSerializer = None
+    paginator = None
+    http_method_names: list[str] = []
+    search_fields: list[str] = []
+
+    def query_model(self):
+        """Query a model with the request params"""
+        request_params = dict(self.request.GET.dict())
+        page_params = {key: val for key, val in request_params.items() if "page" in key}
+        if "search" in request_params.keys() and self.search_fields:
+            # only for events
+            search = request_params.pop("search")
+            # Q:how can i join the queries using the operator | insteaadt of &?
+            # A: use the operator | in the filter
+            q_objects = Q()
+            for field in self.search_fields:
+                q_objects |= Q(**{f"{field}": search})
+            objects = self.model.objects.filter(q_objects).distinct()
+        else:
+            for key in page_params.keys():
+                request_params.pop(key)
+            if request_params.keys():
+                objects = self.model.objects.filter(**request_params)
+            else:
+                objects = self.model.objects.all()
+            if page_params:
+                objects = self.paginator(
+                    objects,
+                    **page_params,
+                )
+        return objects
+
+    def get(self, request, pk: int = None):
+        if pk:
+            instance = self.model.objects.get(pk=pk)
+            serializer = self.serializer(instance, context={"request": request})
+            return Response(serializer.data)
+        query = self.query_model()
+        serializer = self.serializer(query, many=True, context={"request": request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = self.serializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def put(self, request, pk):
+        instance = get_object_or_404(self.model, pk=pk)
+        serializer = self.serializer(instance, data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def delete(self, request, pk):
+        instance = get_object_or_404(self.model, pk=pk)
+        instance.delete()
+        return Response("Item deleted")

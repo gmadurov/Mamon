@@ -1,10 +1,8 @@
-from collections import OrderedDict
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from users.models import Card, Holder, Personel, WalletUpgrades
 from purchase.models import HapOrder, HapPayment, Happen, Order, Product, Purchase, Category, Report
 from django.contrib.auth.models import User
-
-from django.shortcuts import get_list_or_404, get_object_or_404
 
 
 def without_keys(d, keys):
@@ -23,35 +21,33 @@ class PersonelSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PurchaseSerializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        orders = validated_data.pop("orders")
-        purchase = Purchase.objects.create(**validated_data)
-        for order in orders:
-            order, created = Order.objects.get_or_create(quantity=order.get("quantity"), product=order.get("product"))
-            purchase.orders.add(order)
-        return purchase
-
-    orders = OrderSerializer(many=True)
-
-    class Meta:
-        model = Purchase
-        fields = "__all__"
-
-
 class ProductSerializer(serializers.ModelSerializer):
     # image_url = serializers.SerializerMethodField()
-
-    # def get_image_url(self, obj):
-    #     request = self.context.get("request")
-    #     return request.build_absolute_uri(obj.image.url)
 
     class Meta:
         model = Product
         fields = "__all__"
 
+    def update(self, instance: Product, validated_data: dict):
+        "you should only be able to update the name and color of a product"
+        instance.name = validated_data.get("name", instance.name)
+        instance.color = validated_data.get("color", instance.color)
+        instance.save()
+        return instance
+
 
 class UserSerializer(serializers.ModelSerializer):
+    holder = serializers.SerializerMethodField()
+    personel = serializers.SerializerMethodField()
+
+    def get_personel(self, user: User):
+        personel = Personel.objects.filter(user=user).first()
+        return personel.id if personel else None
+
+    def get_holder(self, user: User):
+        holder = Holder.objects.get(user=user)
+        return holder.id
+
     class Meta:
         model = User
         fields = [
@@ -60,6 +56,8 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
+            "holder",
+            "personel",
         ]
 
 
@@ -95,6 +93,30 @@ class SimpleHolderSerializer(serializers.ModelSerializer):
         exclude = ["image_ledenbase", "stand", "image", "user"]
 
 
+class PurchaseSerializer(serializers.ModelSerializer):
+    buyer = HolderSerializer(read_only=True)
+    seller = PersonelSerializer(read_only=True)
+
+    buyer = serializers.IntegerField(write_only=True)
+
+    def validate_buyer(self, value):
+        return Holder.objects.get(id=value)
+
+    def create(self, validated_data):
+        orders = validated_data.pop("orders")
+        purchase = Purchase.objects.create(seller=self.context.get("request").user.personel, **validated_data)
+        for order in orders:
+            order, created = Order.objects.get_or_create(quantity=order.get("quantity"), product=order.get("product"))
+            purchase.orders.add(order)
+        return purchase
+
+    orders = OrderSerializer(many=True)
+
+    class Meta:
+        model = Purchase
+        fields = "__all__"
+
+
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True)
 
@@ -113,9 +135,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 # make serializer for Report
 class ReportSerializer(serializers.ModelSerializer):
+    personel = PersonelSerializer(read_only=True)
+
     class Meta:
         model = Report
         fields = "__all__"
+
+    def create(self, validated_data):
+        return super().create(dict(personel=self.context.get("request").user.personel, **validated_data))
 
 
 # make walletupdate  serializer
@@ -124,16 +151,27 @@ class WalletUpgradesSerializer(serializers.ModelSerializer):
         model = WalletUpgrades
         fields = "__all__"
 
-    holder = SimpleHolderSerializer()
-    seller = PersonelSerializer(read_only=True)
+    holder = SimpleHolderSerializer(read_only=True)
+    personel = PersonelSerializer(read_only=True)
+    holder = serializers.IntegerField(write_only=True)
+    personel = serializers.IntegerField(write_only=True, required=False)
+
+    def validate_holder(self, value):
+        return Holder.objects.get(id=value)
+
+    def validate_personel(self, value):
+        return Personel.objects.get(id=value)
 
 
 class CardSerializer(serializers.ModelSerializer):
-    holder = HolderSerializer()
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Card
         fields = "__all__"
+
+    def create(self, validated_data):
+        return super().create(dict(user=self.context.get("request").user, **validated_data))
 
 
 class HapPaymentHolderSerializer(serializers.ModelSerializer):
@@ -147,13 +185,16 @@ class HapPaymentHolderSerializer(serializers.ModelSerializer):
 
 class HapOrderHolderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
+        hap = get_object_or_404(Happen, id=validated_data.pop("happen"))
         holder = Holder.objects.get(ledenbase_id=validated_data.get("holder").get("ledenbase_id"))
-        if not holder in validated_data.get("happen").participants.all():
+        if not holder in hap.participants.all():
             validated_data["holder"] = holder
+            validated_data["happen"] = hap
             return HapOrder.objects.create(**validated_data)
         else:
-            validated_data.get("happen").participants.remove(holder)
+            hap.participants.remove(holder)
             validated_data["holder"] = holder
+            validated_data["happen"] = hap
             return HapOrder.objects.create(**validated_data)
 
     holder = SimpleHolderSerializer()
