@@ -13,7 +13,8 @@ from core.settings import JWT_KEY
 class ClientAuthentication(BaseAuthentication):
     def authenticate(self, request):
         encoded_jwt = request.META.get("HTTP_AUTHORIZATION", None)
-
+        if request.path in ["/api/login/" ,"/api/login/refresh/"]:
+            return (AnonymousUser(), None)
         # Check validity JWT
         try:
             decoded_jwt = jwt.decode(encoded_jwt, JWT_KEY, algorithms="HS256")

@@ -30,7 +30,7 @@ urlpatterns = [
     path("cards/", views_holders.handle_Cards),
     path("cards/<str:pk>", views_holders.handle_Card),
     # path("users/token/", MyTokenObtainPairView.as_view()),
-    path("users/token/refresh/", MyRefreshPairView.as_view()),
+    path("login/refresh/", MyRefreshPairView.as_view()),
     path("environment/<str:name>/", views.getEnvironment),
     # Happens ###############################
     path("happen/", views_hap.handleHaps),
