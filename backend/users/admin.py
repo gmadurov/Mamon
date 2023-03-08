@@ -65,7 +65,7 @@ class PersonelAdmin(admin.ModelAdmin):
 
 # create WalletUpdateAdmin if you want to see the wallet upgrades in the admin
 class WalletUpdateAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "date", "seller", "refund")
+    list_display = ("__str__", "date", "personel", "refund")
     search_fields = (
         "holder__user__username",
         "holder__user__first_name",
@@ -86,7 +86,7 @@ class WalletUpdateAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         return [
             "holder",
-            "seller",
+            "personel",
             "refund",
             "date",
             "cash",

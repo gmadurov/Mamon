@@ -1,7 +1,6 @@
 from datetime import datetime
 import json
 import os
-import pprint
 
 import requests
 from django.contrib import messages
@@ -11,10 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
-
-from django.urls import reverse
-from purchase.utils import paginateObjects
-from .forms import MolliePaymentsForm
 
 from .models import Holder, MolliePayments, Personel, WalletUpgrades
 from core.settings import mollie_client
@@ -44,7 +39,7 @@ def showUsers(request):
     return render(request)
 
 
-def loginAllUsers(request, username=None, password=None, api=False):
+def loginAllUsers(request, username=None, password=None, api=False) -> tuple[User, int]:
     """this function will loging and update all users, it will return the user and the status code
     it will first try to authenticate the user with the django auth system,
     if that fails it will try to authenticate with the ledenbase api
@@ -178,4 +173,3 @@ def mollieWebhook(request, *args, **kwargs):
     else:
         messages.error(request, "Payment was not succesful")
     return redirect("userHome")
-

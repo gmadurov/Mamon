@@ -18,12 +18,12 @@ utc = pytz.UTC
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=20, unique=True)
-    price = models.FloatField(default=0)
-    color = ColorField(default="#ffdd00")
-    active = models.BooleanField(default=True)
+    name: models.CharField | str = models.CharField(max_length=20, unique=True)
+    price: models.FloatField = models.FloatField(default=0)
+    color: ColorField = ColorField(default="#ffdd00")
+    active: models.BooleanField = models.BooleanField(default=True)
     # add image field without category field
-    image = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
+    image: models.ImageField = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
     history = HistoricalRecords()
 
     def __str__(self):
@@ -59,7 +59,7 @@ class Purchase(models.Model):
     cash = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
     orders = models.ManyToManyField("Order", related_name="ordered")
-    
+
     created = models.DateTimeField(auto_now_add=True)
     remaining_after_purchase = models.FloatField(default=0)
     history = HistoricalRecords()

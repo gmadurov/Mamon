@@ -98,7 +98,7 @@ It is also intersting to know that the django rest framework allows for multiple
   - Peronnel
     - Django User, nickname, image
   - WalletUpgrade
-    - holder, seller, amount, refund, date, comment
+    - holder, personel, amount, refund, date, comment
   - Card
     - holder, card_id, card_name
 

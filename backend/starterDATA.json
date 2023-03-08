@@ -5513,7 +5513,7 @@
     "pk": 1,
     "fields": {
         "holder": 65,
-        "seller": 63,
+        "personel": 63,
         "amount": 20.0,
         "refund": false,
         "date": "2022-11-04T08:45:30.725Z",
@@ -5528,7 +5528,7 @@
     "pk": 2,
     "fields": {
         "holder": 65,
-        "seller": 65,
+        "personel": 65,
         "amount": 20.0,
         "refund": false,
         "date": "2022-11-04T09:57:19.441Z",
@@ -5543,7 +5543,7 @@
     "pk": 3,
     "fields": {
         "holder": 65,
-        "seller": 65,
+        "personel": 65,
         "amount": 2.0,
         "refund": false,
         "date": "2022-11-04T09:58:08.819Z",
@@ -5558,7 +5558,7 @@
     "pk": 4,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 200.0,
         "refund": false,
         "date": "2022-11-04T15:46:15.804Z",
@@ -5573,7 +5573,7 @@
     "pk": 5,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 10.0,
         "refund": false,
         "date": "2022-11-04T15:57:05.831Z",
@@ -5588,7 +5588,7 @@
     "pk": 6,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 200.0,
         "refund": false,
         "date": "2022-11-04T16:02:18.583Z",
@@ -5603,7 +5603,7 @@
     "pk": 7,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 2020.0,
         "refund": false,
         "date": "2022-11-04T16:03:00.804Z",
@@ -5618,7 +5618,7 @@
     "pk": 39,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 1.0,
         "refund": false,
         "date": "2022-11-04T17:18:32.157Z",
@@ -5633,7 +5633,7 @@
     "pk": 40,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 200.0,
         "refund": false,
         "date": "2022-11-04T17:19:54.136Z",
@@ -5648,7 +5648,7 @@
     "pk": 41,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 0.0,
         "refund": false,
         "date": "2022-11-04T17:20:22.421Z",
@@ -5663,7 +5663,7 @@
     "pk": 42,
     "fields": {
         "holder": 50,
-        "seller": 65,
+        "personel": 65,
         "amount": 2024.0,
         "refund": false,
         "date": "2022-11-04T17:35:03.637Z",
