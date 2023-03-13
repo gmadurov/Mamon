@@ -1,5 +1,5 @@
 import json
-import os
+import os, jwt
 from django.shortcuts import get_object_or_404
 
 from django.contrib.auth import authenticate
@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from api.tokens import MyTokenObtainPairSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .serializers import UserSerializer
 from users.views import loginAllUsers
 from django.db.models import Q
 import yaml
@@ -151,8 +152,19 @@ def LoginAllUsers(request):
     refresh = MyTokenObtainPairSerializer.get_token(user)
     # except:
     #     refresh = RefreshToken.for_user(user)
-    response = {"refresh": str(refresh), "access": str(refresh.access_token)}
-
+    user_d = UserSerializer(user,context={"request": request})
+    decode = jwt.decode(str(refresh.access_token), verify=False)
+    response = {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+        "user": dict(
+            **user_d.data,
+            exp=decode["exp"],
+            roles=decode["roles"],
+            
+        ),
+    }
+    # decode the refresh.access_token and print it
     return Response(response)
 
 
@@ -223,6 +235,7 @@ class DatabaseView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        print(request.data)
         serializer = self.serializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()

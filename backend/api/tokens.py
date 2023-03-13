@@ -1,9 +1,12 @@
-import os
+import os, jwt
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from .serializers import UserSerializer
+from django.contrib.auth.models import User
 
 
 def fill_token(token, user):
@@ -14,7 +17,7 @@ def fill_token(token, user):
     token["image"] = user.personel.image_url
     token["nickname"] = user.personel.nickname
     token["personel_id"] = user.personel.id
-    token['username'] = user.username
+    token["username"] = user.username
     # print('RefreshToken', token)
     return token
 
@@ -39,4 +42,15 @@ class MyTokenRefreshPairSerializer(TokenRefreshSerializer):
 
 class MyRefreshPairView(TokenRefreshView):
     serializer_class = MyTokenRefreshPairSerializer
-    
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        decode = jwt.decode(str(response.data.get("refresh")), verify=False)
+        user = User.objects.get(id=decode["user_id"])
+        user_d = UserSerializer(user, context={"request": request})
+        response.data["user"] = dict(
+            **user_d.data,
+            exp=decode["exp"],
+            roles=decode["roles"],
+        )
+        return response

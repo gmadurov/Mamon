@@ -20,6 +20,10 @@ class PersonelSerializer(serializers.ModelSerializer):
         model = Personel
         fields = "__all__"
 
+    # disable the create method
+    def create(self, validated_data):
+        pass
+
 
 class ProductSerializer(serializers.ModelSerializer):
     # image_url = serializers.SerializerMethodField()
@@ -39,6 +43,15 @@ class ProductSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     holder = serializers.SerializerMethodField()
     personel = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    def get_name(self, user: User):
+        return user.first_name + " " + user.last_name
+
+    def get_nickname(self, user: User):
+        personel = Personel.objects.filter(user=user).first()
+        return personel.nickname if personel else None
 
     def get_personel(self, user: User):
         personel = Personel.objects.filter(user=user).first()
@@ -48,17 +61,15 @@ class UserSerializer(serializers.ModelSerializer):
         holder = Holder.objects.get(user=user)
         return holder.id
 
+    image_url = serializers.SerializerMethodField()
+
+    def get_image_url(self, user: User):
+        request = self.context.get("request")
+        return request.build_absolute_uri(Personel.objects.filter(user=user).first().image_url if Personel.objects.filter(user=user).first() else "")
+
     class Meta:
         model = User
-        fields = [
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-            "email",
-            "holder",
-            "personel",
-        ]
+        fields = ["id", "username", "first_name", "last_name", "email", "holder", "personel", "nickname", "image_url", "name"]
 
 
 class HolderSerializer(serializers.ModelSerializer):
@@ -133,7 +144,6 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
 
-# make serializer for Report
 class ReportSerializer(serializers.ModelSerializer):
     personel = PersonelSerializer(read_only=True)
 
@@ -151,16 +161,19 @@ class WalletUpgradesSerializer(serializers.ModelSerializer):
         model = WalletUpgrades
         fields = "__all__"
 
-    holder = SimpleHolderSerializer(read_only=True)
-    personel = PersonelSerializer(read_only=True)
-    holder = serializers.IntegerField(write_only=True)
-    personel = serializers.IntegerField(write_only=True, required=False)
+    holder = SimpleHolderSerializer()
+    #  dont create new personel
 
-    def validate_holder(self, value):
-        return Holder.objects.get(id=value)
+    # holder = serializers.IntegerField(write_only=True)
+    # personel = serializers.IntegerField(write_only=True, required=False)
 
-    def validate_personel(self, value):
-        return Personel.objects.get(id=value)
+    # def validate_personel(self, value):
+    #     return Personel.objects.get(id=value.id)
+
+    def create(self, validated_data):
+        holder = validated_data.pop("holder")
+        holder = Holder.objects.get(ledenbase_id=holder.get("ledenbase_id"))
+        return super().create(dict(holder=holder, **validated_data))
 
 
 class CardSerializer(serializers.ModelSerializer):
