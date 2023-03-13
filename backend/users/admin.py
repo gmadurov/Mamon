@@ -17,8 +17,12 @@ class CardAdmin(admin.ModelAdmin):
     )
 
     def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return [
+                "card_id",
+            ]
         return [
-            "holder",
+            "user",
             "card_id",
         ]
 
