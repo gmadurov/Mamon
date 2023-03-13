@@ -118,7 +118,7 @@ class Card(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return str(self.holder.name) + " has card " + str(self.card_name)
+        return str(self.user.first_name) + str(self.user.last_name) + " has card " + str(self.card_name)
 
     class Meta:
         verbose_name_plural = "Carden"
