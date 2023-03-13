@@ -234,19 +234,27 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     setSearchHolder(false)
   }
   function isDisabled() {
-    if (!showPassword ? [undefined, null, "" as Refund].includes(wallet.refund) ||
-      wallet.amount <= 0 || [undefined, null, NaN].includes(wallet.holder?.id) ||
-      (![undefined, null, ""].includes(wallet.personel?.username) &&
-        ![undefined, null, ""].includes(wallet.personel?.password)) || token === '' ||
-      wallet.refund === Refund.refund && wallet.comment === '' : [undefined, null, "" as Refund].includes(wallet.refund) ||
+    console.log('wallet.refund, wallet.amount, wallet.holder?.id, wallet.personel?.username, wallet.personel?.password,    token,    wallet.comment')
+    console.log(wallet.refund, '                  ', wallet.amount, '                  ', wallet.holder?.id, '            ', wallet.personel?.username, '                  ', wallet.personel?.password, { token }, wallet.comment)
+
+    if (!(token === '') ?
+      [undefined, null, "" as Refund].includes(wallet.refund) ||
+      wallet.amount <= 0 ||
+      [undefined, null, NaN].includes(wallet.holder?.id) ||
+      (![undefined, null, ""].includes(wallet.personel?.username) && ![undefined, null, ""].includes(wallet.personel?.password)) ||
+      token === '' ||
+      wallet.refund === Refund.refund && wallet.comment === ''
+      :
+      [undefined, null, "" as Refund].includes(wallet.refund) ||
       [undefined, null, NaN].includes(wallet.amount) ||
       [undefined, null, ""].includes(wallet.personel?.password) ||
       [undefined, null, ""].includes(wallet.personel?.username) ||
       [undefined, null, NaN].includes(wallet.holder?.id) ||
-    wallet.refund === Refund.refund && wallet.comment === ''
+      wallet.refund === Refund.refund && wallet.comment === ''
     ) { return true }
     else { return false }
   }
+  console.log(isDisabled())
   return (
     <>
       <ScrollView style={{ flex: 1 }}>
