@@ -23,8 +23,8 @@ urlpatterns = [
     path("purchases/<str:pk>/", views_purchases.PurchaseView.as_view()),
     # Holders ###############################
     path("holders/", views_holders.HolderView.as_view()),
+    path("holders/cards/", views_holders.HolderCardView.as_view()),
     path("holders/<str:pk>/", views_holders.HolderView.as_view()),
-    # path("holders/<str:pk>/cards", views_holders.showHolderCards),
     # WalletUpgrades ###############################
     path("walletupgrades/", views_holders.WalletUpgradesView.as_view()),
     # CARDS ######################

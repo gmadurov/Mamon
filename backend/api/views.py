@@ -235,7 +235,7 @@ class DatabaseView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        print(request.data)
+        # print(request.data)
         serializer = self.serializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()

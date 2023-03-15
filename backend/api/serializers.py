@@ -182,9 +182,11 @@ class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = "__all__"
-
+    
     def create(self, validated_data):
-        return super().create(dict(user=self.context.get("request").user, **validated_data))
+        if self.context.get("request").path == "/api/cards/":
+            return super().create(dict(user=self.context.get("request").user, **validated_data))
+        return super().create(validated_data)
 
 
 class HapPaymentHolderSerializer(serializers.ModelSerializer):

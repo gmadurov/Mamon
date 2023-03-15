@@ -19,10 +19,10 @@ class CardAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return [
+                "user",
                 "card_id",
             ]
         return [
-            "user",
             "card_id",
         ]
 

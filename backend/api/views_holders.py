@@ -19,6 +19,19 @@ class HolderView(DatabaseView):
     search_fields = ["user__first_name__icontains", "user__username__icontains", "user__last_name__icontains", "ledenbase_id", "id"]
 
 
+class HolderCardView(DatabaseView):
+    model = Card
+    serializer = CardSerializer
+    http_method_names = ["post"]
+
+    def post(self, request):
+        data = request.data
+        card = CardSerializer(data=data, context={"request": request})
+        if card.is_valid(True):
+            card.save(user_id=data.get("user").get("id"))
+            return Response({"message": "Card added to holder"})
+
+
 # make wallet upgrades api
 
 
