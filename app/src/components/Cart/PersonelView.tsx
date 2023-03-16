@@ -9,12 +9,28 @@ import CartContext from "../../context/CartContext";
 import NFCContext, { TagEventLocal } from "../../context/NFCContext";
 import Holder from "../../models/Holder";
 import User from "../../models/Users";
+import { AuthToken } from "../../models/AuthToken";
 
 type MenuVisibility = {
   [key: string]: boolean | undefined;
 };
 const PersonelView = () => {
-  const { users, logoutFunc, baseUrl } = useContext(AuthContext);
+
+  // menu
+  // cart legmaken
+  //    empties the cart 
+  // Verkoper weghalen
+  //    removes any seller from the active selling position
+  // Zet als verkoper 
+  //    set as active seller
+  // Link Card
+  //    scan card and link card to account 
+  // log out
+  //    log user out
+
+
+
+  const { users, logoutFunc, storeUsers } = useContext(AuthContext);
   const { seller, setSeller, setBuyer, setCart } = useContext(CartContext);
   let avatarSize = 50;
   const NfcProxy = useContext(NFCContext);
@@ -27,12 +43,18 @@ const PersonelView = () => {
   async function LinkCard(user: User) {
     let tag: TagEventLocal | null = null
     let token = await AsyncStorage.getItem("authToken" + user.id) || ''
-    // await AsyncStorage.setItem("card_0410308AC85E80", (JSON.parse(token) as AuthToken).access as string)
     if ((NfcProxy.enabled && NfcProxy.supported)) {
       // console.log("start nfc");
       try {
         tag = await NfcProxy.readTag();
-        await AsyncStorage.setItem(`card_${tag.id as string}`, token)
+        await AsyncStorage.setItem(tag.id || 'card' , JSON.stringify(token));
+        showMessage(
+          {
+            message: 'Card linked',
+            type: 'success',
+            floating: true
+          }
+        )
       } catch (e) {
         await NfcProxy.stopReading();
         showMessage({

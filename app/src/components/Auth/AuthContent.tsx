@@ -10,6 +10,7 @@ import ApiContext from "../../context/ApiContext";
 import { Card } from "../../models/Card";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthContext from "../../context/AuthContext";
+import { AuthToken } from "../../models/AuthToken";
 
 function AuthContent({ isLogin, onAuthenticate }: { isLogin: boolean; onAuthenticate: Function }) {
   const [username, setUsername] = useState<string>("");
@@ -17,7 +18,6 @@ function AuthContent({ isLogin, onAuthenticate }: { isLogin: boolean; onAuthenti
   const [password, setPassword] = useState<string>("");
   const NfcProxy = useContext(NFCContext);
   const { ApiRequest, refreshToken } = useContext(ApiContext);
-  const { storeUsers } = useContext(AuthContext);
   // const [enteredConfirmPassword, setEnteredConfirmPassword] = useState("");
 
   // const { email: emailIsInvalid, password: passwordIsInvalid } =
@@ -58,9 +58,8 @@ function AuthContent({ isLogin, onAuthenticate }: { isLogin: boolean; onAuthenti
     if (NfcProxy.enabled && NfcProxy.supported) {
       try {
         tag = await NfcProxy.readTag();
-        tag = { id: '0410308AC85E80' }
         if (tag?.id) {
-          const cardToken = await AsyncStorage.getItem(tag?.id);
+          const cardToken = (await AsyncStorage.getItem(tag?.id));
           showMessage({
             message: `Card ${tag?.id} scanned`,
             type: "info",
@@ -71,24 +70,8 @@ function AuthContent({ isLogin, onAuthenticate }: { isLogin: boolean; onAuthenti
             position: "bottom",
           });
           if (cardToken) {
-            await refreshToken(JSON.parse(cardToken), tag?.id)
-          }
-          else {
-            const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
-            if (res.status === 200) {
-              onAuthenticate(username, password, tag?.id);
-            } else {
-              showMessage({
-                message: `Card niet gevonden`,
-                description: `is card gekopeld aan een account?`,
-                type: "danger",
-                floating: true,
-                hideStatusBar: true,
-                autoHide: true,
-                duration: 1500,
-                position: "bottom",
-              });
-            }
+            await AsyncStorage.removeItem(tag?.id)
+            await refreshToken((JSON.parse(cardToken)) as AuthToken, tag?.id)
           }
         }
       } catch (e) {

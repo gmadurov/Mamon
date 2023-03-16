@@ -39,6 +39,7 @@ type Props = NativeStackScreenProps<DrawerParamList, "WalletUpgrateScreen">;
 function WalletUpgrateScreen({ route, navigation }: Props) {
   const { seller, buyer, setSeller, setBuyer } = useContext(CartContext);
   const { ApiRequest } = useContext(ApiContext);
+  const { holders } = useContext(HolderContext);
   const NfcProxy = useContext(NFCContext);
   const [showPassword, setShowPassword] = useState(false);
   const [searchTapper, setSearchTapper] = useState(false);
@@ -77,7 +78,6 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
       }
     }
     let { res, data } = await ApiRequest<WalletUpgrade>(`/api/walletupgrades/`, config);
-    // console.log(data)
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Wallet Upgrade was successful`,
@@ -96,6 +96,7 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
       } as WalletUpgrade);
       setSeller({} as User);
       setBuyer({} as Holder);
+      setToken('')
     } else if (res?.status === 501) {
       showMessage({
         message: `Failed to authenticate the seller`,
@@ -150,8 +151,10 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     if ((NfcProxy.enabled && NfcProxy.supported)) {
       try {
         tag = await NfcProxy.readTag();
-        // tag = { id: "0410308AC85E80" }; //for testing locally
-        const token_local: AuthToken = JSON.parse(await AsyncStorage.getItem(`${tag?.id as string}`) || '{}')
+        let token_local: AuthToken = JSON.parse(await AsyncStorage.getItem(tag?.id as string) || '{}')
+        if (typeof token_local==='string'){
+          token_local = JSON.parse(token_local)
+        }
         setToken(token_local.access);
         return true
       } catch (e) {
@@ -178,22 +181,12 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     setSearchTapper(false);
     setSearchHolder((nu) => !nu);
     let tag: TagEventLocal | null = null;
-    if ((NfcProxy.enabled && NfcProxy.supported)) {
+    if (NfcProxy.enabled && NfcProxy.supported) {
       try {
-        tag = await NfcProxy.readTag();
-        // showMessage({
-        //   message: `Card ${tag?.id} scanned`,
-        //   type: "info",
-        //   floating: true,
-        //   hideStatusBar: true,
-        //   autoHide: true,
-        //   duration: 500,
-        //   position: "bottom",
-        // });
-        // tag = { id: "0410308AC85E80" }; //for testing locally
-        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
+        tag = await NfcProxy.readTag()
+        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}/`);
         if (res.status === 200) {
-          setWallet({ ...wallet, holder: data.holder });
+          setWallet({ ...wallet, holder: holders.find(hol => hol.id === data.user.holder) as Holder });
         } else {
           showMessage({
             message: `Card niet gevonden`,
@@ -234,8 +227,8 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     setSearchHolder(false)
   }
   function isDisabled() {
-    console.log('wallet.refund, wallet.amount, wallet.holder?.id, wallet.personel?.username, wallet.personel?.password,    token,    wallet.comment')
-    console.log(wallet.refund, '                  ', wallet.amount, '                  ', wallet.holder?.id, '            ', wallet.personel?.username, '                  ', wallet.personel?.password, { token }, wallet.comment)
+    // console.log('wallet.refund, wallet.amount, wallet.holder?.id, wallet.personel?.username, wallet.personel?.password,    token,    wallet.comment')
+    // console.log(wallet.refund, '                  ', wallet.amount, '                  ', wallet.holder?.id, '            ', wallet.personel?.username, '                  ', wallet.personel?.password, { token }, wallet.comment)
 
     if (!(token === '') ?
       [undefined, null, "" as Refund].includes(wallet.refund) ||
@@ -254,7 +247,6 @@ function WalletUpgrateScreen({ route, navigation }: Props) {
     ) { return true }
     else { return false }
   }
-  console.log(isDisabled())
   return (
     <>
       <ScrollView style={{ flex: 1 }}>

@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 
 import AuthContent from "../components/Auth/AuthContent";
-import AuthContext from "../context/AuthContext";
-import LoadingOverlay from "../components/ui/LoadingOverlay";
 import PersonelView from "../components/Cart/PersonelView";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
+import AuthContext from "../context/AuthContext";
 
 function LoginScreen({ extra }: { extra?: boolean }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);

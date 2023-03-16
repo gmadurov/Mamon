@@ -1,4 +1,5 @@
 import {
+  Appbar,
   Button,
   Divider,
   RadioButton,
@@ -6,29 +7,41 @@ import {
   TouchableRipple,
 } from "react-native-paper";
 import React, { ScrollView, StyleSheet, Text, View } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 
 import ApiContext from "../context/ApiContext";
 import CartContext from "../context/CartContext";
 import PersonelView from "../components/Cart/PersonelView";
 import User from "../models/Users";
 import { showMessage } from "react-native-flash-message";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { DrawerParamList } from "../navigation/Navigators";
+import { GlobalStyles } from "../constants/styles";
+import FullContext from "../context/FullContext";
+import NFCContext, { TagEventLocal } from "../context/NFCContext";
+import { AuthToken } from "../models/AuthToken";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Report = {
-  personel?: User;
+  personel?: {
+    username: string;
+    password: string
+  };
   action?: Action;
   total_cash?: number;
   flow_meter1?: number;
   flow_meter2?: number;
   comment?: string;
-  password?: string;
 };
 export enum Action {
   Open = "Open",
   Close = "Close",
   Middle = "Middle",
 }
-const ReportScreen = () => {
+
+type Props = NativeStackScreenProps<DrawerParamList, "ReportScreen">;
+
+const ReportScreen = ({ navigation }: Props) => {
   //  create state for all properties of Report
   const { seller, setSeller } = useContext(CartContext);
   const { ApiRequest } = useContext(ApiContext);
@@ -40,15 +53,102 @@ const ReportScreen = () => {
     flow_meter2: 0,
     comment: "",
   } as Report);
+
+  const [searchTapper, setSearchTapper] = useState(false);
+  const [token, setToken] = useState('')
+
+  const [showPassword, setShowPassword] = useState(false)
+  const { setBottomSearch } = useContext(FullContext)
+  const NfcProxy = useContext(NFCContext)
   useEffect(() => {
-    setReport({ ...report, personel: seller });
+    setReport({ ...report, personel: { username: seller.username, password: '' } });
   }, [seller]);
 
+  // async function SubmitWalletUpgrade(paymentMethod: string) {
+  //   let config
+  //   if (token) {
+  //     delete wallet.personel
+  //     config = {
+  //       method: "POST",
+  //       body: JSON.stringify({ ...wallet, [paymentMethod]: true }),
+  //       headers: {
+  //         "Content-Type": "*/*",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     }
+  //   } else {
+  //     config = {
+  //       method: "POST",
+  //       body: JSON.stringify({ ...wallet, [paymentMethod]: true }),
+  //     }
+  //   }
+  //   let { res, data } = await ApiRequest<WalletUpgrade>(`/api/walletupgrades/`, config);
+  //   if (res?.status === 201 || res?.status === 200) {
+  //     showMessage({
+  //       message: `Wallet Upgrade was successful`,
+  //       description: ``,
+  //       type: "success",
+  //       floating: true,
+  //       hideStatusBar: true,
+  //       autoHide: true,
+  //       duration: 2500,
+  //       position: "bottom",
+  //     });
+  //     setWallet({
+  //       refund: Refund.notRefunc,
+  //       amount: 0,
+  //       personel: { password: "", username: "" },
+  //     } as WalletUpgrade);
+  //     setSeller({} as User);
+  //     setBuyer({} as Holder);
+  //     setToken('')
+  //   } else if (res?.status === 501) {
+  //     showMessage({
+  //       message: `Failed to authenticate the seller`,
+  //       description: `The seller and password combination is not correct`,
+  //       type: "danger",
+  //       floating: true,
+  //       hideStatusBar: true,
+  //       autoHide: true,
+  //       duration: 4500,
+  //       position: "bottom",
+  //     });
+  //   } else {
+  //     showMessage({
+  //       message: `Wallet Upgrade was Unsuccessful`,
+  //       description: JSON.stringify(res?.status),
+  //       type: "danger",
+  //       floating: true,
+  //       hideStatusBar: true,
+  //       autoHide: true,
+  //       duration: 1500,
+  //       position: "bottom",
+  //     });
+  //   }
+  // }
   async function SubmitReport() {
-    let { res } = await ApiRequest<Report>("/api/report/", {
-      method: "POST",
-      body: JSON.stringify(report),
-    });
+    let config
+    if (token) {
+      delete report.personel
+      config = {
+        method: "POST",
+        body: JSON.stringify(report),
+        headers: {
+          "Content-Type": "*/*",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    } else {
+      config = {
+        method: "POST",
+        body: JSON.stringify(report),
+      }
+    }
+
+    console.log(report, token);
+    
+    let { res } = await ApiRequest<Report>("/api/reports/", config);
+    setToken("")
     if (res?.status === 201 || res?.status === 200) {
       showMessage({
         message: `Report was successful`,
@@ -93,6 +193,60 @@ const ReportScreen = () => {
       });
     }
   }
+
+  async function searchTapperNFC() {
+    // console.log(await AsyncStorage.getItem('0410308AC85E80'))
+    setSearchTapper((nu) => !nu);
+    let tag: TagEventLocal | null = null;
+    if ((NfcProxy.enabled && NfcProxy.supported)) {
+      try {
+        tag = await NfcProxy.readTag();
+        let token_local: AuthToken = JSON.parse(await AsyncStorage.getItem(tag?.id as string) || '{}')
+        if (typeof token_local === 'string') {
+          token_local = JSON.parse(token_local)
+        }
+        setToken(token_local.access);
+        return true
+      } catch (e) {
+        await NfcProxy.stopReading();
+      } finally {
+        await NfcProxy.stopReading();
+      }
+    } else {
+      showMessage({
+        message: `NFC not supported`,
+        description: `NFC is not supported on this device`,
+        type: "danger",
+        floating: true,
+        hideStatusBar: true,
+        autoHide: true,
+        duration: 1500,
+        position: "bottom",
+      });
+    }
+    setSearchTapper(false)
+  }
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: () => (
+        <Appbar.Header style={{ backgroundColor: GlobalStyles.colors.primary1 }}>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Report maken" style={{ alignItems: "center" }} />
+          {NfcProxy.enabled && NfcProxy.supported &&
+            <>
+              <Appbar.Action icon={!showPassword ? "eye" : "eye-off"} onPress={() => setShowPassword((nu) => !nu)} />
+            </>}
+
+        </Appbar.Header>
+      ),
+    });
+
+    return () => {
+      navigation.setOptions({
+        header: () => null,
+      });
+    };
+  }, [navigation, showPassword]);
   return (
     <ScrollView>
       <TouchableRipple
@@ -134,13 +288,28 @@ const ReportScreen = () => {
         </View>
       </TouchableRipple>
       <Divider />
-      <PersonelView />
-      <TextInput
-        label="Tapper Wachtwoord"
-        secureTextEntry
-        value={report.password ? report.password : ""}
-        onChangeText={(text) => setReport({ ...report, password: text })}
-      />
+      {showPassword || !(NfcProxy.enabled && NfcProxy.supported) ?
+        <>
+          <PersonelView />
+          <TextInput
+            label="Tapper Wachtwoord"
+            secureTextEntry
+            value={report.personel?.password ? report.personel?.password : ""}
+            onChangeText={(text) => setReport({ ...report, personel: { username: report.personel?.username || '', password: text } })}
+          />
+        </>
+        : (
+          <View style={{ flexDirection: "row", flex: 1, justifyContent: "center" }}>
+            <Button
+              onPress={searchTapperNFC}
+              textColor={GlobalStyles.colors.thetaGeel}
+              buttonColor={GlobalStyles.colors.thetaBrown}
+              mode={"contained"}
+            >
+              {token ? "Tapper Selected" : !searchTapper ? "Scan NFC voor Tapper" : "Scanning..."}
+            </Button>
+          </View>
+        )}
       <TextInput
         label="Total Cash"
         value={report.total_cash ? report.total_cash.toString() : ""}
@@ -173,10 +342,10 @@ const ReportScreen = () => {
       <Button
         disabled={
           [undefined, null, "" as Action].includes(report.action) ||
-          [undefined, null, NaN].includes(report.flow_meter1) ||
-          [undefined, null, NaN].includes(report.flow_meter2) ||
-          [undefined, null, NaN].includes(report.total_cash) ||
-          [undefined, {} as User].includes(report.personel)
+            [undefined, null, NaN].includes(report.flow_meter1) ||
+            [undefined, null, NaN].includes(report.flow_meter2) ||
+            [undefined, null, NaN].includes(report.total_cash) ||
+            [undefined, {} as User].includes(report.personel)
             ? true
             : false
         }

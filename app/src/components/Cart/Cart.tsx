@@ -53,26 +53,6 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
   if (buttons) {
     return (
       <View style={styles.view}>
-        {/* <TouchableRipple // was View
-          onPress={() => {
-            setCart([] as CartItems[]);
-            setBuyer({} as Holder);
-          }}
-          style={[{ backgroundColor: "red" }, styles.button]}
-        >
-          <Button
-            // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-            // style={styles.EmptyButton}
-            color="white"
-            onPress={() => {
-              setCart([] as CartItems[]);
-              setBuyer({} as Holder);
-            }}
-          >
-            Leegmaken
-          </Button>
-        </TouchableRipple> */}
-
         {disabled && (
           <>
             <TouchableRipple // was View
@@ -80,9 +60,12 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
                 buy("pin");
               }}
               style={[{ backgroundColor: "black" }, styles.button]}
+              disabled={!(seller.id && total > 0)}
             >
               <Button
-                color="white"
+                disabled={!(seller.id && total > 0)}
+                textColor={!(seller.id && total > 0) ? 'grey' : "white"}
+                buttonColor={!(seller.id && total > 0) ? 'grey' : "black"}
                 onPress={() => {
                   buy("pin");
                 }}
@@ -104,7 +87,8 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
             ]}
           >
             <Button
-              color={GlobalStyles.colors.thetaBrown}
+              buttonColor={GlobalStyles.colors.thetaBrown}
+              textColor={'white'}
               disabled={disabled}
               onPress={() => {
                 buy("balance");
@@ -120,11 +104,13 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
               onPress={() => {
                 buy("cash");
               }}
-              disabled={disabled}
+              disabled={!(seller.id && total > 0)}
               style={[{ backgroundColor: "green" }, styles.button]}
             >
               <Button
-                color="white"
+                textColor={'white'}
+
+                disabled={!(seller.id && total > 0)}
                 onPress={() => {
                   buy("cash");
                 }}

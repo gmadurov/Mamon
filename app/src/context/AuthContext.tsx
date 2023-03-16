@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (baseUrl === "") {
         if (process.env.NODE_ENV === "development") {
           setBaseUrl("https://staging-mamon.esrtheta.nl");
-          setBaseUrl("http://10.0.2.2:8000");
+          // setBaseUrl("http://10.0.2.2:8000");
         } else if (process.env.NODE_ENV === "production") {
           setBaseUrl("https://mamon.esrtheta.nl");
         }
@@ -96,8 +96,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthTokenUsers(() => [...authTokenUsers, data]);
     setUsers(() => [...users, localUser]);
     await AsyncStorage.setItem("authToken" + localUser.id, JSON.stringify(data));
-    if (true) {
-      await AsyncStorage.setItem('0410308AC85E80', JSON.stringify(data));
+    if (card) {
+      await AsyncStorage.setItem(card, JSON.stringify(data));
     }
   }
 
