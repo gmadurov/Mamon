@@ -143,7 +143,7 @@ def mollieReturn(request, *args, **kwargs):
             holder=molliePayment.holder,
             amount=float(molliePayment.amount),
             comment=f"Upgrade via mollie payment {molliePayment.payment_id}",
-            seller=Personel.objects.get(id=5),
+            seller=Personel.objects.get(id=2),
             molliePayment=molliePayment,
         )
     else:
@@ -167,7 +167,7 @@ def mollieWebhook(request, *args, **kwargs):
             holder=molliePayment.holder,
             amount=float(molliePayment.amount),
             comment=f"Upgrade via mollie payment {molliePayment.payment_id}",
-            seller=Personel.objects.get(id=5),
+            seller=Personel.objects.get(id=2),
             molliePayment=molliePayment,
         )
     else:
