@@ -1,0 +1,85 @@
+{% extends 'main.html' %} {% block navbar %}
+<nav
+  class="navbar columns is-offset-2 column is-two-thirds"
+  role="navigation"
+  aria-label="main navigation"
+  style="background-color: #edeff1"
+>
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <a class="navbar-item" href="{% url 'login' %}">Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+{% endblock navbar %} {% block content %}
+<div class="column is-one-third" style="margin-top: 100px">
+  <div>
+    {% comment %} center the header text {% endcomment %}
+    <div style="text-align: center; justify-content: center; margin-bottom: 50px">
+      <p class="title is-1" style="text-align: center">Welcome to Mamon</p>
+    </div>
+  </div>
+  <div class="card" style="text-align: center">
+    <div class="card-content">
+      <h3 class="text is-4">Welcome to Mamon, the new Point of Sale (POS) system designed specifically for E.S.R. Thêta.</h3>
+      <br />
+      <h3 class="text is-4">
+        Mamon is a redesign of the old POS system, Bacchus, with similar use, a new look and feel, as well as more advanced
+        financial features. Mamon is designed to be used by both staff and members, and is (soon) available on both Android
+        and IOS.
+      </h3>
+      <br />
+      <h3 class="text is-4">
+        Mamon is currently in beta, and is being tested by the E.S.R. Thêta staff. If you are a Thêta member and want to test
+        the client app, please
+        <a href="{% url 'login' %}" style="color: blue"> login with your E.S.R. Thêta credentials </a> to create an account,
+        you should then be able to log into the client app.
+      </h3>
+      <br />
+      <h3 class="text is-4">
+        If you want to test the staff app, you need to request access to Gustavo Maduro-Vollmer to get a staff account.
+        Unfortunately, if you are not a E.S.R. Thêta member, you will not be able to test Mamon.
+      </h3>
+      <br />
+      <h3 class="text is-4">
+        Should you have any other questions please feel free to contact Gustavo Maduro-Vollmer
+        <a href="mailto:dev.gam.vollmer@gmail.com" style="color: blue"> here</a>.
+      </h3>
+    </div>
+  </div>
+  <div class="columns is-centered">
+    <div class="column">
+      <a
+        href="https://play.google.com/store/apps/details?id=com.gusmadvol.mamongus&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"
+        ><img
+          style="height: 100px"
+          alt="Get it on Google Play"
+          src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+      /></a>
+    </div>
+    <div class="column"></div>
+    <div class="column">
+      {% comment %} <a href="" style="margin-left: 40px"
+        ><img
+          src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1671580800"
+          alt="Download on the App Store"
+          style="border-radius: 13px; height: 70px; margin-top: 15px"
+      /></a> {% endcomment %}
+    </div>
+  </div>
+</div>
+
+{% endblock content %} {% block footer %}
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <strong>Mamon</strong> by Gustavo Maduro-Vollmer and the WWWcie.
+      <br />
+      &#169; 2022-2023 Gustavo Maduro-Vollmer and the WWWcie.
+    </p>
+  </div>
+</footer>
+{% endblock footer %}

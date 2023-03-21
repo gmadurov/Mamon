@@ -25,6 +25,10 @@ from core.settings import mollie_client
 """This page is for what the users see it is personal info"""
 
 
+def landing(reqeust):
+    return render(reqeust, "users/landing.html")
+
+
 @login_required(login_url="login")
 def home(request):
     user = Holder.objects.get(user=request.user)

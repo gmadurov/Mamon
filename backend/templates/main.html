@@ -34,6 +34,15 @@
 
     <div class="columns is-mobile is-centered" style="">{% block content %} {% endblock content %}</div>
   </body>
+  {% block footer %}
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        &#169; 2022-2023 G.A.M.V. & WWWcie.
+      </p>
+    </div>
+  </footer>
+  {% endblock footer %}
   <script>
     function removeMessage(button) {
       {% comment %} this deletes the messages from the page {% endcomment %}
