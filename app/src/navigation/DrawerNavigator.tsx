@@ -24,33 +24,22 @@ const DrawerNavigator = () => {
   const { logoutFunc, users, baseUrl, setBaseUrl } = useContext(AuthContext);
   const { setEnabled, supported, NFCreading } = useContext(NFCContext);
   let updateURL: string;
-  useEffect(() => {
-    const getUpdateURL = async () => {
-      const { data } = await ApiRequest<{ variable?: string }>("/api/environment/open_update_url/");
-      updateURL = data.variable || "";
-    };
-    getUpdateURL();
-  }, []);
+  // useEffect(() => {
+  //   const getUpdateURL = async () => {
+  //     const { data } = await ApiRequest<{ variable?: string }>("/api/environment/open_update_url/");
+  //     updateURL = data.variable || "";
+  //   };
+  //   getUpdateURL();
+  // }, []);
   return (
     <Drawer.Navigator
-      initialRouteName="WalletUpgrateScreen"
+      // initialRouteName="ReportScreen"
       // screenOptions={{  headerStyle: { backgroundColor: "#351401" },//   headerTintColor: "white",//   sceneContainerStyle: { backgroundColor: "#3f2f25" },//   drawerContentStyle: { backgroundColor: "#351401" },//   drawerInactiveTintColor: "white",//   drawerActiveTintColor: "#351401",    //   drawerActiveBackgroundColor: "#e4baa1",// }}
       drawerContent={(props) => {
         return (
           <DrawerContentScrollView {...props}>
             <DrawerItemList {...props} />
-            <DrawerItem
-              label={baseUrl}
-              onPress={() => {
-                if (baseUrl === "https://mamon.esrtheta.nl") {
-                  setBaseUrl("https://staging-mamon.esrtheta.nl");
-                } else if (baseUrl === "https://staging-mamon.esrtheta.nl") {
-                  setBaseUrl("https://mamon.esrtheta.nl");
-                }
-              }}
-            />
             {supported && <DrawerItem label="_Disabled NFC" onPress={() => setEnabled((nu) => !nu)} />}
-            <DrawerItem label="Check Update" onPress={async () => await Linking.openURL(updateURL)} />
             <DrawerItem label="Toggle Side by Side" onPress={() => setSideBySide((nu) => !nu)} />
             <DrawerItem label="Toggle Bottom Search" onPress={() => setEnableBottomSearch((nu) => !nu)} />
             <DrawerItem label="Uitlogen" onPress={async () => await logoutFunc()} />
@@ -86,11 +75,11 @@ const DrawerNavigator = () => {
         name="WalletUpgrateScreen"
         component={WalletUpgrateScreen}
         options={{
-          title: "Wallet opwaderen ",
+          title: "Wallet opwarderen",
           // backgroundColor: GlobalStyles.colors.primary1,
         }}
       />
-      {users.some((user) => user?.roles.includes("Tapper") || user?.roles.includes("Linker")) && (
+      { (
         // supported &&
         <Drawer.Screen
           name="LinkCardScreen"

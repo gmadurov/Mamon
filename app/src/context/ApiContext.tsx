@@ -8,26 +8,6 @@ import dayjs from "dayjs";
 import jwt_decode from "jwt-decode";
 import { showMessage } from "react-native-flash-message";
 
-/**### use this instead of fetch
- * user: user, type
- * {"token_type": string,"exp": unix date,"iat": unix date,"jti": string,"user_id": Int,"name": string,"roles": [ ],"user_id": Int}
- *
- * ApiRequest: ApiRequest,
- * ### use this instead of fetch
- * @params {url: string , config : object}
- * @returns \{ res, data \}
- *
- * ApiFileRequest: ApiFileRequest,
- * ### use this instead of fetch for files
- * @params {url: string , config : object}
- * @returns \{ res, data \}
- *
- * refreshToken: refreshToken
- * use this to refresh tockens
- * */
-
-// recreate file in typscript
-
 export type ApiContextType = {
   user: User | null;
   users: User[];
@@ -45,7 +25,7 @@ export type ApiContextType = {
       [key: string]: any;
     }
   ): Promise<{ res: Response; data: TResponse }>;
-  refreshToken: (authTokens: AuthToken) => Promise<boolean>;
+  refreshToken: (authTokens: AuthToken|string, card?: string) => Promise<boolean>;
   refreshTokenUsers(authTokens: AuthToken[]): Promise<void>;
   baseUrl: string;
 };
@@ -68,35 +48,37 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthTokenUsers,
     originalRequest,
     baseUrl,
+    storeUsers
   } = useContext(AuthContext);
 
   /** makes the original request called but with the Bearer set and to the correct location */
 
   /** gets the refresh token and update the local state and local storage */
-  async function refreshToken(authToken: AuthToken): Promise<boolean> {
+  async function refreshToken(authToken: AuthToken, card?: string): Promise<boolean> {
+    if (typeof authToken === "string"){
+      authToken = JSON.parse(authToken)
+    }
     const controller = new AbortController();
     const { signal } = controller;
-    const { res, data } = await originalRequest<AuthToken>(`/api/users/token/refresh/`, {
+    const { res, data } = await originalRequest<AuthToken>(`/api/login/refresh/`, {
       signal,
       method: "POST",
       headers: { Accept: "*/*", "Content-Type": "application/json" },
       body: JSON.stringify({
-        refresh: authToken?.refresh,
+        refresh: authToken.refresh,
       }),
     });
-    setTimeout(() => controller.abort(), 2000);
+    // setTimeout(() => controller.abort(), 2000);
     if (res?.status === 200) {
-      setAuthTokens(data); // if cycling refresh tokens
-      setUser(jwt_decode(data?.access as string) as User);
-      await AsyncStorage.setItem("authTokens", JSON.stringify(data)); // if cycling refresh tokens
-      await AsyncStorage.setItem("user", JSON.stringify(data.access));
+      await storeUsers(data, card)
       return true;
     } else {
       // console.log(`Problem met de refresh token: ${res?.status}`);
       showMessage({
-        message: "Refresh token expired",
-        description: "Je hebt de app in te lang niet gebruikt, je woord uitgelogged",
-        type: "info",
+        message: "Login failed",
+        // @ts-ignore
+        description: data.detail,
+        type: "danger",
         floating: true,
         hideStatusBar: true,
         autoHide: true,
@@ -115,14 +97,14 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     // await AsyncStorage.clear()
     // console.log(await AsyncStorage.getAllKeys());
     authTokens.map(async (authToken, index) => {
-      const currentUser = jwt_decode(authToken?.access as string) as User;
-      if (currentUser.user_id in usersLocal.map((u) => u.user_id)) {
+      const currentUser = (authToken?.user);
+      if (currentUser.id in usersLocal.map((u) => u.id)) {
         return;
       }
       // console.log({ index, currentUser, type: typeof authToken });
       const controller = new AbortController();
       const { signal } = controller;
-      const { res, data } = await originalRequest<AuthToken>(`/api/users/token/refresh/`, {
+      const { res, data } = await originalRequest<AuthToken>(`/api/login/refresh/`, {
         signal,
         method: "POST",
         headers: { Accept: "*/*", "Content-Type": "application/json" },
@@ -131,22 +113,16 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       });
       setTimeout(() => controller.abort(), 2000);
-      let localUser = jwt_decode((data?.access as string) || "") as User;
+      let localUser = data?.user;
       if (res?.status === 200) {
         if (index === 0) {
           setAuthTokens(() => data);
           setUser(() => localUser);
         }
-        await AsyncStorage.removeItem("authToken" + localUser.user_id);
-        await AsyncStorage.setItem("authToken" + localUser.user_id, JSON.stringify(data));
-        !usersLocal.some((u) => u.user_id === localUser.user_id) && tokens.push(data);
-        !usersLocal.some((u) => u.user_id === localUser.user_id) && usersLocal.push(localUser);
-        // console.log(usersLocal, tokens);
-        // await AsyncStorage.setItem(
-        //   "authToken" + localUser.user_id,
-        //   JSON.stringify([...authTokenUsers, data])
-        // );
-        // await AsyncStorage.setItem("authToken", JSON.stringify(tokens));
+        await AsyncStorage.removeItem("authToken" + localUser.id);
+        await AsyncStorage.setItem("authToken" + localUser.id, JSON.stringify(data));
+        !usersLocal.some((u) => u.id === localUser.id) && tokens.push(data);
+        !usersLocal.some((u) => u.id === localUser.id) && usersLocal.push(localUser);
         setAuthTokenUsers(() => [...tokens]);
         setUsers(() => [...usersLocal]);
         showMessage({
@@ -206,11 +182,11 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       headers?: { [key: string]: any; "Content-Type": string };
       [key: string]: any;
     } = {
-      headers: {
-        Authorization: `Bearer ${authTokens?.access}`,
-        "Content-Type": "application/json",
-      },
-    }
+        headers: {
+          Authorization: `Bearer ${authTokens?.access}`,
+          "Content-Type": "application/json",
+        },
+      }
   ) {
     await checkTokens();
     if (!config.headers?.["Content-Type"]) {
@@ -242,16 +218,16 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     url: string,
     config:
       | {
-          headers?: { [key: string]: any; "Content-Type": "application/json" };
+        headers?: { [key: string]: any; "Content-Type": "application/json" };
 
-          [key: string]: any;
-        }
+        [key: string]: any;
+      }
       | undefined = {
-      headers: {
-        Authorization: `Bearer ${authTokens?.access}`,
-        "Content-Type": "application/json",
-      },
-    }
+        headers: {
+          Authorization: `Bearer ${authTokens?.access}`,
+          "Content-Type": "application/json",
+        },
+      }
   ): Promise<{ res: Response; data: TResponse }> {
     await checkTokens();
     if (users.length > 0) {

@@ -31,18 +31,18 @@ export const ProductProvider = ({
   );
   async function GET() {
     setProducts([] as Product[]);
-    const { data } = await ApiRequest<Product[]>("/api/product/");
+    const { data } = await ApiRequest<Product[]>("/api/products/");
     setProducts(data);
   }
   async function POST(product: Product) {
-    const { data } = await ApiRequest<Product>("/api/product/", {
+    const { data } = await ApiRequest<Product>("/api/products/", {
       method: "POST",
       body: JSON.stringify(product),
     });
     setProducts(() => [...products, data]);
   }
   async function PUT(product: Product) {
-    const { data } = await ApiRequest<Product>(`/api/product/${product.id}`, {
+    const { data } = await ApiRequest<Product>(`/api/products/${product.id}`, {
       method: "PUT",
       body: JSON.stringify(product),
     });
@@ -62,7 +62,7 @@ export const ProductProvider = ({
     });
   }
   async function DELETE(product: Product) {
-    await ApiRequest<Product>(`/api/product/${product.id}`, {
+    await ApiRequest<Product>(`/api/products/${product.id}`, {
       method: "DELETE",
     });
     setProducts(() =>
@@ -75,7 +75,7 @@ export const ProductProvider = ({
   useEffect(() => {
     if (selectedCategory.length > 0) {
       setSelectedProducts(
-        selectedCategory.map((category) => category.products).flat()
+        selectedCategory.map((category) => category?.products).flat()
       );
     } else {
       setSelectedProducts(products);

@@ -16,6 +16,8 @@ type FullContextType = {
   setBottomSearch: React.Dispatch<React.SetStateAction<boolean>>;
   enableBottomSearch: boolean;
   setEnableBottomSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  cashBottomSheet: boolean;
+  setCashBottomSheet: React.Dispatch<React.SetStateAction<boolean>>;
   choosePage: boolean;
 };
 
@@ -24,6 +26,7 @@ const FullContext = createContext<FullContextType>({} as FullContextType);
 export default FullContext;
 export const FullProvider = ({ children }: { children: React.ReactNode }) => {
   const [BottomSearch, setBottomSearch] = useState<boolean>(false);
+  const [cashBottomSheet, setCashBottomSheet] = useState<boolean>(false);
   const [enableBottomSearch, setEnableBottomSearch] = useState<boolean>(false);
   const [choosePage, setChoosePage] = useState(false);
   const data = {
@@ -32,6 +35,7 @@ export const FullProvider = ({ children }: { children: React.ReactNode }) => {
     enableBottomSearch,
     setEnableBottomSearch,
     choosePage,
+    cashBottomSheet, setCashBottomSheet
   };
   return (
     <FullContext.Provider value={data}>

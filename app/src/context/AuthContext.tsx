@@ -35,11 +35,11 @@ export type AuthContextType = {
   authTokenUsers: AuthToken[];
   setAuthTokens: React.Dispatch<React.SetStateAction<AuthToken>>;
   setUser: React.Dispatch<React.SetStateAction<User>>;
-  loginFunc: (username: string, password: string, setIsAuthenticating: any) => Promise<void>;
+  loginFunc: (username: string, password: string, setIsAuthenticating: any, card?: string) => Promise<void>;
   logoutFunc(user?: User): Promise<void>;
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setAuthTokenUsers: React.Dispatch<React.SetStateAction<AuthToken[]>>;
-  storeUsers(data: AuthToken): Promise<void>;
+  storeUsers(data: AuthToken, card?: string): Promise<void>;
   originalRequest<TResponse>(
     url: string,
     config: object
@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (baseUrl === "") {
         if (process.env.NODE_ENV === "development") {
           setBaseUrl("https://staging-mamon.esrtheta.nl");
+          // setBaseUrl("http://10.0.2.2:8000");
         } else if (process.env.NODE_ENV === "production") {
           setBaseUrl("https://mamon.esrtheta.nl");
         }
@@ -86,18 +87,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     wakeUp();
   }, [baseUrl]);
 
-  async function storeUsers(data: AuthToken) {
-    let localUser = jwt_decode((data?.access as string) || "") as User;
+  async function storeUsers(data: AuthToken, card?: string) {
+    let localUser = data?.user
     if (users.length < 1) {
       setAuthTokens(() => data);
       setUser(() => localUser);
     }
     setAuthTokenUsers(() => [...authTokenUsers, data]);
     setUsers(() => [...users, localUser]);
-    await AsyncStorage.setItem("authToken" + localUser.user_id, JSON.stringify(data));
+    await AsyncStorage.setItem("authToken" + localUser.id, JSON.stringify(data));
+    if (card) {
+      await AsyncStorage.setItem(card, JSON.stringify(data));
+    }
   }
 
-  async function loginFunc(username: string, password: string, setIsAuthenticating: any) {
+  async function loginFunc(username: string, password: string, setIsAuthenticating: any, card?: string) {
     let { res, data } = await originalRequest<AuthToken>(`/api/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -107,10 +111,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }),
     });
     if (res?.status === 200) {
-      storeUsers(data);
+      await storeUsers(data, card);
       // console.log(users);
       // await AsyncStorage.setItem("user", JSON.stringify(data.access));
-      // navigation.replace("ProductsPage");
     } else {
       showMessage({
         message: "Account info klopt niet",
@@ -131,20 +134,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         if (userOut) {
           // remove user from users
-          setUsers(() => users.filter((u) => u.user_id !== userOut.user_id));
+          setUsers(() => users.filter((u) => u.id !== userOut.id));
           setAuthTokenUsers(() =>
-            authTokenUsers.filter((u) => (jwt_decode((u?.access as string) || "") as User).user_id !== userOut.user_id)
+            authTokenUsers.filter((u) => (jwt_decode((u?.access as string) || "") as User).id !== userOut.id)
           );
-          if (user.user_id === userOut?.user_id) {
-            setUser(() => users.filter((u) => u.user_id !== userOut.user_id)[0] as User);
+          if (user.id === userOut?.id) {
+            setUser(() => users.filter((u) => u.id !== userOut.id)[0] as User);
             setAuthTokens(
               () =>
                 authTokenUsers.filter(
-                  (u) => (jwt_decode((u?.access as string) || "") as User).user_id !== userOut.user_id
+                  (u) => (jwt_decode((u?.access as string) || "") as User).id !== userOut.id
                 )[0] as AuthToken
             );
           }
-          await AsyncStorage.removeItem("authToken" + userOut.user_id);
+          await AsyncStorage.removeItem("authToken" + userOut.id);
         } else {
           setUser(() => ({} as User));
           setUsers(() => [] as User[]);

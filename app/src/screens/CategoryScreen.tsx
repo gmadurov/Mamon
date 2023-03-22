@@ -1,18 +1,16 @@
+import React, { useContext, useState } from "react";
 import {
-  FlatList,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from "react-native";
-import React, { useContext, useState } from "react";
 
-import Category from "../models/Category";
-import { Divider } from "react-native-paper";
+import { Divider, Switch } from "react-native-paper";
 import { GlobalStyles } from "../constants/styles";
 import SettingsContext from "../context/SettingsContext";
-import { Switch } from "react-native-paper";
+import Category from "../models/Category";
 
 const CategoryItem = ({ category }: { category: Category }) => {
   const { selectedCategory, setSelectedCategory } = useContext(SettingsContext);

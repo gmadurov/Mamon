@@ -40,7 +40,7 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
-      if (buyer?.stand > total && total > 0.5 && seller.user_id) {
+      if (buyer?.stand > total && total > 0.5 && seller.id) {
         setDisabled(!true);
       } else {
         setDisabled(!false);
@@ -53,26 +53,6 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
   if (buttons) {
     return (
       <View style={styles.view}>
-        {/* <TouchableRipple // was View
-          onPress={() => {
-            setCart([] as CartItems[]);
-            setBuyer({} as Holder);
-          }}
-          style={[{ backgroundColor: "red" }, styles.button]}
-        >
-          <Button
-            // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-            // style={styles.EmptyButton}
-            color="white"
-            onPress={() => {
-              setCart([] as CartItems[]);
-              setBuyer({} as Holder);
-            }}
-          >
-            Leegmaken
-          </Button>
-        </TouchableRipple> */}
-
         {disabled && (
           <>
             <TouchableRipple // was View
@@ -80,9 +60,12 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
                 buy("pin");
               }}
               style={[{ backgroundColor: "black" }, styles.button]}
+              disabled={!(seller.id && total > 0)}
             >
               <Button
-                color="white"
+                disabled={!(seller.id && total > 0)}
+                textColor={!(seller.id && total > 0) ? 'grey' : "white"}
+                buttonColor={!(seller.id && total > 0) ? 'grey' : "black"}
                 onPress={() => {
                   buy("pin");
                 }}
@@ -92,7 +75,7 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
             </TouchableRipple>
           </>
         )}
-        {buyer.id && seller.user_id && total > 0 && (
+        {buyer.id && seller.id && total > 0 && (
           <TouchableRipple // was View
             onPress={() => {
               buy("balance");
@@ -104,7 +87,8 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
             ]}
           >
             <Button
-              color={GlobalStyles.colors.thetaBrown}
+              buttonColor={GlobalStyles.colors.thetaBrown}
+              textColor={'white'}
               disabled={disabled}
               onPress={() => {
                 buy("balance");
@@ -120,11 +104,13 @@ export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: bool
               onPress={() => {
                 buy("cash");
               }}
-              disabled={disabled}
+              disabled={!(seller.id && total > 0)}
               style={[{ backgroundColor: "green" }, styles.button]}
             >
               <Button
-                color="white"
+                textColor={'white'}
+
+                disabled={!(seller.id && total > 0)}
                 onPress={() => {
                   buy("cash");
                 }}

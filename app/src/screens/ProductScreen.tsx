@@ -1,26 +1,26 @@
-import BottomSheetHolders, { HolderChoice } from "../components/Cart/BottomSheetHolders";
-import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
-import NFCContext, { TagEventLocal } from "../context/NFCContext";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { Dimensions, FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import BottomSheetHolders, { HolderChoice } from "../components/Cart/BottomSheetHolders";
+import NFCContext, { TagEventLocal } from "../context/NFCContext";
 
-import ApiContext from "../context/ApiContext";
-import { Appbar } from "react-native-paper";
-import { Card } from "../models/Card";
-import Cart from "../components/Cart/Cart";
-import CartContext from "../context/CartContext";
 import { DrawerActions } from "@react-navigation/native";
-import FullContext from "../context/FullContext";
-import { GlobalStyles } from "../constants/styles";
-import Holder from "../models/Holder";
-import HolderContext from "../context/HolderContext";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import PersonelView from "../components/Cart/PersonelView";
-import ProductContext from "../context/ProductContext";
-import ProductTile from "../components/Product/ProductTile";
-import SettingsContext from "../context/SettingsContext";
-import User from "../models/Users";
 import { showMessage } from "react-native-flash-message";
+import { Appbar } from "react-native-paper";
+import Cart from "../components/Cart/Cart";
+import PersonelView from "../components/Cart/PersonelView";
+import ProductTile from "../components/Product/ProductTile";
+import { GlobalStyles } from "../constants/styles";
+import ApiContext from "../context/ApiContext";
+import CartContext from "../context/CartContext";
+import FullContext from "../context/FullContext";
+import HolderContext from "../context/HolderContext";
+import ProductContext from "../context/ProductContext";
+import SettingsContext from "../context/SettingsContext";
+import { Card } from "../models/Card";
+import Holder from "../models/Holder";
+import User from "../models/Users";
 
 const { width } = Dimensions.get("screen");
 type RootStackParamList = {
@@ -31,7 +31,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ProductScreen">;
 
 const ProductScreen = () => {
   const { GET, selectedProducts } = useContext(ProductContext);
-  const { GET: GET_HOLDER } = useContext(HolderContext);
+  const { GET: GET_HOLDER, holders } = useContext(HolderContext);
   const { GET_categories, sideBySide } = useContext(SettingsContext);
   const { ApiRequest } = useContext(ApiContext);
   const { cart, setBuyer, setSeller } = useContext(CartContext);
@@ -76,13 +76,13 @@ const ProductScreen = () => {
           duration: 500,
           position: "bottom",
         });
-        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}`);
+        const { res, data } = await ApiRequest<Card>(`/api/cards/${tag?.id}/`);
         if (res.status === 200) {
           // console.log(data);
           setBuyer({
-            ...data.holder,
-            value: data.holder.id,
-            label: data.holder?.name,
+            ...holders.find(hol=> hol.id === data.user.holder),
+            value: data.user.id,
+            label: data.user?.name,
           } as HolderChoice);
           setBottomSearch(false);
         } else {
