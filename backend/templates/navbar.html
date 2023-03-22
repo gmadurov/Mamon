@@ -22,7 +22,7 @@
           <a class="navbar-item" href="{% url 'products'%}"> Mijn Producten </a>
         </div>
       </div>
-      <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a>
+      {% comment %} <a class="navbar-item" href="{% url 'paymentUpgrade'%}"> Geld opwarderen </a> {% endcomment %}
       {% if request.user|has_group:'Bestuur' %}
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link"> Overzicht </a>
