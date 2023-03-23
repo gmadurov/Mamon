@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from users.models import Card, Holder, Personel, WalletUpgrades
-from purchase.models import HapOrder, HapPayment, Happen, Order, Product, Purchase, Category, Report
+from purchase.models import HapOrder, HapPayment, Happen, Purchase, Report
+from inventory.models import Category, Order, Product
 from django.contrib.auth.models import User
 
 
@@ -182,7 +183,7 @@ class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = "__all__"
-    
+
     def create(self, validated_data):
         if self.context.get("request").path == "/api/cards/":
             return super().create(dict(user=self.context.get("request").user, **validated_data))

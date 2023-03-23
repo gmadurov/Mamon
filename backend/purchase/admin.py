@@ -5,7 +5,7 @@ from django.db.models import Q
 from nonrelated_inlines.admin import NonrelatedTabularInline
 
 from .actions import set_to_close, set_to_open
-from .models import Barcycle, Category, HapOrder, HapPayment, Happen, Order, Product, Purchase, Report
+from .models import Barcycle, HapOrder, HapPayment, Happen, Purchase, Report
 
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -168,33 +168,6 @@ class BarcycleAdmin(SimpleHistoryAdmin):
         return False
 
 
-class CategoryAdmin(SimpleHistoryAdmin):
-    list_display = [
-        "name",
-        "description",
-    ]
-    filter_horizontal = ["products"]
-    # list_editable = ["description"]
-    list_filter = ["products"]
-    search_fields = ["name", "description", "products"]
-
-
-class ProductAdmin(SimpleHistoryAdmin):
-    list_display = ["name", "price", "image", "color", "active"]
-    # list_display = ['name', 'price', 'category', 'barcode']
-    list_editable = ["image", "color", "active"]
-    list_filter = ["cat_products"]
-    search_fields = ["name", "price", "id"]
-    add_readonly_fields = []
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj:
-            return self.readonly_fields + ("price", "id")
-        return self.readonly_fields
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
 
 class PurchaseAdmin(SimpleHistoryAdmin):
     list_display = [
@@ -282,9 +255,7 @@ class HapAdmin(SimpleHistoryAdmin):
 
 
 admin.site.register(Barcycle, BarcycleAdmin)
-admin.site.register(Category, CategoryAdmin)
 admin.site.register(Happen, HapAdmin)
-admin.site.register(Product, ProductAdmin)
 admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(Report, ReportAdmin)
 # admin.site.register(Order)  # do not enable

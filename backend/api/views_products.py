@@ -1,5 +1,5 @@
 from .views import DatabaseView
-from purchase.models import Category, Product
+from inventory.models import Category, Product
 
 from .serializers import CategorySerializer, ProductSerializer
 

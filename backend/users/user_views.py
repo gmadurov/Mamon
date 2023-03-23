@@ -1,20 +1,11 @@
-from datetime import datetime
-import json
-import os
-import pprint
 
-import requests
-from django.contrib import messages
-
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
-from django.views.decorators.csrf import csrf_exempt
 
 from django.db.models import Sum
 from django.urls import reverse
-from purchase.models import Order, Product, Purchase
+from inventory.models import Order, Product
+from purchase.models import  Purchase
 from purchase.utils import paginateObjects
 from .forms import MolliePaymentsForm
 

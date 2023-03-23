@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "users.apps.UsersConfig",
     "client.apps.ClientConfig",
+    "inventory.apps.InventoryConfig",
     "rest_framework",
     "corsheaders",
     "colorfield",
