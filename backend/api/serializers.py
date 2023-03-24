@@ -109,12 +109,51 @@ class PurchaseSerializer(serializers.ModelSerializer):
     buyer = HolderSerializer(read_only=True)
     seller = PersonelSerializer(read_only=True)
 
-    buyer = serializers.IntegerField(write_only=True)
+    buyer = serializers.IntegerField(write_only=True, required=False)
 
     def validate_buyer(self, value):
+        cash, pin = self.initial_data.get("cash"), self.initial_data.get("pin")
+        if value and (cash == True or pin == True):
+            raise serializers.ValidationError("Buyer can't be true if cash or pin is true")
+        if cash:
+            return Holder.objects.get(user=2)
+        if pin:
+            return Holder.objects.get(user=3)
         return Holder.objects.get(id=value)
 
+    def validate_cash(self, value):
+        buyer, pin = self.initial_data.get("buyer"), self.initial_data.get("pin")
+        if value == True and (buyer or pin):
+            raise serializers.ValidationError("Cash can't be true if buyer or pin is true")
+        return value
+
+    def validate_pin(self, value):
+        buyer, cash = self.initial_data.get("buyer"), self.initial_data.get("cash")
+        if value == True and (buyer or cash):
+            raise serializers.ValidationError("Pin can't be true if buyer or cash is true")
+        return value
+
+    def validate(self, value):
+        cash, pin, balance, buyer = (
+            self.initial_data.get("cash"),
+            self.initial_data.get("pin"),
+            self.initial_data.get("balance"),
+            self.initial_data.get("buyer"),
+        )
+        if not buyer and not cash and not pin:
+            raise serializers.ValidationError("You need to select a buyer or cash or pin")
+        if cash and balance:
+            raise serializers.ValidationError("You can't select cash and balance")
+        if pin and balance:
+            raise serializers.ValidationError("You can't select pin and balance")
+        if not cash and not balance and not pin :
+            raise serializers.ValidationError('You have to choose either pin, cash or balance')
+        if buyer and not balance:
+            raise serializers.ValidationError("You have to select balance if you select a buyer")
+        return super().validate(value)
+
     def create(self, validated_data):
+        cash, pin = validated_data.get("cash"), validated_data.get("pin")
         orders = validated_data.pop("orders")
         purchase = Purchase.objects.create(seller=self.context.get("request").user.personel, **validated_data)
         for order in orders:

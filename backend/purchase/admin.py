@@ -171,15 +171,14 @@ class BarcycleAdmin(SimpleHistoryAdmin):
 
 class PurchaseAdmin(SimpleHistoryAdmin):
     list_display = [
-        "buyer",
+        "created",
         "total",
         "balance",
-        "created",
         "seller",
     ]
     filter_horizontal = ["orders"]
-    list_filter = ["buyer", "balance"]
-    search_fields = ["buyer", "balance", "id"]
+    list_filter = ["balance"]
+    search_fields = ["balance", "id"]
     exclude = ("remaining_after_purchase",)
 
     def get_readonly_fields(self, request, obj=None):
