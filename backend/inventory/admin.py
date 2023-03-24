@@ -6,12 +6,24 @@ from simple_history.admin import SimpleHistoryAdmin
 from .models import Stock, StockMutations, Product, Category
 
 
+class StockMutationsInline(admin.TabularInline):
+    model = StockMutations
+    extra = 0
+
+    def has_change_permission(self, request, obj):
+        return False
+
+    def has_delete_permission(self, request, obj):
+        return False
+
+
 @admin.register(Stock)
 class StockAdmin(SimpleHistoryAdmin):
-    list_display = ("name","quantity", "units", "description")
+    list_display = ("name", "quantity", "units", "description")
     list_filter = ("units",)
     search_fields = ("units", "description")
     ordering = ("units",)
+    inlines = [StockMutationsInline]
 
 
 @admin.register(StockMutations)
