@@ -9,7 +9,9 @@ from purchase.utils import paginateObjects
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Order, Product, Barcycle, Category, Purchase
+from .models import Order, Product,  Category
+from purchase.models import  Barcycle, Purchase
+# Create your views here.
 # Create your views here.
 @login_required(login_url="login")
 def showProducts(request):
