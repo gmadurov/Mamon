@@ -29,7 +29,7 @@ class Product(models.Model):
     # add image field without category field
     image: models.ImageField = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
     units: models.FloatField = models.FloatField(default=1)
-    master_stock = models.ForeignKey("Stock", null=True, blank=True, default=None, on_delete=models.SET_NULL)
+    master_stock: models.ForeignKey['Stock'] = models.ForeignKey("Stock", null=True, blank=True, default=None, on_delete=models.SET_NULL)
     history = HistoricalRecords()
 
     def __str__(self):

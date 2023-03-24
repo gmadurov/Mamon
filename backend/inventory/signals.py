@@ -1,19 +1,20 @@
-from django.db.models.signals import post_delete, post_save
-from inventory.models import StockMutations
+from django.db.models.signals import post_delete, post_save, m2m_changed
+from inventory.models import StockMutations, Order
 
 from users.models import Holder
 from purchase.models import Purchase
 
 
-def updateStock(sender, instance, created, **kwargs):
+def updateStock(sender, instance: Purchase, **kwargs):
     purchase = instance
-    if created:
-        for order in purchase.orders.all():
-            order.product.stock -= order.quantity
-            order.product.save()
+    order: Order
+    for order in purchase.orders.all():
+        order.product.master_stock.quantity -= order.quantity * order.product.units
+        order.product.master_stock.save()
 
 
-post_save.connect(updateStock, sender=Purchase)
+# post_save.connect(updateStock, sender=Purchase)
+m2m_changed.connect(updateStock, sender=Purchase.orders.through)
 
 
 def updateStock_from_mutation(sender, instance, created, **kwargs):
@@ -21,5 +22,6 @@ def updateStock_from_mutation(sender, instance, created, **kwargs):
         stock = instance.stock
         stock.quantity += instance.quantity
         stock.save()
+
 
 post_save.connect(updateStock_from_mutation, sender=StockMutations)

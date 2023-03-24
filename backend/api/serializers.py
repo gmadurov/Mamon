@@ -146,19 +146,16 @@ class PurchaseSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You can't select cash and balance")
         if pin and balance:
             raise serializers.ValidationError("You can't select pin and balance")
-        if not cash and not balance and not pin :
-            raise serializers.ValidationError('You have to choose either pin, cash or balance')
+        if not cash and not balance and not pin:
+            raise serializers.ValidationError("You have to choose either pin, cash or balance")
         if buyer and not balance:
             raise serializers.ValidationError("You have to select balance if you select a buyer")
         return super().validate(value)
 
     def create(self, validated_data):
-        cash, pin = validated_data.get("cash"), validated_data.get("pin")
         orders = validated_data.pop("orders")
         purchase = Purchase.objects.create(seller=self.context.get("request").user.personel, **validated_data)
-        for order in orders:
-            order, created = Order.objects.get_or_create(quantity=order.get("quantity"), product=order.get("product"))
-            purchase.orders.add(order)
+        purchase.orders.set([Order.objects.get_or_create(quantity=order.get("quantity"), product=order.get("product"))[0] for order in orders])
         return purchase
 
     orders = OrderSerializer(many=True)

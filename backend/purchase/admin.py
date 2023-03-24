@@ -168,7 +168,6 @@ class BarcycleAdmin(SimpleHistoryAdmin):
         return False
 
 
-
 class PurchaseAdmin(SimpleHistoryAdmin):
     list_display = [
         "created",
@@ -185,6 +184,9 @@ class PurchaseAdmin(SimpleHistoryAdmin):
         if obj:
             return self.readonly_fields + ("orders", "seller", "buyer")
         return self.readonly_fields
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
     def has_delete_permission(self, request, obj=None):
         return False
