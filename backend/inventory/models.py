@@ -30,6 +30,7 @@ class Product(models.Model):
     image: models.ImageField = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
     units: models.FloatField = models.FloatField(default=1)
     master_stock: models.ForeignKey['Stock'] = models.ForeignKey("Stock", null=True, blank=True, default=None, on_delete=models.SET_NULL)
+    grootboek_waarde: models.TextField = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -79,6 +80,7 @@ class Stock(models.Model):
     quantity: int = models.FloatField()
     units: models.CharField = models.CharField(choices=UNITS, max_length=10, default="units")
     description: str = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Stock of {self.name}, {self.quantity} {self.units}"
@@ -93,6 +95,7 @@ class StockMutations(models.Model):
     comment: str = models.TextField(blank=True, null=True)
     date: models.DateTimeField = models.DateTimeField(auto_now_add=True)
     cost: float = models.FloatField(blank=True, null=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Mutation of {self.stock.name}, {self.quantity} {self.units} "
