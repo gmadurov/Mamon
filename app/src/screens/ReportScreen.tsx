@@ -255,7 +255,7 @@ const ReportScreen = ({ navigation }: Props) => {
           value={report.total_cash ? report.total_cash.toString() : ""}
           keyboardType="numeric"
           onChangeText={(text) =>
-            setReport({ ...report, total_cash: Number(text) })
+            setReport({ ...report, total_cash: parseFloat(text) })
           }
           right={<TextInput.Icon icon="cash" onPress={() => {
             setCashBottomSheet(nu => !nu)

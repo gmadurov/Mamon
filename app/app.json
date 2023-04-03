@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mamon",
     "slug": "mamon-gus",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "owner": "gusmadvol",
     "icon": "./src/assets/pwa-icons/manifest-icon-512.png",
     "userInterfaceStyle": "light",
@@ -31,7 +31,8 @@
       "package": "com.gusmadvol.mamongus",
       "permissions": [
         "android.permission.NFC"
-      ]
+      ],
+      "versionCode": 2
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
