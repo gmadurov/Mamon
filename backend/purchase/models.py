@@ -1,64 +1,27 @@
 import datetime
-from operator import mod
 
 # from re import U
 # import uuid
 from django.db import models
-from colorfield.fields import ColorField
-from django.db.models import Q
+from inventory.models import Order
 
 from users.models import Holder, Personel
 import pytz
 from simple_history.models import HistoricalRecords
-
 
 # Create your models here.
 
 utc = pytz.UTC
 
 
-class Product(models.Model):
-    name: models.CharField | str = models.CharField(max_length=20, unique=True)
-    price: models.FloatField = models.FloatField(default=0)
-    color: ColorField = ColorField(default="#ffdd00")
-    active: models.BooleanField = models.BooleanField(default=True)
-    # add image field without category field
-    image: models.ImageField = models.ImageField(upload_to="products/", null=True, blank=True, default="products/default.png")
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return str(self.name) + ", €" + str(self.price)
-
-    class Meta:
-        verbose_name_plural = "Producten"
-        ordering = ["name"]
-
-
-class Category(models.Model):
-
-    name = models.CharField(max_length=20)
-    description = models.TextField(null=True, blank=True)
-    products = models.ManyToManyField(
-        Product,
-        related_name="cat_products",
-        blank=True,
-    )
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return str(self.name)
-
-    class Meta:
-        verbose_name_plural = "Categories"
-
-
 class Purchase(models.Model):
+    id: int
     buyer = models.ForeignKey(Holder, on_delete=models.SET(Holder), related_name="purchases")
     seller = models.ForeignKey(Personel, on_delete=models.SET(Personel), related_name="sold")
     balance = models.BooleanField(default=False)
     cash = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
-    orders = models.ManyToManyField("Order", related_name="ordered")
+    orders = models.ManyToManyField(Order, related_name="ordered")
 
     created = models.DateTimeField(auto_now_add=True)
     remaining_after_purchase = models.FloatField(default=0)
@@ -74,22 +37,28 @@ class Purchase(models.Model):
     class Meta:
         ordering = ["-created"]
 
+    def save(self, *args, **kwargs):
+        if self.created and self.balance:
+            id = self.buyer.id
+            holder = Holder.objects.get(id=id)
+            # id = self.buyer.id
+            # holder = Holder.objects.get(id=id)
+            print(1, holder.stand)
+            holder.stand -= round(
+                sum([item.quantity * item.product.price for item in self.orders.all()]),
+                3,
+            )
+            if holder.stand > 0:
+                holder.save()
+                print(2,holder.stand)
+            else:
+                raise ("not enought money")
+        super().save(*args, **kwargs)
 
-class Order(models.Model):
-    # purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return str(self.quantity) + " " + str(self.product)
-
-    @property
-    def cost(self):
-        return self.quantity * self.product.price
 
 
 class Report(models.Model):
+    id: int
     # bar_cycle = models.ForeignKey("Barcycle", verbose_name=("bar cycle"), on_delete=models.CASCADE)
     ACTIONS = (
         ("Open", "Open"),
@@ -114,6 +83,7 @@ class Report(models.Model):
 
 
 class Barcycle(models.Model):
+    id: int
     opening_report = models.OneToOneField(
         Report,
         verbose_name=("opening_report"),
@@ -175,6 +145,7 @@ class Barcycle(models.Model):
 class Happen(models.Model):
     """date title description opening_date closing_date cost max_participants participants deducted_from"""
 
+    id: int
     date = models.DateTimeField()
     title = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
@@ -213,6 +184,7 @@ class Happen(models.Model):
 
 
 class HapOrder(models.Model):
+    id: int
     happen = models.ForeignKey(Happen, on_delete=models.CASCADE)
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
     # how many are to be deducted from the holder
@@ -229,6 +201,7 @@ class HapOrder(models.Model):
 
 
 class HapPayment(models.Model):
+    id: int
     happen = models.ForeignKey(Happen, on_delete=models.CASCADE)
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
     # how many were deducted from the holder

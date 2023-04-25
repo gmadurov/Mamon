@@ -1,12 +1,7 @@
 from django import forms
 
-from purchase.models import  Purchase
-from inventory.models import Category, Order, Product
+from purchase.models import Category, Purchase, Order, Product
 from django.contrib.admin.widgets import FilteredSelectMultiple
-
-
-class PurchaseForm(forms.Form):
-    purchases = forms.ModelChoiceField(queryset=Purchase.objects.all())
 
 
 class ProductForm(forms.ModelForm):
@@ -37,20 +32,3 @@ class ProductForm(forms.ModelForm):
         instance = getattr(self, "instance", None)
         if instance and instance.pk:
             self.fields["price"].widget.attrs["readonly"] = True
-
-# class CategoryForm(forms.ModelForm):
-#     products = forms.ModelMultipleChoiceField(
-#         queryset=Product.objects.all(),
-#         widget=FilteredSelectMultiple('Products', is_stacked=False),
-#         required=False
-#     )
-
-#     class Meta:
-#         model = Category
-#         fields = ('name', 'description', 'products')
-#         css = {
-#             'all':['admin/css/widgets.css',
-#                    'css/uid-manage-form.css'],
-#         }
-#         # Adding this javascript is crucial
-#         js = ['/admin/jsi18n/']
