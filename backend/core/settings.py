@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 from mollie.api.client import Client
-from .utils.utils import init_DB
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -115,7 +115,9 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 if os.environ.get("DATABASE_URL"):
     # start
-    host, port, name, user, password = init_DB(os.environ.get("DATABASE_URL"))
+    splitted_url = urlparse(os.environ.get("DATABASE_URL"))
+    name, (user, extra, port) = splitted_url.path[1:], splitted_url.netloc.split(":")
+    password, host = extra.split("@")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",

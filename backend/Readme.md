@@ -194,14 +194,14 @@ This will run through the steps to deploy this to metis
 
 ### Cloudfare
 
-Log into cloudfare and add <app-name- to the list of subdomains are direct it towards metis
+Log into cloudfare and add frontend to the list of subdomains are direct it towards metis
 
 ### Locally
 
 Add remote to git repo
 
 ```
-git remote add metis metis:<app-name-
+git remote add metis metis:frontend
 ```
 
 Then we will have to do a couple of steps on the server before we can push the backend, but when we do this is the comman
@@ -217,39 +217,39 @@ First, we need to ssh into the server. (You should know how to do this, if you d
 We have to create the app and the databases it needs.
 
 ```
- dokku apps:create <app-name-
- dokku postgres:create <app-name- -db -I 14
- dokku postgres:link <app-name- -db <app-name-  --no-restart
+ dokku apps:create frontend
+ dokku postgres:create frontend-db -I 14
+ dokku postgres:link frontend-db frontend  --no-restart
 ```
 
 Then we have to set a couple of things before the app is ready for deployment. First we set up the domain that the app has to respond to, then add the enviroment variables. Mamon requires the following environment variables: DATABASE_URL, DEBUG, JWT_KEY, LEDENBASE_TOKEN, LEDENBASE_URL, MOLLIE_API_KEY, SECRET_KEY. Then we create a folder to save everything that the app needs to save, we encrypt the website(allows https instead of http)
 
 ```
-dokku domains:add <app-name-  "<app-name- .esrtheta.nl"
-dokku config:set <app-name-  <key- =<value-  --no-restart
+dokku domains:add frontend  "frontend .esrtheta.nl"
+dokku config:set frontend  <key- =<value-  --no-restart
 # or
-dokku config:set <app-name-  <key- =<value-  <key- =<value- .... --no-restart
-mkdir /home/<app-name-
-dokku letsencrypt:enable <app-name-
+dokku config:set frontend  <key- =<value-  <key- =<value- .... --no-restart
+mkdir /home/frontend
+dokku letsencrypt:enable frontend
 ```
 
 We are releasing the app with docker so we need to enable a couple of things for the app to be able to serve static files and for the app to be deployed with Docker instead of the default buildpack way.
 
 ```
-dokku docker-options:add <app-name-  deploy "-v /home/<app-name- /database:/code/backend/database"
-dokku docker-options:add <app-name-  deploy "-v /home/<app-name- /staticfiles:/code/backend/staticfiles"
-dokku docker-options:add <app-name-  deploy "-v /home/<app-name- /mediafiles:/code/backend/mediafiles"
-dokku docker-options:add <app-name-  run "-v /home/<app-name- /database:/code/backend/database"
-dokku docker-options:add <app-name-  run "-v /home/<app-name- /staticfiles:/code/backend/staticfiles"
-dokku docker-options:add <app-name-  run "-v /home/<app-name- /mediafiles:/code/backend/mediafiles"
-dokku config:unset <app-name-  DOKKU_PROXY_PORT_MAP --no-restart
-dokku builder-dockerfile:set <app-name-  dockerfile-path backend/Dockerfile
+dokku docker-options:add frontend  deploy "-v /home/frontend /database:/code/backend/database"
+dokku docker-options:add frontend  deploy "-v /home/frontend /staticfiles:/code/backend/staticfiles"
+dokku docker-options:add frontend  deploy "-v /home/frontend /mediafiles:/code/backend/mediafiles"
+dokku docker-options:add frontend  run "-v /home/frontend /database:/code/backend/database"
+dokku docker-options:add frontend  run "-v /home/frontend /staticfiles:/code/backend/staticfiles"
+dokku docker-options:add frontend  run "-v /home/frontend /mediafiles:/code/backend/mediafiles"
+dokku config:unset frontend  DOKKU_PROXY_PORT_MAP --no-restart
+dokku builder-dockerfile:set frontend  dockerfile-path backend/Dockerfile
 ```
 
 We push the application from our computer using the command I specified earlier and once that is done we migrate the application to make sure it is able to comunicate with the backend(this command is only for django)
 
 ```
-dokku run <app-name-  python backend/manage.py migrate --noinput
+dokku run frontend  python backend/manage.py migrate --noinput
 ```
 
 Once the app has been deployed to the server you can deploy it using GitLab's CI/CD
