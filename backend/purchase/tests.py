@@ -1,13 +1,13 @@
 from time import sleep
 import unittest
-from users.tests import BaseCase
+from inventory.tests import InventoryBaseTest
 from inventory.models import Order, Product
 from .models import Purchase
 
 # Create your tests here.
 
 
-class PurchaseTest(BaseCase):
+class PurchaseTest(InventoryBaseTest):
     def setUp(self):
         super().setUp()
         # add standen to holders
@@ -17,13 +17,6 @@ class PurchaseTest(BaseCase):
         self.holder_2.save()
         self.holder_3.stand = 1000
         self.holder_3.save()
-
-        # creating products
-        self.product_1 = Product.objects.create(name="product_1", price=1.00)
-        self.product_2 = Product.objects.create(name="product_2", price=2.00)
-        self.product_3 = Product.objects.create(name="product_3", price=3.00)
-        self.product_40 = Product.objects.create(name="product_40", price=40.00)
-        self.product_50 = Product.objects.create(name="product_50", price=50.00)
 
         # creating orders
         self.order_prod_1 = Order.objects.create(product=self.product_1, quantity=3)

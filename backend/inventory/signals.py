@@ -8,9 +8,11 @@ from purchase.models import Purchase
 def updateStock(sender, instance: Purchase, **kwargs):
     purchase = instance
     order: Order
+    
     for order in purchase.orders.all():
-        order.product.master_stock.quantity -= order.quantity * order.product.units
-        order.product.master_stock.save()
+        if order.product.master_stock:
+            order.product.master_stock.quantity -= order.quantity * order.product.units
+            order.product.master_stock.save()
 
 
 # post_save.connect(updateStock, sender=Purchase)
