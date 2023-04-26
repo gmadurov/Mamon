@@ -48,6 +48,12 @@ stages:
 tests:
   stage: test
   image: tiangolo/docker-with-compose
+  services:
+    # docker in docker is added as a service to step
+    - docker:20-dind
+  tags:
+    # can only run on runners with docker in docker correctly configured
+    - dind
   script:
     # the docker compose image provides the docker-compose tool
     - docker-compose run web python manage.py test
