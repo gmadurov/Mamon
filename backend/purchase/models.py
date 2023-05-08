@@ -4,6 +4,7 @@ import datetime
 # import uuid
 from django.db import models
 from inventory.models import Order
+from django.db.models import Count
 
 from users.models import Holder, Personel
 import pytz
@@ -23,12 +24,23 @@ class Purchase(models.Model):
     pin = models.BooleanField(default=False)
     orders = models.ManyToManyField(Order, related_name="ordered")
 
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField()
     remaining_after_purchase = models.FloatField(default=0)
     history = HistoricalRecords()
 
-    def __str__(self):
-        return str("Total:") + " €" + str(sum([item.quantity * item.product.price for item in self.orders.all()]))
+    # def __str__(self):
+    #     return str("Total:") + " €" + str(sum([item.quantity * item.product.price for item in self.orders.all()]))
+
+    @property
+    def payment_method(self):
+        if self.cash:
+            return "Cash"
+        elif self.pin:
+            return "Pin"
+        elif self.balance:
+            return "Wallet"
+        else:
+            return "Unknown"
 
     @property
     def total(self):
@@ -37,24 +49,24 @@ class Purchase(models.Model):
     class Meta:
         ordering = ["-created"]
 
-    def save(self, *args, **kwargs):
-        if self.created and self.balance:
-            id = self.buyer.id
-            holder = Holder.objects.get(id=id)
-            # id = self.buyer.id
-            # holder = Holder.objects.get(id=id)
-            print(1, holder.stand)
-            holder.stand -= round(
-                sum([item.quantity * item.product.price for item in self.orders.all()]),
-                3,
-            )
-            if holder.stand > 0:
-                holder.save()
-                print(2,holder.stand)
-            else:
-                raise ("not enought money")
-        super().save(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        # if self.created and self.balance:
+        #     id = self.buyer.id
+        #     holder = Holder.objects.get(id=id)
+        #     # id = self.buyer.id
+        #     # holder = Holder.objects.get(id=id)
+        #     print(1, holder.stand)
+        #     holder.stand -= round(
+        #         sum([item.quantity * item.product.price for item in self.orders.all()]),
+        #         3,
+        #     )
+        #     if holder.stand > 0:
+        #         holder.save()
+        #         print(2,holder.stand)
+        #     else:
+        #         raise ("not enought money")
+        super().save(*args, **kwargs)
 
 
 class Report(models.Model):

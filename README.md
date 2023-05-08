@@ -69,3 +69,10 @@ pipfile.lock: do not touch, specification of used packages in the project.
 
 
 ## Plan for implementation 
+
+
+Log in with card 
+niewew bar cycle spelling
+
+
+Find out how you can let someone make users but not change their permissions

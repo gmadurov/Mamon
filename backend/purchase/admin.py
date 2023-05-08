@@ -3,6 +3,9 @@ from datetime import datetime
 from django.contrib import admin
 from django.db.models import Q
 from nonrelated_inlines.admin import NonrelatedTabularInline
+from django.contrib.admin import DateFieldListFilter
+
+from common.export_functions import purchase_export_excel
 
 from .actions import set_to_close, set_to_open
 from .models import Barcycle, HapOrder, HapPayment, Happen, Purchase, Report
@@ -176,9 +179,15 @@ class PurchaseAdmin(SimpleHistoryAdmin):
         "seller",
     ]
     filter_horizontal = ["orders"]
-    list_filter = ["balance"]
-    search_fields = ["balance", "id"]
+    list_filter = [
+        "balance",
+        "cash",
+        "pin",
+        ("created", DateFieldListFilter),
+    ]
+    search_fields = ["balance", "id", "created"]
     exclude = ("remaining_after_purchase",)
+    actions = [purchase_export_excel]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

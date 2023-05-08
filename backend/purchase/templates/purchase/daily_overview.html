@@ -36,6 +36,22 @@
             {% endif %}Per Maand
           </label>
         </div>
+        <div class="control">
+          <label class="radio">
+            {% if unit_mode == 'days' %}<input type="radio" name="unit_mode" checked value="days" /> {% else %}<input
+              type="radio"
+              name="unit_mode"
+              checked
+              value="euro"
+            />
+            {% endif %}€ Euros
+          </label>
+          <label class="radio">
+            {% if unit_mode == 'months' %}<input type="radio" name="unit_mode" checked value="months" />{% else %}
+            <input type="radio" name="unit_mode" value="quantity" />
+            {% endif %}Quantity
+          </label>
+        </div>
         <input class="button is-success" type="submit" value="Submit" style="align: right" />
       </div>
     </form>

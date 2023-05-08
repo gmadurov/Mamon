@@ -48,7 +48,7 @@ class Holder(models.Model):
 class Personel(models.Model):
     id: int
     user: User = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname: str = models.CharField(max_length=15)
+    nickname: str = models.CharField(max_length=30)
     image: models.ImageField = models.ImageField(
         upload_to="personel/",
         null=True,

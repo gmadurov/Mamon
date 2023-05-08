@@ -19,3 +19,4 @@ class InventoryBaseTest(BaseCase):
         self.product_3 = Product.objects.create(name="product_3", price=3.00, master_stock=self.master_stock_bottles, units=1)
         self.product_40 = Product.objects.create(name="product_40", price=40.00, master_stock=self.master_stock_liters, units=1)
         self.product_50 = Product.objects.create(name="product_50", price=50.00, master_stock=self.master_stock_units, units=1)
+

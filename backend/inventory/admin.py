@@ -1,4 +1,6 @@
+from typing import Any, List, Optional, Tuple, Union
 from django.contrib import admin
+from django.http.request import HttpRequest
 
 # Register your models here.
 from simple_history.admin import SimpleHistoryAdmin
@@ -17,14 +19,31 @@ class StockMutationsInline(admin.TabularInline):
         return False
 
 
+class ProductInline(admin.TabularInline):
+    model = Product
+    extra = 0
+
+    def has_add_permission(self, request, obj):
+        return False
+    def has_change_permission(self, request, obj):
+        return False
+
+    def has_delete_permission(self, request, obj):
+        return False
+
+
 @admin.register(Stock)
 class StockAdmin(SimpleHistoryAdmin):
     list_display = ("name", "quantity", "units", "description")
     list_filter = ("units",)
     search_fields = ("units", "description")
     ordering = ("units",)
-    inlines = [StockMutationsInline]
+    inlines = [ProductInline, StockMutationsInline]
 
+    def get_readonly_fields(self, request: HttpRequest, obj: Any | None = ...) -> List[str] | Tuple[Any, ...]:
+        if obj:
+            return self.readonly_fields + ("units", "quantity")
+        return super().get_readonly_fields(request, obj)
 
 @admin.register(StockMutations)
 class StockMutationsAdmin(SimpleHistoryAdmin):
