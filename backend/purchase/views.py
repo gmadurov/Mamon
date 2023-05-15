@@ -197,10 +197,11 @@ def dailyOverview(request):
         created__gte=start_date,
         created__lte=end_date,
     )
-    products: list[Product]
-    products: list[Product] = (
-        [prod.product for pur in purchases for prod in pur.orders.all()] if category == 0 else categories.get(id=category).products.all()
-    )
+    kwargs = dict(order__ordered__created__gte=start_date, order__ordered__created__lte=end_date)
+    if category:
+        kwargs['cat_products__id'] = category
+    products = Product.objects.filter(**kwargs).distinct()
+
     products_quant = {
         prod: purchases.filter(orders__product=prod).aggregate(Sum("orders__quantity")).get("orders__quantity__sum") or 0 for prod in products
     }
