@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .forms import ClientApplicationForm
 
 from .models import ClientApplication, ClientApplicationAdministrator

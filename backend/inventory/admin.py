@@ -25,6 +25,7 @@ class ProductInline(admin.TabularInline):
 
     def has_add_permission(self, request, obj):
         return False
+
     def has_change_permission(self, request, obj):
         return False
 
@@ -32,7 +33,6 @@ class ProductInline(admin.TabularInline):
         return False
 
 
-@admin.register(Stock)
 class StockAdmin(SimpleHistoryAdmin):
     list_display = ("name", "quantity", "units", "description")
     list_filter = ("units",)
@@ -45,7 +45,7 @@ class StockAdmin(SimpleHistoryAdmin):
             return self.readonly_fields + ("units", "quantity")
         return super().get_readonly_fields(request, obj)
 
-@admin.register(StockMutations)
+
 class StockMutationsAdmin(SimpleHistoryAdmin):
     list_display = ("stock", "quantity", "units", "comment", "date", "cost")
     list_filter = ("stock", "units")
@@ -58,9 +58,9 @@ class StockMutationsAdmin(SimpleHistoryAdmin):
         "stock",
         "units",
     )
+    autocomplete_fields = ["stock"]
 
 
-@admin.register(Category)
 class CategoryAdmin(SimpleHistoryAdmin):
     list_display = [
         "name",
@@ -72,7 +72,6 @@ class CategoryAdmin(SimpleHistoryAdmin):
     search_fields = ["name", "description", "products"]
 
 
-@admin.register(Product)
 class ProductAdmin(SimpleHistoryAdmin):
     list_display = ["name", "price", "image", "color", "active"]
     # list_display = ['name', 'price', 'category', 'barcode']
@@ -80,6 +79,7 @@ class ProductAdmin(SimpleHistoryAdmin):
     list_filter = ["cat_products"]
     search_fields = ["name", "price", "id"]
     add_readonly_fields = []
+    autocomplete_fields = ["master_stock"]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -88,3 +88,10 @@ class ProductAdmin(SimpleHistoryAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+
+admin.site.register(Stock, StockAdmin)
+admin.site.register(StockMutations, StockMutationsAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Product, ProductAdmin)

@@ -8,7 +8,7 @@ from django.contrib.admin import DateFieldListFilter
 from common.export_functions import purchase_export_excel
 
 from .actions import set_to_close, set_to_open
-from .models import Barcycle, HapOrder, HapPayment, Happen, Purchase, Report
+from .models import Activity, Barcycle, HapOrder, HapPayment, Happen, Purchase, Report
 
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -215,6 +215,7 @@ class ReportAdmin(SimpleHistoryAdmin):
     list_filter = ["action"]
     search_fields = ["name", "price", "date", "personel", "action", "comment"]
     actions = [set_to_open, set_to_close]
+    autocomplete_fields = ["personel"]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -234,10 +235,12 @@ class ReportAdmin(SimpleHistoryAdmin):
 
 class HapOrderInline(admin.TabularInline):
     model = HapOrder
+    autocomplete_fields = ["holder"]
 
 
 class HapPaymentInline(admin.TabularInline):
     model = HapPayment
+    autocomplete_fields = ["holder"]
 
 
 class HapAdmin(SimpleHistoryAdmin):
@@ -263,6 +266,9 @@ class HapAdmin(SimpleHistoryAdmin):
     # def has_delete_permission(self, request, obj=None):
     #     return False
 
+# @admin.register(Activity)
+# class ActivityAdmin(HapAdmin):
+#     pass
 
 admin.site.register(Barcycle, BarcycleAdmin)
 admin.site.register(Happen, HapAdmin)

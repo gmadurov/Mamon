@@ -195,6 +195,10 @@ class Happen(models.Model):
         verbose_name_plural = "Happen"
 
 
+# class Activity(Happen):
+#     class Meta:
+#         proxy = True
+
 class HapOrder(models.Model):
     id: int
     happen = models.ForeignKey(Happen, on_delete=models.CASCADE)
