@@ -39,6 +39,25 @@ def showUsers(request):
     return render(request)
 
 
+def fetchLedenBase(username: str, password: str) -> tuple[User, int, dict]:
+    """login to ledenbase and return the user and the status code and the ledenbase user info"""
+    LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
+    LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
+    login_res = requests.post(
+        f"{LEDENBASE_URL}/login/",
+        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
+        json={"password": password, "username": username},
+    )
+    if login_res.status_code == 200:
+        person_res = requests.get(
+            f"{LEDENBASE_URL}/personen/{json.loads(login_res.text).get('token')}/",
+            headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
+        )
+        ledenbase_lid: dict = json.loads(person_res.text)
+        return login_res, login_res.text, ledenbase_lid
+    return login_res, login_res.text, None
+
+
 def loginAllUsers(request, username=None, password=None, api=False) -> tuple[User, int]:
     """this function will loging and update all users, it will return the user and the status code
     it will first try to authenticate the user with the django auth system,
@@ -48,41 +67,14 @@ def loginAllUsers(request, username=None, password=None, api=False) -> tuple[Use
     if user is not None:
         return user, 200
     else:
-        LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
-        LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
-        login_res = requests.post(
-            f"{LEDENBASE_URL}/login/",
-            headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-            json={"password": password, "username": username},
-        )
-        lid_token = login_res.text
-        if login_res.status_code != 200:
-            if not api:
-                try:
-                    messages.error(request, "Error 4032:" + json.loads(lid_token).get("non_field_errors")[0])
-                except:
-                    messages.error(request, "Error 4041: No response from Ledenbase")
-                return None, login_res.status_code
-            else:
-                # return ledenbase response and status code
-                return json.loads(login_res.text), login_res.status_code
-
+        login_res, lid_token, ledenbase_lid = fetchLedenBase(username, password)
         if login_res.status_code == 200:
-            person_res = requests.get(
-                f"{LEDENBASE_URL}/personen/{json.loads(lid_token).get('token')}/",
-                headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-            )
-            ledenbase_lid: dict = json.loads(person_res.text)
-            (user, created,) = User.objects.get_or_create(
-                username=username,
-                # user purposely doesnt have a password set here to make sure it
-            )
+            user = User.objects.get_or_create(username=username)[0]  # user purposely doesnt have a password set here to make sure it
             user.first_name = ledenbase_lid.get("voornaam")
             user.last_name = ledenbase_lid.get("tussenvoegsel") + ledenbase_lid.get("achternaam")
-            user.is_superuser = ledenbase_lid.get("is_administrator")
+            user.is_superuser = ledenbase_lid.get("is_administrator", False)
             if not user.is_staff and ledenbase_lid.get("is_administrator"):
                 user.is_staff = True
-
             user.save()
             (holder, created) = Holder.objects.get_or_create(user=user)
             holder.ledenbase_id = ledenbase_lid.get("id")
@@ -91,7 +83,16 @@ def loginAllUsers(request, username=None, password=None, api=False) -> tuple[Use
             if created and not api:
                 messages.info(request, "User and Holder were created")
             return user, login_res.status_code
-    return user, 404128
+        else:
+            if not api:
+                try:
+                    messages.error(request, "Error 4032: " + json.loads(lid_token).get("non_field_errors")[0])
+                except:
+                    messages.error(request, "Error 4041: No response from Ledenbase")
+                return None, login_res.status_code
+            else:
+                # return ledenbase response and status code
+                return json.loads(login_res.text), login_res.status_code
 
 
 def loginUser(request):

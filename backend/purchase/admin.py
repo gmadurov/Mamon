@@ -8,7 +8,7 @@ from django.contrib.admin import DateFieldListFilter
 from common.export_functions import purchase_export_excel
 
 from .actions import set_to_close, set_to_open
-from .models import Activity, Barcycle, HapOrder, HapPayment, Happen, Purchase, Report
+from .models import  Barcycle, HapOrder, HapPayment, Happen, Purchase, Report
 
 from simple_history.admin import SimpleHistoryAdmin
 

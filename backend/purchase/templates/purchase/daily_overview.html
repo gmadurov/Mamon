@@ -1,4 +1,4 @@
-{% extends 'main.html' %} {% load pagination_tags %} {% block content %}
+{% extends 'main.html' %} {% load pagination_tags %} {% load purchase_tags %}{% block content %}
 <div class="column is-two-thirds">
   <div class="column is-half is-offset-3">
     <form action="" method="GET" class="columns">
@@ -38,7 +38,7 @@
         </div>
         <div class="control">
           <label class="radio">
-            {% if unit_mode == 'days' %}<input type="radio" name="unit_mode" checked value="days" /> {% else %}<input
+            {% if unit_mode == 'euro' %}<input type="radio" name="unit_mode" checked value="euro" /> {% else %}<input
               type="radio"
               name="unit_mode"
               checked
@@ -47,13 +47,26 @@
             {% endif %}€ Euros
           </label>
           <label class="radio">
-            {% if unit_mode == 'months' %}<input type="radio" name="unit_mode" checked value="months" />{% else %}
+            {% if unit_mode == 'quantity' %}<input type="radio" name="unit_mode" checked value="quantity" />{% else %}
             <input type="radio" name="unit_mode" value="quantity" />
             {% endif %}Quantity
           </label>
         </div>
         <input class="button is-success" type="submit" value="Submit" style="align: right" />
       </div>
+      <table class="table">
+        {% if unit_mode == 'euro' %}
+        <tr>
+          <th title="">Totaal bedrag</th>
+          <td>€{{total_sales|round_to:2}}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <th title="">Totaal hoeveelheid verkorcht</th>
+          <td>{{total_sales|round_to:2}}</td>
+        </tr>
+        {% endif %}
+      </table>
     </form>
   </div>
   <div class="column is-two-thids">
@@ -84,7 +97,7 @@
         </tbody>
       </table>
       {% else %}
-      <h1 class='title is-3 ' style='text-align: center'>Geen resultaten gevonden</h1>
+      <h1 class="title is-3" style="text-align: center">Geen resultaten gevonden</h1>
       {% endif %}
     </div>
   </div>

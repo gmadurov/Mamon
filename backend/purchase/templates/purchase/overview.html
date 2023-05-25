@@ -62,22 +62,15 @@
 
   <div class="column">
     <table class="table is-fullwidth">
+      <tr></tr>
       <tr>
-        <th title="This is the total amount of money that has been payed by ">drankafname bezoekerspassen</th>
-        <th
-          title="This is the total revenue of the (category) bar (different to bacchus where this was only the revenue of the bar that passed by outlayman)"
-        >
-          drank/koek/snoep bar
-        </th>
-        <th title="These are all the refunds that take place during this time period">refund bar (rectificaties)</th>
+        <th title="This is the total amount of money that has been payed by people in the Bezoekers group">Drankafname Bezoekerspassen</th>
+        <td>{{bezoekers_pasen|round_to:2}}</td>
       </tr>
       <tr>
-        <td>{{bezoekers_pasen|round_to:2}}</td>
-        <td>{{barWinst|round_to:2}}</td>
+        <th title="These are all the refunds that take place during this time period">refund bar (rectificaties)</th>
         <td>{{refunds|round_to:2}}</td>
       </tr>
-    </table>
-    <table class="table">
       <tr title="This is a summation of all the money in mamon wallets">
         <th>Total Bedrag in Standen</th>
         <td>{{holder_stands|round_to:2}}</td>
@@ -88,35 +81,50 @@
         <td>{{walletUpgrades|round_to:2}}</td>
         {% comment %} all the money that has entered according to wallet upgrades {% endcomment %}
       </tr>
-      <tr title="The total amount that has been payed by card - the amount payed my card for the hap and for handelswaar">
-        <th>potje 7111 (PIN)</th>
-        <td>{{totalGepind|round_to:5}}</td>
-        {% comment %} all the purchases that were paid by card {% endcomment %}
+    </table>
+    <table class="table is-fullwidth">
+      <tr></tr>
+      <tr>
+        <th
+          title="This is the total revenue of the (category) bar (different to bacchus where this was only the revenue of the bar that passed by outlayman)"
+        >
+          Baromzet Wallet
+        </th>
+        <td>{{barOmzetWallet|round_to:2}}</td>
       </tr>
-      <tr title="give a description of what each of these potjes is and what it holds to Gustavo">
-        <th>(total hap)</th>
-        <td>{{happen|round_to:2}}</td>
-        {% comment %} all the purchases of hap that were paid by card{% endcomment %}
+      <tr>
+        <th title="The total amount that has been payed by card - the amount payed my card for the Bar category">Baromzet Pin</th>
+        <td>{{barOmzetPin|round_to:2}}</td>
       </tr>
-      <tr title="give a description of what each of these potjes is and what it holds to Gustavo">
-        <th>potje 7400 (PIN hap)</th>
-        <td>{{happenPin|round_to:2}}</td>
-        {% comment %} all the purchases of hap that were paid by card{% endcomment %}
+      <tr>
+        <th title="This is the total revenue of the (category) bar that was payed by cash ">Baromzet Cash</th>
+        <td>{{barOmzetCash|round_to:2}}</td>
       </tr>
-      <tr title="give a description of what each of these potjes is and what it holds to Gustavo">
-        <th>Potje 7400 (Cash hap)</th>
-        <td>{{happenCash|round_to:2}}</td>
-        {% comment %} all the happen that were paid by cash {% endcomment %}
+    </table>
+    <table class="table is-fullwidth">
+      <tr></tr>
+      <tr>
+        <th
+          title="This is the total revenue of the (category) bar (different to bacchus where this was only the revenue of the bar that passed by outlayman)"
+        >
+          Hapomzet Wallet
+        </th>
+        <td>{{hapOmzetWallet|round_to:2}}</td>
       </tr>
+      <tr>
+        <th title="The total amount that has been payed by card - the amount payed my card for the hap category">Hapomzet Pin</th>
+        <td>{{hapOmzetPin|round_to:2}}</td>
+      </tr>
+      <tr>
+        <th title="This is the total revenue of the (category) hap that was payed by cash ">Hapomzet Cash</th>
+        <td>{{hapOmzetCash|round_to:2}}</td>
+      </tr>
+    </table>
+    <table class="table">
       <tr title="give a description of what each of these potjes is and what it holds to Gustavo">
-        <th>Potje 3400 (Handelswaar)*</th>
+        <th>Handelswaar</th>
         <td>{{handelswaar|round_to:2}}</td>
         {% comment %} all the bestuur kamer catergories {% endcomment %}
-      </tr>
-      <tr title="How much was payed via cash in total ">
-        <th>potje 7112 (cash) *</th>
-        <td>{{totalGecashed|round_to:2}}</td>
-        {% comment %} all the purchases that were paid by cash {% endcomment %}
       </tr>
     </table>
   </div>
