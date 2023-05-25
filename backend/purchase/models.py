@@ -24,7 +24,7 @@ class Purchase(models.Model):
     pin = models.BooleanField(default=False)
     orders = models.ManyToManyField(Order, related_name="ordered")
 
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
     remaining_after_purchase = models.FloatField(default=0)
     history = HistoricalRecords()
 

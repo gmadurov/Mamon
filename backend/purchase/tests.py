@@ -56,9 +56,9 @@ class PurchaseTest(InventoryBaseTest):
         product_1 = Product.objects.get(id=self.product_1.id)
         product_2 = Product.objects.get(id=self.product_2.id)
         product_3 = Product.objects.get(id=self.product_3.id)
-        self.assertEqual(product_1.__str__(), "product_1, €1.0")
-        self.assertEqual(product_2.__str__(), "product_2, €2.0")
-        self.assertEqual(product_3.__str__(), "product_3, €3.0")
+        self.assertEqual(product_1.__str__(), "product_1 €(1.0)")
+        self.assertEqual(product_2.__str__(), "product_2 €(2.0)")
+        self.assertEqual(product_3.__str__(), "product_3 €(3.0)")
 
     def test_order_costs(self):
         order_prod_1 = Order.objects.get(id=self.order_prod_1.id)
