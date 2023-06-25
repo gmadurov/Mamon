@@ -14,7 +14,7 @@ urlpatterns = [
     path("environment/<str:name>/", views.getEnvironment),
     # Products ###############################
     path("products/", views_products.ProductView.as_view()),
-    path('products/overview/', views_holders.ProductsOverview),
+    path("products/overview/", views_holders.ProductsOverview),
     path("products/<str:pk>/", views_products.ProductView.as_view()),
     path("categories/", views_products.CategoryView.as_view()),
     # Reports #############################
@@ -38,8 +38,4 @@ urlpatterns = [
     path("happen/<str:pk>/pay/", views_hap.HapPaymentView.as_view()),
     path("happen/<str:pk>/leden/", views_hap.HapRegisterView.as_view()),
     path("happen/<str:pk>/leden/<int:lid_id>/", views_hap.HapRegisterView.as_view()),
-    # Swagger ################################
-    path("apidocs/", TemplateView.as_view(template_name="swagger-ui.html", extra_context={"schema_url": "routes"}), name="swagger-ui"),
-    path("printme/", views.printme),
-    
 ]

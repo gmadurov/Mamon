@@ -176,10 +176,6 @@ def getEnvironment(request, name):
         return Response({"error": "not allowed"}, status=403)
 
 
-@api_view(["POST"])
-def printme(request):
-    print(request.data)
-    return Response(request.data)
 
 
 from rest_framework import serializers

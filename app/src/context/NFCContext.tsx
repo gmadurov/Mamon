@@ -2,8 +2,6 @@ import { Alert, Platform } from "react-native";
 import NfcManager, { NdefStatus, NfcError, NfcEvents, NfcTech, TagEvent } from "react-native-nfc-manager";
 import React, { createContext, useEffect, useState } from "react";
 
-import { showMessage } from "react-native-flash-message";
-
 export interface TagEventLocal extends TagEvent {
   ndefStatus?: {
     status?: NdefStatus;

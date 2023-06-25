@@ -1,9 +1,9 @@
-import os, jwt
+import jwt
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
 )
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
@@ -12,9 +12,10 @@ from django.contrib.auth.models import User
 def fill_token(token, user):
     # Add custom claims
     token["name"] = user.holder.name
-    # print(user, user.lid, user.lid.name)
     token["roles"] = [group.name for group in user.groups.all()]
     try:
+        if not user.personel.active:
+            raise Exception("Personel is not active")
         image = user.personel.image_url
         nickname = user.personel.nickname
         id = user.personel.id
@@ -35,10 +36,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         return fill_token(token, user)
-
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
 
 
 class MyTokenRefreshPairSerializer(TokenRefreshSerializer):

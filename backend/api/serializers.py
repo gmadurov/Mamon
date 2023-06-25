@@ -51,11 +51,11 @@ class UserSerializer(serializers.ModelSerializer):
         return user.first_name + " " + user.last_name
 
     def get_nickname(self, user: User):
-        personel = Personel.objects.filter(user=user).first()
+        personel = Personel.objects.filter(user=user, active=True).first()
         return personel.nickname if personel else None
 
     def get_personel(self, user: User):
-        personel = Personel.objects.filter(user=user).first()
+        personel = Personel.objects.filter(user=user, active=True).first()
         return personel.id if personel else None
 
     def get_holder(self, user: User):
@@ -66,7 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, user: User):
         request = self.context.get("request")
-        return request.build_absolute_uri(Personel.objects.filter(user=user).first().image_url if Personel.objects.filter(user=user).first() else "")
+        return request.build_absolute_uri(Personel.objects.filter(user=user, active=True).first().image_url if Personel.objects.filter(user=user, active=True).first() else "")
 
     class Meta:
         model = User
