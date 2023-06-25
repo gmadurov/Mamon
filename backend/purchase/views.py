@@ -92,15 +92,14 @@ def showOverview(request):
     hapOmzetCash = get_category_sales("Happen", cash=True)  # get total amounts of happen payed with cash
     hapOmzetWallet = get_category_sales("Happen", balance=True)  # get total revenue from happen
 
-    custom_range_purchases, purchases = paginateObjects(request, purchases, 20, "purchase_page")
+    purchases, paginator_purchases = paginateObjects(request, purchases, 20, "purchase_page")
 
     # handle all the calculations for wallet upgrades in this time period
     walletUpgrades = walletUpgradeQuery.aggregate(Sum("amount")).get("amount__sum")
     refunds = walletUpgradeQuery.filter(refund=True).aggregate(Sum("amount")).get("amount__sum")
     # refunds = sum([wal.amount for wal in walletUpgradeQuery])
 
-    custom_range_products_quant, products_quant = paginateObjects(request, list(products_quant), 10, "product_page")
-
+    products_quant, paginator_products_quant = paginateObjects(request, list(products_quant), 10, "product_page")
     content = {
         "purchases": purchases,
         "products_quant": products_quant,
@@ -119,79 +118,10 @@ def showOverview(request):
         "hapOmzetCash": hapOmzetCash,
         "hapOmzetWallet": hapOmzetWallet,
         "refunds": refunds,
-        "custom_range_purchases": custom_range_purchases,
-        "custom_range_products_quant": custom_range_products_quant,
+        "pages_purchases": paginator_purchases.get_elided_page_range(number=purchases.number, on_each_side=2, on_ends=1),
+        "pages_products_quant": paginator_products_quant.get_elided_page_range(number=products_quant.number, on_each_side=2, on_ends=1),
     }
     return render(request, "purchase/overview.html", content)
-
-
-@login_required(login_url="login")
-def showBarcycles(request):
-    barcycles = Barcycle.objects.all()
-    content = {"barcycles": barcycles}
-    return render(
-        request,
-        "purchase/barcycles.html",
-        content,
-    )
-
-
-def showBarcycle(request, pk):
-    barcycle = Barcycle.objects.get(id=pk)
-    purchases = barcycle.purchases
-    print(purchases)
-    #  get all the products that has been bought in the purchases
-    products = [prod.product for pur in purchases for prod in pur.orders.all()]
-    products_quant = {
-        prod: purchases.filter(orders__product=prod).aggregate(Sum("orders__quantity")).get("orders__quantity__sum") or 0 for prod in products
-    }.items()
-
-    # get sum of all holder stands
-    holder_stands = Holder.objects.all().aggregate(Sum("stand")).get("stand__sum")
-    barWinst = sum([pur.total for pur in purchases])
-    totalGepind = sum([pur.total for pur in purchases.filter(pin=True)])
-    totalGecashed = sum([pur.total for pur in purchases.filter(cash=True)])
-    bezoekers_pasen = sum([pur.total for pur in purchases.filter(buyer__user__groups__name__in=["Bezoekers"])])
-    handelswaar = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Handelswaar"])])
-    happenPin = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Happen"], pin=True)])
-    happenCash = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Happen"], cash=True)])
-    custom_range_products_quant, products_quant = paginateObjects(request, list(products_quant), 10, "product_page")
-    custom_range_purchases, purchases = paginateObjects(request, purchases, 10, "purchase_page")
-    content = {
-        "purchases": purchases,
-        "products_quant": products_quant,
-        "holder_stands": holder_stands,
-        "barWinst": barWinst,
-        "totalGepind": totalGepind,
-        "totalGecashed": totalGecashed,
-        "bezoekers_pasen": bezoekers_pasen,
-        "handelswaar": handelswaar,
-        "happenPin": happenPin,
-        "happenCash": happenCash,
-        "custom_range_purchases": custom_range_purchases,
-        "custom_range_products_quant": custom_range_products_quant,
-        "barcycle": barcycle,
-    }
-    return render(request, "purchase/barcycle.html", content)
-
-
-def showUpgrades(request):
-    return redirect("https://expo.dev/accounts/gusmadvol/projects/mamon-gus/builds/ceadb199-b637-4596-b702-a8fba62e1880")
-
-
-# idk if this should be implemented
-# def product_edit(request, pk=None):
-#     product = get_object_or_404(Product, pk=pk)
-#     if request.method == "POST":
-#         form = ProductForm(data=request.POST, instance=product)
-#         if form.is_valid():
-#             form.save()
-#             return redirect("product", pk=pk)
-#         else:
-#             messages.error(request, form.errors)
-#     else:
-#         form = ProductForm(instance=product)
-#     return render(request, "purchase/product_form.html", {"form": form})
 
 
 @login_required
@@ -266,6 +196,71 @@ def dailyOverview(request):
         "unit_mode": unit_mode,
     }
     return render(request, "purchase/daily_overview.html", content)
+
+
+@login_required(login_url="login")
+def showBarcycles(request):
+    barcycles = Barcycle.objects.all()
+    content = {"barcycles": barcycles}
+    return render(
+        request,
+        "purchase/barcycles.html",
+        content,
+    )
+
+
+def showBarcycle(request, pk):
+    barcycle = Barcycle.objects.get(id=pk)
+    purchases = barcycle.purchases
+    print(purchases)
+    #  get all the products that has been bought in the purchases
+    products = [prod.product for pur in purchases for prod in pur.orders.all()]
+    products_quant = {
+        prod: purchases.filter(orders__product=prod).aggregate(Sum("orders__quantity")).get("orders__quantity__sum") or 0 for prod in products
+    }.items()
+
+    # get sum of all holder stands
+    holder_stands = Holder.objects.all().aggregate(Sum("stand")).get("stand__sum")
+    barWinst = sum([pur.total for pur in purchases])
+    totalGepind = sum([pur.total for pur in purchases.filter(pin=True)])
+    totalGecashed = sum([pur.total for pur in purchases.filter(cash=True)])
+    bezoekers_pasen = sum([pur.total for pur in purchases.filter(buyer__user__groups__name__in=["Bezoekers"])])
+    handelswaar = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Handelswaar"])])
+    happenPin = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Happen"], pin=True)])
+    happenCash = sum([pur.total for pur in purchases.filter(orders__product__cat_products__name__in=["Happen"], cash=True)])
+    products_quant, paginator_products_quant = paginateObjects(request, list(products_quant), 10, "product_page")
+    purchases, paginator_purchases= paginateObjects(request, purchases, 10, "purchase_page")
+    content = {
+        "purchases": purchases,
+        "products_quant": products_quant,
+        "holder_stands": holder_stands,
+        "barWinst": barWinst,
+        "totalGepind": totalGepind,
+        "totalGecashed": totalGecashed,
+        "bezoekers_pasen": bezoekers_pasen,
+        "handelswaar": handelswaar,
+        "happenPin": happenPin,
+        "happenCash": happenCash,
+        "custom_range_purchases": paginator_purchases.get_elided_page_range(number=purchases.number, on_each_side=2, on_ends=1),
+        "custom_range_products_quant": paginator_products_quant.get_elided_page_range(number=products_quant.number, on_each_side=2, on_ends=1),
+        "barcycle": barcycle,
+    }
+    return render(request, "purchase/barcycle.html", content)
+
+
+# idk if this should be implemented
+# def product_edit(request, pk=None):
+#     product = get_object_or_404(Product, pk=pk)
+#     if request.method == "POST":
+#         form = ProductForm(data=request.POST, instance=product)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("product", pk=pk)
+#         else:
+#             messages.error(request, form.errors)
+#     else:
+#         form = ProductForm(instance=product)
+#     return render(request, "purchase/product_form.html", {"form": form})
 
 
 # def category_create(request):

@@ -21,7 +21,7 @@
 
     {% if products_quant %}
     <h1 class="title">Producten</h1>
-    {%include 'pagination.html' with pageName='product_page' queryset=products_quant custom_range=custom_range_products_quant%}
+    {%include 'pagination.html' with pageName='product_page' queryset=products_quant custom_range=pages_products_quant%}
     <table class="table is-fullwidth">
       <tr>
         <th>Product</th>
@@ -38,7 +38,7 @@
     </table>
     {% endif %} {% if purchases%}
     <h1 class="title">Purchases</h1>
-    {% include 'pagination.html' with pageName='purchase_page' queryset=purchases custom_range=custom_range_purchases %}
+    {% include 'pagination.html' with pageName='purchase_page' queryset=purchases custom_range=pages_purchases %}
     <table class="table is-fullwidth">
       <tr>
         <th>Order Date</th>

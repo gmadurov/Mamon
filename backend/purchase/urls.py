@@ -12,13 +12,8 @@ urlpatterns = [
     path("barcycles/", views.showBarcycles, name="barcycles"),
     path("barcycle/<str:pk>", views.showBarcycle, name="barcycle"),
     
-    # path("edit-product/<int:pk>", views.product_edit, name="product edit"),
-   
-    # path("create-category/", views.category_create, name="category creation"),
     path("personel-overview/", views.userOverview, name="personelOverview"),
     path("personel/<int:pk>/toggle", views.togglePersonelActive, name="personelActivityToggle"),
     path("personel/<int:pk>/edit", views.userEdit, name="personelEdit"),
 
-
-    path("upgrade/", views.showUpgrades, name="upgrades"),
 ]

@@ -17,12 +17,15 @@
     <ul class="pagination-list">
 
       {% for page in custom_range %}
-       {% if page == queryset.number %} 
-          {% comment %} {{request.GET.urlencode}}& {%   endcomment %}
+        {% if page == '…' %}
+        <li >
+          <p class="pagination-link is-disabled">{{page}}</p>
+        </li>
+       {% elif page == queryset.number %} 
           <li >
-            <a class="pagination-link is-current"href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a>
+            <a class="pagination-link is-current" href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a>
           </li>
-          {% else %} {% comment %} {{request.GET.urlencode}}& {% endcomment %}
+        {% else %}
           <li >
             <a class="pagination-link"href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a>
           </li>
