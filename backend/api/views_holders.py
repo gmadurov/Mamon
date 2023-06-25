@@ -1,13 +1,15 @@
-from django.contrib.auth.models import User
-from django.db.models import Q
+from django.urls import reverse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from purchase.models import Purchase
+from inventory.models import Product
 from users.views import loginAllUsers
-from users.models import Card, Holder, Personel, WalletUpgrades
+from users.models import Card, Holder, MolliePayments, Personel, WalletUpgrades
 from django.shortcuts import get_object_or_404
+from core.settings import mollie_client
 
-from .serializers import CardSerializer, HolderSerializer, WalletUpgradesSerializer
+from .serializers import CardSerializer, HolderSerializer, ProductSerializer, WalletUpgradesSerializer, MolliePaymentsSerializer
 
 from .views import DatabaseView
 
@@ -73,6 +75,34 @@ class WalletUpgradesView(DatabaseView):
             if upgrade.is_valid(True):
                 upgrade.save()
                 return Response(upgrade.data)
+
+
+class SelfMolliePaymentsView(DatabaseView):
+    model = MolliePayments
+    serializer = MolliePaymentsSerializer
+    http_method_names = ["get", "post"]
+
+    def post(self, request):
+        data = request.data
+        # upgrade = self.model.objects.create(holder=request.user.holder, **data)
+        ser = self.serializer(data=data, context={"request": request})
+        if ser.is_valid(True):
+            # print(ser.validated_data)
+            molliePayment = ser.save(payment_id = 90, holder=request.user.holder)
+            # body = {
+            #     "amount": {"currency": "EUR", "value": f"{molliePayment.amount:.2f}"},
+            #     "description": f"Mamon | Wallet Opwarderen  €{molliePayment.amount:.2f}",
+            #     "redirectUrl": request.build_absolute_uri(reverse("mollie-return", args=[str(molliePayment.identifier)])),
+            #     "webhookUrl": request.build_absolute_uri(reverse("mollie-webhook", args=[str(molliePayment.identifier)])),
+            #     "method": ["applepay", "creditcard", "ideal"],
+            #     "metadata": {"identifier": str(molliePayment.identifier)},
+            # }
+            # payment = mollie_client.payments.create(body)
+            # molliePayment.payment_id = payment.id
+            # molliePayment.expiry_date = payment.get("expiresAt")
+            # molliePayment.checkout_url = payment.checkout_url
+            molliePayment.save()
+            return Response(ser.data)
 
 
 # @api_view(["GET", "POST"])
@@ -176,3 +206,19 @@ def handle_Card(request, pk):
         card = Card.objects.get(id=pk)
         card.delete()
         return Response()
+
+
+from django.db.models import Sum
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def ProductsOverview(request):
+    pur = Purchase.objects.filter(buyer__user_id=request.user.id)
+    quant = {}
+    prods = Product.objects.filter(order__ordered__buyer__user_id=request.user.id).distinct()
+    ser = ProductSerializer(prods, many=True, context={"request": request})
+
+    for prod in prods:
+        quant[prod.id] = pur.filter(orders__product=prod).aggregate(Sum("orders__quantity"))["orders__quantity__sum"] or 0
+    return Response({"quant": quant, "products": ser.data})

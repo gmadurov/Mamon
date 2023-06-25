@@ -14,9 +14,17 @@ def fill_token(token, user):
     token["name"] = user.holder.name
     # print(user, user.lid, user.lid.name)
     token["roles"] = [group.name for group in user.groups.all()]
-    token["image"] = user.personel.image_url
-    token["nickname"] = user.personel.nickname
-    token["personel_id"] = user.personel.id
+    try:
+        image = user.personel.image_url
+        nickname = user.personel.nickname
+        id = user.personel.id
+    except:
+        image = ""
+        nickname = ""
+        id = 0
+    token["image"] = image
+    token["nickname"] = nickname
+    token["personel_id"] = id
     token["username"] = user.username
     # print('RefreshToken', token)
     return token

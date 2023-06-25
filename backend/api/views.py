@@ -205,8 +205,6 @@ class DatabaseView(APIView):
         if "search" in request_params.keys() and self.search_fields:
             # only for events
             search = request_params.pop("search")
-            # Q:how can i join the queries using the operator | insteaadt of &?
-            # A: use the operator | in the filter
             q_objects = Q()
             for field in self.search_fields:
                 q_objects |= Q(**{f"{field}": search})

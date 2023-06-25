@@ -1,4 +1,6 @@
 from pprint import pprint
+
+from .paginators import paginatePurchases
 from .views import DatabaseView
 from purchase.models import Purchase
 from inventory.models import Order, Product
@@ -13,3 +15,4 @@ class PurchaseView(DatabaseView):
     model = Purchase
     serializer = PurchaseSerializer
     http_method_names = ["get", "post"]
+    paginator = paginatePurchases

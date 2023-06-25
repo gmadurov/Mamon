@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from users.models import Card, Holder, Personel, WalletUpgrades
+from users.models import Card, Holder, MolliePayments, Personel, WalletUpgrades
 from purchase.models import HapOrder, HapPayment, Happen, Purchase, Report
 from inventory.models import Category, Order, Product
 from django.contrib.auth.models import User
@@ -311,3 +311,21 @@ class HappenSerializer(serializers.ModelSerializer):
     closing_date = serializers.DateTimeField()
     active = serializers.BooleanField(read_only=True)
     participants = HapOrderHolderSerializer(many=True, source="haporder_set", required=False)
+
+class ProductOverviewSerializer(serializers.ModelSerializer):
+
+    ordered = serializers.SerializerMethodField()
+    def get_ordered(self, obj):
+
+        return obj.orders.count()
+    class Meta:
+        model = Product
+        fields = ["id", "name", "price"]
+
+
+class MolliePaymentsSerializer(serializers.ModelSerializer):
+
+    holder = SimpleHolderSerializer(required=False)
+    class Meta:
+        model = MolliePayments
+        fields = "__all__"

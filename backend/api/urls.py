@@ -14,6 +14,7 @@ urlpatterns = [
     path("environment/<str:name>/", views.getEnvironment),
     # Products ###############################
     path("products/", views_products.ProductView.as_view()),
+    path('products/overview/', views_holders.ProductsOverview),
     path("products/<str:pk>/", views_products.ProductView.as_view()),
     path("categories/", views_products.CategoryView.as_view()),
     # Reports #############################
@@ -27,6 +28,7 @@ urlpatterns = [
     path("holders/<str:pk>/", views_holders.HolderView.as_view()),
     # WalletUpgrades ###############################
     path("walletupgrades/", views_holders.WalletUpgradesView.as_view()),
+    path("wallet/opwarderen/", views_holders.SelfMolliePaymentsView.as_view()),
     # CARDS ######################
     path("cards/", views_holders.CardView.as_view()),
     path("cards/<str:pk>/", views_holders.CardView.as_view()),
@@ -39,4 +41,5 @@ urlpatterns = [
     # Swagger ################################
     path("apidocs/", TemplateView.as_view(template_name="swagger-ui.html", extra_context={"schema_url": "routes"}), name="swagger-ui"),
     path("printme/", views.printme),
+    
 ]
