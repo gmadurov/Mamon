@@ -6,13 +6,14 @@ import ProductContext from "./ProductContext";
 import PurchaseContext from "./PurchaseContext";
 import User from "../models/Users";
 
+export type PaymentType = "cash" | "pin" | "balance";
 // createcontext
 export type CartContextType = {
   cart: CartItems[];
   buyer: Holder;
   seller: User;
   setSeller: React.Dispatch<React.SetStateAction<User>>;
-  buy_cart(buyer: Holder, sell: boolean): Promise<void>;
+  buy_cart(buyer: Holder, payment: PaymentType): Promise<void>;
   setCart: React.Dispatch<React.SetStateAction<CartItems[]>>;
   add_to_cart: (item: CartItems) => void;
   remove_from_cart: (product: CartItems, quantity?: number) => void;
@@ -71,19 +72,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   function remove_from_cart(product: CartItems, quantity: number = 1) {
     if (cart) {
       if (cart.some((order) => order.id === product.id)) {
-        if (
-          cart.find((order) => order.id === product.id)?.quantity === quantity
-        ) {
+        if (cart.find((order) => order.id === product.id)?.quantity === quantity) {
           setCart(() => cart.filter((order) => order.id !== product.id));
-        } else if (
-          cart.find((order) => order.id === product.id)?.quantity !== quantity
-        ) {
+        } else if (cart.find((order) => order.id === product.id)?.quantity !== quantity) {
           setCart(() =>
-            cart.map((order) =>
-              order.id === product.id
-                ? { ...order, quantity: order.quantity - quantity }
-                : order
-            )
+            cart.map((order) => (order.id === product.id ? { ...order, quantity: order.quantity - quantity } : order))
           );
         } else {
           setCart(() => cart.filter((order) => order.id !== product.id));
@@ -91,23 +84,21 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }
-  async function buy_cart(buyer: Holder, sell: boolean) {
+  async function buy_cart(buyer: Holder, payment: PaymentType) {
     let purchase = {
       orders: cart?.map((order) => ({
         quantity: order.quantity,
         product: order.id,
       })),
-      seller: seller.user_id,
-      payed: sell === true ? true : false,
+      seller: seller.id,
+      balance: payment === "balance" ? true : false,
+      cash: payment === "cash" ? true : false,
+      pin: payment === "pin" ? true : false,
       buyer: buyer.id,
       remaining_after_purchase:
         buyer.stand -
         cart?.reduce(
-          (partialSum, a) =>
-            partialSum +
-            (products?.find((product) => product.id === a.product)?.price ||
-              0) *
-              a.quantity,
+          (partialSum, a) => partialSum + (products?.find((product) => product.id === a.product)?.price || 0) * a.quantity,
           0
         ),
     } as Purchase;

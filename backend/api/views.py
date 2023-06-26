@@ -1,15 +1,17 @@
 import json
-import os
+import os, jwt
+from django.shortcuts import get_object_or_404
 
-import requests
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from api.tokens import MyTokenObtainPairSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from users.models import Holder
-
+from .serializers import UserSerializer
+from users.views import loginAllUsers
+from django.db.models import Q
+import yaml
 
 API_URL = "/api/"
 
@@ -112,7 +114,13 @@ def getRoutes(request):
             "description": "Get card by id",
             "pk": "Card id",
         },
+        {
+            "GET": API_URL + "environment/<str:name>/",
+            "name": "name of enviroment variable",
+        },
     ]
+    with open("api/openapiMAMON.yaml", "r") as stream:
+        routes = yaml.safe_load(stream)
     return Response(routes)
 
 
@@ -126,6 +134,9 @@ def getVersion(request):
 
 @api_view(["POST"])
 def LoginAllUsers(request):
+    """this is a test
+    :param .Info info: information about the API; if omitted, defaults to :ref:`DEFAULT_INFO <default-swagger-settings>`
+    """
     user1 = User.objects.filter(username=request.data["username"])
     if user1.exists() and user1.filter(holder__ledenbase_id=0).exists():
         user = authenticate(
@@ -134,53 +145,106 @@ def LoginAllUsers(request):
             username=request.data.get("username"),
         )
     else:
-        user, status = loginLedenbaseAPI(request)
+        user, status = loginAllUsers(request, password=request.data.get("password"), username=request.data.get("username"), api=True)
         if status != 200:
             return Response(data=user, status=status)
     # try:
     refresh = MyTokenObtainPairSerializer.get_token(user)
     # except:
     #     refresh = RefreshToken.for_user(user)
-    response = {"refresh": str(refresh), "access": str(refresh.access_token)}
-
+    user_d = UserSerializer(user,context={"request": request})
+    decode = jwt.decode(str(refresh.access_token), verify=False)
+    response = {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+        "user": dict(
+            **user_d.data,
+            exp=decode["exp"],
+            roles=decode["roles"],
+            
+        ),
+    }
+    # decode the refresh.access_token and print it
     return Response(response)
 
 
-def loginLedenbaseAPI(request, boolean=False):
-    LEDENBASE_TOKEN = os.environ.get("LEDENBASE_TOKEN")
-    LEDENBASE_URL = os.environ.get("LEDENBASE_URL")
-    login_res = requests.post(
-        f"{LEDENBASE_URL}/login/",
-        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-        json={
-            "password": request.data.get("password"),
-            "username": request.data.get("username"),
-        },
-    )
-    if login_res.status_code != 200:
-        return json.loads(login_res.text), login_res.status_code
-    person_res = requests.get(
-        f"{LEDENBASE_URL}/personen/{json.loads(login_res.text).get('token')}/",
-        headers={"Content-Type": "application/json", "Accept": "application/json", "Authorization": LEDENBASE_TOKEN},
-    )
-    ledenbase_lid = json.loads(person_res.text)
-    user, created = User.objects.get_or_create(
-        username=request.data.get("username"),
-        # user purposely doesnt have a password set here to make sure it
-    )
-
-    user.first_name = ledenbase_lid.get("voornaam")
-    user.last_name = ledenbase_lid.get("achternaam")
-    user.is_superuser = ledenbase_lid.get("is_administrator")
-    if not user.is_staff and ledenbase_lid.get("is_administrator"):
-        user.is_staff = True
-    user.save()
-    if created:
-        holder = Holder.objects.create(user=user)
-        holder.save()
+@api_view(["GET"])
+def getEnvironment(request, name):
+    if "open_" in name:
+        return Response({"variable": os.environ.get(name)})
     else:
-        holder = user.holder
-    holder.ledenbase_id = ledenbase_lid.get("id")
-    holder.image_ledenbase = ledenbase_lid.get("foto")
-    holder.save()
-    return user, 200
+        return Response({"error": "not allowed"}, status=403)
+
+
+
+
+from rest_framework import serializers
+from rest_framework.views import APIView
+
+
+class DatabaseView(APIView):
+    """model = None \\
+    serializer: serializers.ModelSerializer = None \\
+    paginator = None\\
+    http_method_names = []"""
+
+    model = None
+    serializer: serializers.ModelSerializer = None
+    paginator = None
+    http_method_names: list[str] = []
+    search_fields: list[str] = []
+
+    def query_model(self):
+        """Query a model with the request params"""
+        request_params = dict(self.request.GET.dict())
+        page_params = {key: val for key, val in request_params.items() if "page" in key}
+        if "search" in request_params.keys() and self.search_fields:
+            # only for events
+            search = request_params.pop("search")
+            q_objects = Q()
+            for field in self.search_fields:
+                q_objects |= Q(**{f"{field}": search})
+            objects = self.model.objects.filter(q_objects).distinct()
+        else:
+            for key in page_params.keys():
+                request_params.pop(key)
+            if request_params.keys():
+                objects = self.model.objects.filter(**request_params)
+            else:
+                objects = self.model.objects.all()
+            if page_params:
+                objects = self.paginator(
+                    objects,
+                    **page_params,
+                )
+        return objects
+
+    def get(self, request, pk: int = None):
+        if pk:
+            instance = self.model.objects.get(pk=pk)
+            serializer = self.serializer(instance, context={"request": request})
+            return Response(serializer.data)
+        query = self.query_model()
+        serializer = self.serializer(query, many=True, context={"request": request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        # print(request.data)
+        serializer = self.serializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def put(self, request, pk):
+        instance = get_object_or_404(self.model, pk=pk)
+        serializer = self.serializer(instance, data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def delete(self, request, pk):
+        instance = get_object_or_404(self.model, pk=pk)
+        instance.delete()
+        return Response("Item deleted")

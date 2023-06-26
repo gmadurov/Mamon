@@ -1,64 +1,124 @@
-{% extends 'main.html' %} {% block content %} {% comment %} create a from with
-date inputs called start_date and end_date {% endcomment %}
-<div class="columns">
-  <div class="column is-half"></div>
-  <div class="column is-half">
-    <form action="" method="GET" class="columns">
-      <div class="column is-half">
-        <label for="start_date">Start Date</label>
-        <input
-          type="datetime-local"
-          name="start_date"
-          id="start_date"
-          class="input"
-          value="{{start_date}}"
+{% extends 'main.html' %} {% load pagination_tags %} {% block content %}{% comment %} {% endcomment %} {% comment %} create a
+from with date inputs called start_date and end_date {% endcomment %}
+<div style="width: 80%" class="column is-8">
+  <h1 class="title is-1">Barcycle</h1>
+  <h1 class="subtitle">
+    {{barcycle.opening_report.date}} tot {% if barcycle.closing_report %}
+    <td>{{barcycle.closing_report.date}}</td>
+    {% else %}
+    <td>Niet afgesloten</td>
+    {% endif %}
+  </h1>
+  <div class="columns">
+    <div class="column is-half columns is-centered">
+      <div class="column is-3 is-centered">
+        <img
+          class="image is-rounded is-64x64"
+          src="{{barcycle.opening_report.personel.image_url}}"
+          alt="{{barcycle.opening_report.personel.name}}"
+          title="{{barcycle.opening_report.personel.name}}"
         />
       </div>
-      <div class="column is-half">
-        <label for="end_date">End Date</label>
-        {% comment %} auto add today date and date a month ago {% endcomment %}
-        <input
-          class="input"
-          type="datetime-local"
-            name="end_date"
-          id="end_date"
-          value="{{end_date}}"
+      <div class="column is-3 is-centered">
+        {% if barcycle.closing_report %}
+        <img
+          class="image is-rounded is-one-forth is-64x64"
+          src="{{barcycle.closing_report.image.url}}"
+          alt="{{barcycle.closing_report.personel.name}}"
+          title="{{barcycle.closing_report.personel.name}}"
         />
-        <input
-          class="button is-success"
-          type="submit"
-          value="Submit"
-          style="align: riht"
-        />
+        {% endif %}
       </div>
-    </form>
-    {% if barcycles %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Barcycle</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for barcycle in barcycles %}
-        <tr >
-            <a href={% url 'barcycle' barcycle.id %}>
-          <td>{{barcycle}}</td>
-          <td>{{barcycle.opening_report.date}}</td>
-          {% if barcycle.closing_report %}
-          <td>{{barcycle.closing_report.data}}</td>
-          {% else %}
-          <td>Niet afgesloten</td>
-          {% endif %}
-          <td>{{barcycle.total_sales}}</td></a>
-        </tr>
-        {% endfor %}
-      </tbody>
+      <br />
+    </div>
+    <div>
+      <p><b>Opening Cash: </b>{{barcycle.opening_report.total_cash}}</p>
+      <p>
+        <b>Sluiting Cash: </b>
+        {% if barcycle.closing_report %}
+        <td>{{barcycle.closing_report.total_cash}}</td>
+        {% else %}
+        <td>Niet afgesloten</td>
+        {% endif %}
+      </p>
+      <p><b>Turnover: </b>{{barcycle.total_sales}}</p>
+    </div>
+  </div>
+  <h1 class="title is-3">Report</h1>
+  <div>
+    <table class="table is-fullwidth is-bordered is-striped">
+      <tr>
+        <th>DATE</th>
+        <th>TAPPER</th>
+        <th>ACTION</th>
+        <th>TOTAL CASH</th>
+        <th>FLOW METER 1</th>
+        <th>FLOW METER 2</th>
+        <th>COMMENT</th>
+      </tr>
+      <tr>
+        <td>{{barcycle.opening_report.date|date:'M d, Y h:m '}}</td>
+        <td>{{barcycle.opening_report.personel}}</td>
+        <td>{{barcycle.opening_report.action}}</td>
+        <td>€ {{barcycle.opening_report.total_cash}}</td>
+        <td>{{barcycle.opening_report.flow_meter1}}</td>
+        <td>{{barcycle.opening_report.flow_meter2}}</td>
+        <td>{{barcycle.opening_report.comment}}</td>
+      </tr>
+      <tr>
+        <td>{{barcycle.closing_report.date|date:'M d, Y h:m '}}</td>
+        <td>{{barcycle.closing_report.personel}}</td>
+        <td>{{barcycle.closing_report.action}}</td>
+        <td>€ {{barcycle.closing_report.total_cash}}</td>
+        <td>{{barcycle.closing_report.flow_meter1}}</td>
+        <td>{{barcycle.closing_report.flow_meter2}}</td>
+        <td>{{barcycle.closing_report.comment}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div>
+    {% if products_quant %}
+    <h1 class="title is-3">Producten</h1>
+    {%include 'pagination.html' with pageName='product_page' queryset=products_quant custom_range=custom_range_products_quant%}
+    <table class="table is-bordered is-striped is-fullwidth">
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Revenue</th>
+      </tr>
+      {% for product, quant in products_quant %}
+      <tr>
+        <td><a href="{% url 'overviewProduct' product.id %}?{{request.GET.urlencode}}">{{product.name}}</a></td>
+        <td>{{quant}}</td>
+        <td>€{% widthratio quant 1 product.price %}</td>
+      </tr>
+      {% endfor %}
     </table>
     {% endif %}
+  </div>
+  <div>
+    {% if purchases%}
+    <h1 class="title is-3">Purchases</h1>
+    {% include 'pagination.html' with pageName='purchase_page' queryset=purchases custom_range=custom_range_purchases %}
+    <table class="table is-fullwidth is-bordered is-striped">
+      <tr>
+        <th>Order Date</th>
+        <th>Price</th>
+        <th>Products</th>
+      </tr>
+      {% for purchase in purchases %}
+      <tr>
+        <td>{{purchase.created}}</td>
+        <td>{{purchase.total}}</td>
+        <td>
+          {% for item in purchase.orders.all %} {{item.product.name}}: {{item.quantity}}, 
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %} {% comment %} make table for products {% endcomment %}
   </div>
 </div>
 {% endblock content %}

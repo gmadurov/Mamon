@@ -1,72 +1,70 @@
 {% extends 'main.html'%} {% block content %} {% load purchase_tags %} {% if product %} {% if purchases %}
 
 <div class="columns">
-    <div class="column is-two-thirds">
-        <table
-            class="table table-bordered table-striped table-hover "
-        >
-            <thead>
-            <tr>
-                <th>Product</th>
+  <div class="column is-two-thirds">
+    <table class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Product</th>
 
-                <th>Customer</th>
+          <th>Customer</th>
 
-                <th>Price</th>
+          <th>Price</th>
 
-                <th>Date</th>
-            </tr>
-            </thead>
+          <th>Date</th>
+        </tr>
+      </thead>
 
-            <tbody>
-            {% for purchase in purchases %}
+      <tbody>
+        {% for purchase in purchases %}
 
-            <tr>
-                <td>{{ purchase.orders|getOrderInfo:product.id }}</td>
+        <tr>
+          <td>{{ purchase.orders|getOrderInfo:product.id }}</td>
 
-                <td>{{ purchase.buyer.name }}</td>
+          <td>{{ purchase.buyer.name }}</td>
 
-                <td>{{ purchase.total }}</td>
+          <td>{{ purchase.total }}</td>
 
-                <td>{{ purchase.created }}</td>
-            </tr>
+          <td>{{ purchase.created }}</td>
+        </tr>
 
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% comment %} <div class="column is-two-thirds has-text-centered is-centered">
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% comment %}
+  <div class="column is-two-thirds has-text-centered is-centered">
     Je hebt {{ purchases|getTotal:product.id }} "{{ product.name }}" gekocht!!!
-    </div> {% endcomment %}
+  </div>
+  {% endcomment %} {% comment %} create table for total, total_costs {% endcomment %}
+  <div class="column is-two-thirds has-text-centered is-centered">
+    <h1 class="title">{{product.name}}</h1>
+    <table class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Total gekocht</th>
 
-    {% comment %} create table for total, total_costs   {% endcomment %}
-    <div class="column is-two-thirds has-text-centered is-centered" >
-        <h1 class='title'>{{product.name}}</h1>
-        <table
-            class="table table-bordered table-striped table-hover "
-        >
-            <thead>
-            <tr>
-                <th>Total gekocht</th>
+          <th>Total revenue</th>
+          <th>Product Prijs</th>
+        </tr>
+      </thead>
 
-                <th>Total revenue</th>
+      <tbody>
+        <tr>
+          <td>{{ purchases|getTotal:product.id }}</td>
 
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr>
-                <td>{{ purchases|getTotal:product.id }}</td>
-
-                <td>{% widthratio purchases|getTotal:product.id 1 product.price %}</td>
-
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-</div
+          <td>{% widthratio purchases|getTotal:product.id 1 product.price %}</td>
+          <td>€ {{ product.price }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 {% else %}
-<h2>There are no purchases that contain "{{product.name}}" as a product</h2>
+<div style="text-align: center">
+  <h2 class="title">"{{product.name}}" is nog niet bestelt</h2>
+  <h2 class="subtitle">Als het besteel is krijg je een overzicht ervan.</h2>
+</div>
 {% endif %} {% else %}
 
 <h2>Product not found</h2>

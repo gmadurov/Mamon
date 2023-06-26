@@ -2,41 +2,52 @@
 <html>
   {% load static %}
   <head>
+    {% comment %}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-    <meta content="text/html; charset=utf-8" http-equiv="Context-Type" />
+    {% endcomment %}
+    <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <title>Mamon | {% block title %}{% endblock title %}</title>
+    <title>Mamon {% block title %}{% endblock title %}</title>
     <meta name="csrf-param" content="authenticity_token" />
     <meta
       name="csrf-token"
       content="AfDAD+MppIohg45k1osDsFKHghgG+Fs3SjqpgL3P/OBWaEzK0h3rW5obKb/IiQl92N1HIczaZDptJBl2Av/TCA=="
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    {% comment %}
-    <link rel="stylesheet" href="{% static 'css/main.css'%}" />
-    {% endcomment %}
   </head>
   <body style="background-color: #edeff1">
-    {% block navbar %}{% include 'navbar.html' %}{% endblock navbar %} {% if messages %} {% for message in messages %}
-    <div class="columns">
-      <div class="column is-2">
-        <article id="alert" class="message is-{{message.tags}}">
-          <div class="message-header">
-            <p>{{message.tags}}</p>
-            <button class="delete" id="alert__close" aria-label="delete"></button>
-          </div>
-          <div class="message-body">{{message}}</div>
-        </article>
-      </div>
-    </div>
-    {% endfor %} {% endif %}
-    <div class="columns is-mobile is-multiline is-centered" style="">{% block content %} {% endblock content %}</div>
+    {% block navbar %}{% include 'navbar.html' %}{% endblock navbar %} {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <article id="alert" class="message is-{{message.tags}}" style="width: 150px">
+        <div class="message-header">
+          <p>{{message.tags}}</p>
+          <button class="delete" onclick="removeMessage(this)"></button>
+        </div>
+        <div class="message-body">{{message}}</div>
+      </article>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="columns is-mobile is-centered" style="">{% block content %} {% endblock content %}</div>
   </body>
-  {% comment %}
-  <script src='{% static "js/app.js" %}'>
-    </> {% endcomment %}
-        <script src='{% static "js/main.js" %}'>
+  {% block footer %}
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        &#169; 2022-2023 G.A.M.V. & WWWcie.
+      </p>
+    </div>
+  </footer>
+  {% endblock footer %}
+  <script>
+    function removeMessage(button) {
+      {% comment %} this deletes the messages from the page {% endcomment %}
+      const messageContainer = button.closest("#alert");
+      messageContainer.remove();
+    }
   </script>
 </html>

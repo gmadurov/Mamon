@@ -30,13 +30,13 @@ export const PurchaseProvider = ({
   async function GET() {
     setPurchases([] as Purchase[]) ;
     const { data }: { data: Purchase[] } = await ApiRequest<Purchase[]>(
-      "/api/purchase/"
+      "/api/purchases/"
     );
     setPurchases(data);
   }
   async function POST(purchase: Purchase) {
     const { res, data }: { res: Response; data: Purchase } =
-      await ApiRequest<Purchase>("/api/purchase/", {
+      await ApiRequest<Purchase>("/api/purchases/", {
         method: "POST",
         body: JSON.stringify(purchase),
       });
@@ -67,7 +67,7 @@ export const PurchaseProvider = ({
   }
   async function PUT(purchase: Purchase) {
     const { data } = await ApiRequest<Purchase>(
-      `/api/purchase/${purchase.id}`,
+      `/api/purchases/${purchase.id}`,
       {
         method: "PUT",
         "Content-Type": "application/json",
@@ -81,7 +81,7 @@ export const PurchaseProvider = ({
     );
   }
   async function DELETE(purchase: Purchase) {
-    await ApiRequest<Purchase>(`/api/purchase/${purchase.id}`, {
+    await ApiRequest<Purchase>(`/api/purchases/${purchase.id}`, {
       method: "DELETE",
     });
   }

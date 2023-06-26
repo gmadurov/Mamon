@@ -1,7 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
-import { Button } from "@rneui/themed";
-import { GlobalStyles } from "../../constants/styles";
+import { Button } from "react-native-paper";
 import React from "react";
 
 function LoadingOverlay({
@@ -24,6 +23,7 @@ function LoadingOverlay({
         //     opacity: 0.7,
         //   },
         // ]}
+        mode={"outlined"}
         onPress={() => {
           onCancel(!show);
         }}

@@ -1,0 +1,782 @@
+openapi: 3.0.3
+info:
+  title: Mamon API
+  description: Welcome the the mamon API documentation
+  contact:
+    email: dev.gam.vollmer@gmail.com
+  license:
+    name: BSD License
+  version: v1
+servers:
+  - url: http://localhost:8000/api
+    description: Local Testing
+  - url: https://staging-mamon.esrtheta.nl/api
+    description: Testing
+  - url: https://mamon.esrtheta.nl/api
+    description: Live site
+
+tags:
+  - name: Login
+    description: ""
+  - name: Happen
+    description: ""
+  - name: Holders
+    description: ""
+  - name: Cards
+    description: ""
+  - name: Categories
+    description: ""
+  - name: Products
+    description: ""
+  - name: Purchases
+    description: ""
+  - name: Reports
+    description: ""
+  - name: Mollie Payments
+    description: ""
+  - name: Personel
+    description: ""
+  - name: Wallet Upgrades
+    description: ""
+
+paths:
+  /login/:
+    post:
+      description: Log into the site
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/UserMe"
+                  access_token:
+                    type: string
+                    description: JWT access token
+                  refresh_token:
+                    type: string
+                    description: JWT refresh token
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+      tags:
+        - Login
+  /users/token/refresh/:
+    post:
+      summary: get new access token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+                  
+                      
+      responses:
+        "200":
+          description: succesful refresh
+          content:
+            application/json:
+              schema:
+                type: object
+                description: new access token
+                properties:
+                  access:
+                    type: string
+                  refresh:
+                    type: string
+
+        "422":
+          description: invalid refresh token
+      parameters: []
+      tags:
+        - Login
+    parameters: []
+  /cards/:
+    get:
+      operationId: api_cards_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Cards
+    post:
+      operationId: api_cards_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Cards
+    delete:
+      operationId: api_cards_delete
+      description: ""
+      parameters: []
+      responses:
+        "204":
+          description: ""
+      tags:
+        - Cards
+    parameters: []
+
+  /cards/{id}:
+    get:
+      description: ""
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Cards
+    put:
+      operationId: api_cards_update
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Cards
+    delete:
+      operationId: api_cards_delete
+      description: ""
+      parameters: []
+      responses:
+        "204":
+          description: ""
+      tags:
+        - Cards
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /category/:
+    get:
+      operationId: api_category_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: category collected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+      tags:
+        - Categories
+    post:
+      operationId: api_category_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: category created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      tags:
+        - Categories
+    parameters: []
+  /environment/{name}/:
+    get:
+      operationId: api_environment_read
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: "variable collected"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Environment"
+
+      tags:
+        - api
+    parameters:
+      - name: name
+        in: path
+        required: true
+        type: string
+  /happen/:
+    get:
+      operationId: api_happen_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    post:
+      operationId: api_happen_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Happen
+    parameters: []
+  /happen/{id}/:
+    get:
+      operationId: api_happen_read
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    put:
+      operationId: api_happen_update
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    delete:
+      operationId: api_happen_delete
+      description: ""
+      parameters: []
+      responses:
+        "204":
+          description: ""
+      tags:
+        - Happen
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /happen/{id}/leden/:
+    get:
+      operationId: api_happen_leden_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    post:
+      operationId: api_happen_leden_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Happen
+    put:
+      operationId: api_happen_leden_update
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    delete:
+      operationId: api_happen_leden_delete
+      description: ""
+      parameters: []
+      responses:
+        "204":
+          description: ""
+      tags:
+        - Happen
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /happen/{id}/leden/{lid_id}/:
+    get:
+      operationId: api_happen_leden_read
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    post:
+      operationId: api_happen_leden_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Happen
+    put:
+      operationId: api_happen_leden_update
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    delete:
+      operationId: api_happen_leden_delete
+      description: ""
+      parameters: []
+      responses:
+        "204":
+          description: ""
+      tags:
+        - Happen
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+      - name: lid_id
+        in: path
+        required: true
+        type: string
+  /happen/{id}/pay/:
+    get:
+      operationId: api_happen_pay_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Happen
+    post:
+      operationId: api_happen_pay_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Happen
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /holder/:
+    get:
+      operationId: api_holder_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Holder"
+      tags:
+        - Holders
+    parameters: []
+  /holder/{id}:
+    get:
+      operationId: api_holder_read
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Holders
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /holder/{id}/cards:
+    get:
+      operationId: api_holder_cards_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Holders
+    post:
+      operationId: api_holder_cards_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Holders
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /product/:
+    get:
+      operationId: api_product_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Products
+    post:
+      operationId: api_product_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Products
+    parameters: []
+  /product/{id}:
+    get:
+      operationId: api_product_read
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Products
+    put:
+      operationId: api_product_update
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Products
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /purchase/:
+    get:
+      operationId: api_purchase_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Purchases
+    post:
+      operationId: api_purchase_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Purchases
+    parameters: []
+  /purchase/{id}:
+    get:
+      operationId: api_purchase_read
+      description: ""
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Purchases
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /report/:
+    post:
+      operationId: api_report_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Purchases
+    parameters: []
+  /walletupgrade/:
+    get:
+      operationId: api_walletupgrade_list
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Wallet Upgrades
+    post:
+      operationId: api_walletupgrade_create
+      description: ""
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Wallet Upgrades
+    parameters: []
+definitions:
+  Auth:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        maxLength: 100
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        maxLength: 100
+        minLength: 1
+  MyTokenRefreshPair:
+    required:
+      - refresh
+    type: object
+    properties:
+      refresh:
+        title: Refresh
+        type: string
+        minLength: 1
+      access:
+        title: Access
+        type: string
+        readOnly: true
+        minLength: 1
+components:
+  schemas:
+    UserMe:
+      allOf:
+        - type: object
+          properties:
+            access:
+              type: string
+            refresh:
+              type: string
+    User:
+      type: object
+      properties:
+        last_name:
+          type: string
+        id:
+          type: integer
+        first_name:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+    Holder:
+      type: object
+      properties:
+        image:
+          type: string
+        name:
+          type: string
+        id:
+          type: integer
+        stand:
+          type: number
+        user:
+          $ref: "#/components/schemas/User"
+        ledenbase_id:
+          type: integer
+    Product:
+      type: object
+      properties:
+        image:
+          type: string
+        color:
+          type: string
+        price:
+          type: number
+        name:
+          type: string
+        active:
+          type: boolean
+        id:
+          type: integer
+    Environment:
+      type: object
+      properties:
+        variable: 
+          type: string
+    Hap:
+      type: object
+      properties:
+        id: number
+        deducted_from:
+          type: array
+          items:
+            type: object
+            properties:
+              id: integer
+              name: string
+              ledenbase_id: integer
+        date:
+          type: string
+          format: date
+
+        opening_date:
+          type: string
+          format: date
+        closing_date:
+          type: string
+          format: date
+        active: boolean
+        participants:
+          type: array
+          items:
+            type: object
+            properties:
+              id: int
+              holder:
+                type: object
+                properties:
+                  id: integer
+                  name: string
+                  ledenbase_id: integer
+              quantity: integer
+              comment: string
+        title: string
+        description: string
+        cost:
+          type: number
+          format: float
+        max_participants: integer
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        name:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      required: false
+      description: The page size for paginated responses
+      schema:
+        type: integer
+    searchstring:
+      name: searchstring
+      in: query
+      required: false
+      description: A string to search for
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      required: true
+      description: the id of the wanted item
+      schema:
+        type: integer
+    page:
+      name: page
+      in: query
+      required: false
+      description: Number of the page to retrieve
+      schema:
+        type: integer
+  securitySchemes:
+    Access:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    Refresh:
+      type: http
+      scheme: bearer
+  responses:
+    FileError:
+      description: The download could not be deleted due to a problem
+      content:
+        application/json:
+          schema:
+            type: string
+            example: 'One or more files could not be deleted\: \{error\}'
+    SuccessStatus:
+      description: Operation succesful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+    ObjectNotFound:
+      description: Object not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+    Unauthorized:
+      description: User has no permission for this request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Only xxxxx and superadmins allowed access.

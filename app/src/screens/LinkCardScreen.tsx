@@ -1,21 +1,22 @@
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Subheading, Text, TextInput } from "react-native-paper";
 import NFCContext, { TagEventLocal } from "../context/NFCContext";
-import React, { useContext, useEffect, useState } from "react";
 
-import ApiContext from "../context/ApiContext";
-import BottomSearch from "../components/Cart/BottomSearch";
-import { Card } from "../models/Card";
-import CartContext from "../context/CartContext";
-import FullContext from "../context/FullContext";
-import Holder from "../models/Holder";
 import { View } from "react-native";
 import { showMessage } from "react-native-flash-message";
+import BottomSheetHolders from "../components/Cart/BottomSheetHolders";
+import ApiContext from "../context/ApiContext";
+import CartContext from "../context/CartContext";
+import FullContext from "../context/FullContext";
+import { Card } from "../models/Card";
+import Holder from "../models/Holder";
+import User from "../models/Users";
 
-function LinkCardScreen(props: { navigation: any }) {
+function LinkCardScreen(props: { [key: string]: any }) {
   const [card, setCard] = useState<Card>({
     card_id: "",
     card_name: "",
-    holder: {} as Holder,
+    user: {} as User,
   } as Card);
   const { setBottomSearch } = useContext(FullContext);
   const NfcProxy = useContext(NFCContext);
@@ -25,13 +26,13 @@ function LinkCardScreen(props: { navigation: any }) {
   const [scanning, setScanning] = useState<boolean>(false);
 
   useEffect(() => {
-    setCard({ ...card, holder: buyer });
+    setCard({ ...card, user: buyer.user });
   }, [buyer]);
   useEffect(() => {
     async function useNfc() {
       let tag: TagEventLocal | null = null;
       try {
-        tag = await NfcProxy.readTag();
+        tag = await NfcProxy.readTag();       
       } catch (e) {
         console.log(e);
       } finally {
@@ -57,7 +58,7 @@ function LinkCardScreen(props: { navigation: any }) {
   }, [scanning]);
   async function SubmitCard() {
     // console.log(card);
-    let { res } = await ApiRequest<Card>(`/api/holder/${card.holder.id}/cards`, {
+    let { res } = await ApiRequest<Card>(`/api/holders/cards/`, {
       method: "POST",
       body: JSON.stringify(card),
     });
@@ -74,7 +75,7 @@ function LinkCardScreen(props: { navigation: any }) {
         duration: 2500,
         position: "bottom",
       });
-      setCard({ card_id: "", card_name: "", holder: {} as Holder } as Card);
+      setCard({ card_id: "", card_name: "", user: {} as User } as Card);
       setBuyer({} as Holder);
     } else {
       showMessage({
@@ -123,7 +124,7 @@ function LinkCardScreen(props: { navigation: any }) {
           <Button
             disabled={
               [undefined, null, ""].includes(card.card_id) ||
-              [undefined, null, ""].includes(card.holder?.name) ||
+              [undefined, null, ""].includes(card.user?.name) ||
               [undefined, null, ""].includes(card.card_name)
                 ? true
                 : false
@@ -187,7 +188,7 @@ function LinkCardScreen(props: { navigation: any }) {
           <Subheading style={{ textAlign: "center", marginBottom: 10 }}>Card Linking is niet mogelijk.</Subheading>
         </View>
       )}
-      <BottomSearch placeholder={"Kies Gebruiker om te linken"} noNFC={true} />
+      <BottomSheetHolders placeholder={"Kies Gebruiker om te linken"} noNFC={true} />
     </>
   );
 }

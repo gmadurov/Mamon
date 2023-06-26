@@ -11,5 +11,5 @@ def req_page(request, page):
 @register.filter(name="page_num")
 def page_num(req_page_output, page):
     request, pageName = req_page(req_page_output[0], req_page_output[1])
-    get = request.GET.urlencode().replace(f"{pageName}={request.GET.get(pageName)}", "") + f"{pageName}={page}"
+    get = request.GET.urlencode().replace(f"{pageName}={request.GET.get(pageName)}", "") + f"&{pageName}={page}" if '=' in request.GET.urlencode() else f"{pageName}={page}"
     return get

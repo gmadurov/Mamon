@@ -1,32 +1,21 @@
 import { Button, Divider, TouchableRipple } from "react-native-paper";
-import CartContext, { CartItems } from "../../context/CartContext";
+import CartContext, { CartItems, PaymentType } from "../../context/CartContext";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 
 import CartItem from "./CartItem";
 import { FlatList } from "react-native";
+import FullContext from "../../context/FullContext";
 import { GlobalStyles } from "../../constants/styles";
 import Holder from "../../models/Holder";
-import HolderContext from "../../context/HolderContext";
-import Select from "./Select";
+import IconButton from "../ui/IconButton";
 
-export const Cart = ({ sell }: { sell: boolean }) => {
-  const { cart, setCart, buy_cart, buyer, setBuyer, seller } =
-    useContext(CartContext);
-  const { GET, holders } = useContext(HolderContext);
+export const Cart = ({ sell, buttons = false }: { sell?: boolean; buttons?: boolean }) => {
+  const { cart, setCart, buy_cart, buyer, setBuyer, seller } = useContext(CartContext);
+
   const [disabled, setDisabled] = useState<boolean>(true);
   // let total equal the sum of the products in the cart multiplied by the quantity
-  let total = cart?.reduce(
-    (partialSum, a) => partialSum + a.price * a.quantity,
-    0
-  );
-  let optionsHolders =
-    holders &&
-    holders.map((holder) => ({
-      value: holder.id,
-      label: holder.name,
-      searchHelp: holder.ledenbase_id.toString(),
-    }));
+  let total = cart?.reduce((partialSum, a) => partialSum + a.price * a.quantity, 0);
   // console.log(users);
   function renderProducts(cartItem: CartItems) {
     return (
@@ -44,103 +33,190 @@ export const Cart = ({ sell }: { sell: boolean }) => {
       />
     );
   }
-  async function buy() {
-    await buy_cart(buyer, sell);
+  async function buy(payment: PaymentType) {
+    await buy_cart(buyer, payment);
     setBuyer({} as Holder);
   }
   useEffect(() => {
     function checkStand() {
       // this has a change for double spending highly unlikely but still need to fix
-      if (sell) {
-        if (buyer?.stand > total && total > 0.5 && seller.user_id) {
-          setDisabled(!true);
-        } else {
-          setDisabled(!false);
-        }
+      if (buyer?.stand > total && total > 0.5 && seller.id) {
+        setDisabled(!true);
       } else {
-        setDisabled(false);
+        setDisabled(!false);
       }
     }
     checkStand();
     // eslint-disable-next-line
   }, [buyer, total, seller]);
-  return (
-    <View style={[styles.gridItem]}>
-      <View
-        style={[
-          styles.innerContainer,
-          !(cart.length > 0) && { alignItems: "center" },
-        ]}
-      >
-        {!(cart.length > 0) ? (
-          <Text>Cart is leeg</Text>
-        ) : (
-          <FlatList
-            data={cart}
-            keyExtractor={(item) => "cart product" + item.id}
-            renderItem={({ item }) => renderProducts(item)}
-            ItemSeparatorComponent={Divider}
-            numColumns={1}
-          />
-        )}
-      </View>
+
+  if (buttons) {
+    return (
       <View style={styles.view}>
-        <Select
-          defaultValue={buyer}
-          refreshFunction={GET}
-          options={optionsHolders}
-          // optionFunction={loadOptions}
-          // onSelect={(e) => setBuyer(e)}
-          label="Kies Lid Hier"
-          wallet={false}
-        />
-        <View style={styles.view}>
+        {disabled && (
+          <>
+            <TouchableRipple // was View
+              onPress={() => {
+                buy("pin");
+              }}
+              style={[{ backgroundColor: "black" }, styles.button]}
+              disabled={!(seller.id && total > 0)}
+            >
+              <Button
+                disabled={!(seller.id && total > 0)}
+                textColor={!(seller.id && total > 0) ? 'grey' : "white"}
+                buttonColor={!(seller.id && total > 0) ? 'grey' : "black"}
+                onPress={() => {
+                  buy("pin");
+                }}
+              >
+                Pin
+              </Button>
+            </TouchableRipple>
+          </>
+        )}
+        {buyer.id && seller.id && total > 0 && (
           <TouchableRipple // was View
             onPress={() => {
-              setCart([] as CartItems[]);
-              setBuyer({} as Holder);
+              buy("balance");
             }}
-            style={{ backgroundColor: "red" }}
+            disabled={disabled}
+            style={[
+              disabled ? { backgroundColor: "grey" } : { backgroundColor: GlobalStyles.colors.thetaGeel, width: "100%" },
+              styles.button,
+            ]}
           >
             <Button
-              // android_ripple={{ color: GlobalStyles.colors.androidRippleColor }}
-              // style={styles.EmptyButton}
-              color="white"
+              buttonColor={GlobalStyles.colors.thetaBrown}
+              textColor={'white'}
+              disabled={disabled}
               onPress={() => {
-                setCart([] as CartItems[]);
-                setBuyer({} as Holder);
+                buy("balance");
               }}
             >
-              Leegmaken
+              {disabled ? "Geen Saldo" : "Afrekenen"}
             </Button>
           </TouchableRipple>
-          <TouchableRipple // was View
-            onPress={buy}
-            disabled={disabled}
-            style={
-              disabled
-                ? { backgroundColor: "grey" }
-                : { backgroundColor: "green" }
-            }
-          >
-            <Button color="white" disabled={disabled} onPress={buy}>
-              {disabled
-                ? "Geen Saldo"
-                : "€" +
-                  // convert total to string and add 2 decimals
-                  total.toFixed(2).toString() +
-                  " "}
-            </Button>
-          </TouchableRipple>
+        )}
+        {disabled && (
+          <>
+            <TouchableRipple // was View
+              onPress={() => {
+                buy("cash");
+              }}
+              disabled={!(seller.id && total > 0)}
+              style={[{ backgroundColor: "green" }, styles.button]}
+            >
+              <Button
+                textColor={'white'}
+
+                disabled={!(seller.id && total > 0)}
+                onPress={() => {
+                  buy("cash");
+                }}
+              >
+                Cash
+              </Button>
+            </TouchableRipple>
+          </>
+        )}
+      </View>
+    );
+  } else {
+    return (
+      <View style={[styles.gridItem]}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>{buyer.id ? "Koper: " + buyer.name : "Cart"}</Text>
+            <Text style={styles.headerText}>
+              Total: ${total.toFixed(2).toString()}
+              <IconButton
+                name={"close-circle-outline"}
+                style={styles.input}
+                color={GlobalStyles.colors.textColorDark}
+                onPressFunction={() => {
+                  setCart([] as CartItems[]);
+                  setBuyer({} as Holder);
+                }}
+              />
+            </Text>
+          </View>
+          <View style={{ height: 1, backgroundColor: "grey" }} />
+          {/* </View>
+        <View style={[styles.innerContainer, !(cart.length > 0) && { alignItems: "center" }]}> */}
+          {!(cart.length > 0) ? (
+            <Text style={{ flex: 1, textAlign: "center", textAlignVertical: "center", fontSize: 20, color: "grey" }}>
+              Cart is leeg
+            </Text>
+          ) : (
+            <FlatList
+              data={cart}
+              keyExtractor={(item) => "cart product" + item.id}
+              renderItem={({ item }) => renderProducts(item)}
+              ItemSeparatorComponent={Divider}
+              numColumns={1}
+            />
+          )}
         </View>
       </View>
-    </View>
-  );
+    );
+  }
 };
 
 export default Cart;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "stretch",
+    backgroundColor: "white",
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: "black",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.26,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  header: {
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    width: "100%",
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  innerContainer: {
+    flex: 5,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "stretch",
+    backgroundColor: "white",
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: "black",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.26,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
   gridItem: {
     flex: 1,
     margin: 16,
@@ -155,7 +231,7 @@ const styles = StyleSheet.create({
     overflow: Platform.OS === "android" ? "hidden" : "visible",
   },
   button: {
-    maxWidth: 4,
+    borderRadius: 20,
   },
   EmptyButton: {
     maxWidth: 4,
@@ -165,15 +241,26 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.5,
   },
-  innerContainer: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 8,
-    justifyContent: "center",
-    backgroundColor: GlobalStyles.colors.offwhite,
-  },
+  // innerContainer: {
+  //   flex: 1,
+  //   padding: 16,
+  //   borderRadius: 8,
+  //   justifyContent: "center",
+  //   backgroundColor: GlobalStyles.colors.offwhite,
+  // },
   view: {
+    flex: 1,
     flexDirection: "row",
-    backgroundColor: GlobalStyles.colors.primary2,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginHorizontal: "10%",
+    borderRadius: 20,
+  },
+  input: {
+    paddingTop: 10,
+    marginTop: 10,
+    fontSize: 18,
+    height: 35,
+    color: GlobalStyles.colors.textColorDark,
   },
 });

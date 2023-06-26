@@ -8,7 +8,7 @@ export default function PersonelSreen() {
   return (
     <View style={styles.first}>
       {users.map((user) => (
-        <Text key={user.user_id}>{user.user_id}</Text>
+        <Text key={user.id}>{user.id}</Text>
       ))}
     </View>
   );

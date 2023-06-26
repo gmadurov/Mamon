@@ -1,0 +1,10 @@
+{% extends 'main.html' %} {% block content %}
+<div class="column is-half">
+  <h3 class="title">Nieuwe Product aanmaken</h3>
+  <form class="form" method="POST" action="">
+    {% csrf_token %} {{form.as_p}}
+    <br />
+    <input class="button is-success" type="submit" value="Submit" />
+  </form>
+</div>
+{% endblock content %}

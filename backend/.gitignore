@@ -11,3 +11,4 @@ DEVELOP
 *.sqlite3
 .expo/
 *data*
+*.pyc

@@ -1,6 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
 from .models import Card, Holder, MolliePayments, Personel, WalletUpgrades
+
+# admin.site.login_form =
+# admin.site.
 
 
 class CardAdmin(admin.ModelAdmin):
@@ -10,12 +15,17 @@ class CardAdmin(admin.ModelAdmin):
         # "holder__user__first_name",
         # "holder__user__last_name",
         "card_id",
-        # "holder__ledenbase_id",
+        # "holder__ledenbase
     )
+    autocomplete_fields = ["user"]
 
     def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return [
+                "user",
+                "card_id",
+            ]
         return [
-            "holder",
             "card_id",
         ]
 
@@ -32,12 +42,15 @@ class HolderAdmin(admin.ModelAdmin):
         "ledenbase_id",
     )
     exclude = ("stand",)
+    autocomplete_fields = ["user"]
 
     def get_readonly_fields(self, request, obj=None):
-        return [
-            "user",
-            "ledenbase_id",
-        ]
+        if obj:
+            return [
+                "user",
+                "ledenbase_id",
+            ]
+        return []
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -46,11 +59,13 @@ class HolderAdmin(admin.ModelAdmin):
 class PersonelAdmin(admin.ModelAdmin):
     list_display = ("user", "nickname", "image")
     search_fields = ("user__username", "user__first_name", "user__last_name")
-
+    autocomplete_fields = ["user"]
     def get_readonly_fields(self, request, obj=None):
-        return [
-            "user",
-        ]
+        if obj:
+            return [
+                "user",
+            ]
+        return self.readonly_fields
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -58,7 +73,7 @@ class PersonelAdmin(admin.ModelAdmin):
 
 # create WalletUpdateAdmin if you want to see the wallet upgrades in the admin
 class WalletUpdateAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "date", "seller", "refund")
+    list_display = ("__str__", "date", "personel", "refund")
     search_fields = (
         "holder__user__username",
         "holder__user__first_name",
@@ -79,7 +94,7 @@ class WalletUpdateAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         return [
             "holder",
-            "seller",
+            "personel",
             "refund",
             "date",
             "cash",
@@ -101,6 +116,7 @@ class MolliePaymentsAdmin(admin.ModelAdmin):
         "identifier",
     )
     exclude = ("amount",)
+    autocomplete_fields = ["holder"]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -126,8 +142,31 @@ class MolliePaymentsAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Holder, HolderAdmin)
 admin.site.register(Personel, PersonelAdmin)
-
 admin.site.register(WalletUpgrades, WalletUpdateAdmin)
 admin.site.register(Card, CardAdmin)
-
 admin.site.register(MolliePayments, MolliePaymentsAdmin)
+
+class GroupUserInline(admin.TabularInline):
+    model = Group.user_set.through
+    extra = 0
+    autocomplete_fields = ["user"]
+
+
+class CustomGroupAdmin(GroupAdmin):
+    inlines = [GroupUserInline]
+
+
+class CustomUserAdmin(UserAdmin):
+    # add holders to feild sets
+    fieldsets = (("Info", {"fields": ("holder",)}),) + UserAdmin.fieldsets
+
+    def get_readonly_fields(self, request, obj=None):
+        return self.readonly_fields + ("holder",)
+
+    def holder(self, obj):
+        return obj.user.holder
+
+admin.site.unregister(Group)
+admin.site.unregister(User)
+admin.site.register(Group, CustomGroupAdmin)
+admin.site.register(User, CustomUserAdmin)

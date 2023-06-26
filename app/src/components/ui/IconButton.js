@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
+import { TouchableRipple } from "react-native-paper";
 
 function IconButton({ name, color, onPressFunction, style }) {
   //   name: string;
@@ -11,14 +12,14 @@ function IconButton({ name, color, onPressFunction, style }) {
 
   return (
     <Text style={style}>
-      <Pressable
+      <TouchableRipple
         onPress={(e) => onPressFunction(e)}
         // style={({ pressed }) => {
         //   pressed ? [styles.pressed] : {};
         // }}
       >
         <Ionicons name={name} size={24} color={color} />
-      </Pressable>
+      </TouchableRipple>
     </Text>
   );
 }

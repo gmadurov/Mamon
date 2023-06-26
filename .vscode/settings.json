@@ -12,13 +12,22 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
-  },
+    },
   },
   "black-formatter.args": [
     "--line-length",
     "155",
   ],
-  "isort.args":["--profile", "black", "--ls","--virtual-env"],
+  "isort.args": [
+    "--profile",
+    "black",
+    "--ls",
+    "--virtual-env"
+  ],
   "prettier.endOfLine": "auto",
-  "prettier.printWidth": 125
+  "prettier.printWidth": 155,
+  "djangointellisense.debugMessages": true,
+  "djangointellisense.settingsModule": "backend.core.settings",
+  "html.format.templating": true,
+  "djangointellisense.projectRoot": "backend.core"
 }

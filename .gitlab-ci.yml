@@ -1,0 +1,18 @@
+stages:
+  - triggers
+
+trigger_app:
+  stage: triggers
+  trigger:
+    include: app/.gitlab-ci.yml
+  rules:
+    - changes:
+        - app/*
+
+trigger_backend:
+  stage: triggers
+  trigger:
+    include: backend/.gitlab-ci.yml
+  rules:
+    - changes:
+        - backend/*

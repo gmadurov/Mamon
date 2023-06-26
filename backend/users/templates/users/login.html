@@ -1,76 +1,39 @@
-{% extends 'main.html'%} {% block content%} {% if page == 'register' %}
-{%comment %}
-<div class="auth">
-  <div class="card">
-    <div class="auth__header text-center">
-      <a href="/">
-        <!-- <img src="images/icon.svg" alt="icon" /> -->
-      </a>
-      <h3>Register an Account</h3>
-      <p>Create a new account</p>
-    </div>
-
-    <form action="{% url 'register' %}" method="POST" class="form auth__form">
-      {% csrf_token %} {% for field in form %}
-
-      <!-- Input:Text -->
-      <div class="form__field">
-        <label for="formInput#text">{{field.label}}: </label>
-        {{field}}
+{% extends 'main.html'%}
+{% block navbar %}
+<nav
+  class="navbar columns is-offset-2 column is-two-thirds"
+  role="navigation"
+  aria-label="main navigation"
+  style="background-color: #edeff1"
+>
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <a class="navbar-item" href="{% url 'landing' %}">Home</a>
       </div>
-      <!-- {% if field.help_text %}
-      <small>{{field.help_text}}</small>
-      {% endif %} -->
-
-      {% for error in field.errors %}
-      <p style="color: red">{{error}}</p>
-      {% endfor %} {% endfor %}
-      <div class="auth__actions">
-        <input class="btn btn--sub btn--lg" type="submit" value="Sign  In" />
-      </div>
-    </form>
-    <div class="auth__alternative">
-      <p>Already have an Account?</p>
-      <a href="{% url 'login' %}">Log In</a>
     </div>
   </div>
-</div>
-{% endcomment %} {% else %}
+</nav>
 
-<div class="column is-3 is-centered is-offset-4">
+{% endblock navbar %}
+{% block content%}
+<div class="column is-one-fifth" style="margin-top: 100px">
+  <div>
+    <div style="text-align: center; justify-content: center; margin-bottom: 50px">
+      <p class="title is-1" style="text-align: center">Login</p>
+    </div>
+  </div>
   <div class="card">
-    <h3 class="title">Login</h3>
     <form action="" method="POST" class="card-content">
       {% csrf_token %}
-
       <div class="field">
-        <p class="control has-icons-left has-icons-right">
-          <input
-            class="input"
-            type="username"
-            placeholder="Username"
-            type="text"
-            name="username"
-          />
-          <span class="icon is-small is-left">
-            <i class="fas fa-envelope"></i>
-          </span>
-          <span class="icon is-small is-right">
-            <i class="fas fa-check"></i>
-          </span>
+        <p class="control">
+          <input class="input" type="username" placeholder="Username" type="text" name="username" />
         </p>
       </div>
       <div class="field">
-        <p class="control has-icons-left">
-          <input
-            class="input"
-            type="password"
-            placeholder="Password"
-            name="password"
-          />
-          <span class="icon is-small is-left">
-            <i class="fas fa-lock"></i>
-          </span>
+        <p class="control">
+          <input class="input" type="password" placeholder="Password" name="password" />
         </p>
       </div>
       <div class="field">
@@ -79,13 +42,7 @@
         </p>
       </div>
     </form>
-    {% comment %}
-    <div class="auth__alternative">
-      <p>Don’t have an Account?</p>
-      <a href="{% url 'register' %}">Sign Up</a>
-    </div>
-    {% endcomment %}
   </div>
 </div>
 
-{% endif %} {% endblock content%}
+{% endblock content%}

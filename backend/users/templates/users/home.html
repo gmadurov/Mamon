@@ -1,29 +1,29 @@
 {% extends 'main.html' %} {% block content %}
-<div>
-<table class="table table-striped table-bordered table-hover">
-  <thead>
-    <th>Purchase date</th>
-    <th>Purchased</th>
-    <th>Total Price</th>
-    <th>Payed</th>
-    <th>Saldo Na Transactie</th>
-  </thead>
-  {% for purchase in purchases %}
-  <tbody>
-    <tr>
-      <td>{{ purchase.created | date:"D d b (m-Y)"}}</td>
-      <td>
-        {% for item in purchase.orders.all %} {{item.product.name}}:
-        {{item.quantity}}<br />
-        {% endfor %}
-      </td>
-      <td>{{ purchase.total}}</td>
-      <td>{{ purchase.payed }}</td>
-    </tr>
-  </tbody>
-  {% endfor %}
-  
-</table>
-{% include 'pagination.html' with pageName='purchase_page' queryset=purchases custom_range=custom_range %}
+<div class="column is-12-mobile is-8-desktop">
+  <h1 class='title' style="text-align: center">Mijn Transacties</h1>
+  <table class="table table-striped table-hover table is-narrow is-fullwidth" style="text-align: center">
+    <thead>
+      <th>Purchase date</th>
+      <th>Purchased</th>
+      <th>Total Price</th>
+      <th>Payed</th>
+      <th>Saldo Na Transactie</th>
+    </thead>
+    {% for purchase in purchases %}
+    <tbody>
+      <tr>
+        <td>{{ purchase.created | date:"D d b (m-Y)"}}</td>
+        <td>
+          {% for item in purchase.orders.all %} {{item.product.name}}: {{item.quantity}}<br />
+          {% endfor %}
+        </td>
+        <td>{{ purchase.total}}</td>
+        <td>{{ purchase.balance }}</td>
+        <td>{{ purchase.remaining_after_purchase }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+  {% include 'pagination.html' with pageName='purchase_page' queryset=purchases custom_range=custom_range %}
 </div>
 {% endblock content %}

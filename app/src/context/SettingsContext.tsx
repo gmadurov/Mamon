@@ -31,13 +31,13 @@ export const SettingsProvider = ({
 
   const [categories, setCategories] = useState<Category[]>([] as Category[]);
   const [selectedCategory, setSelectedCategory] = useState<Category[]>(
-    [] as Category[]
+    []
   );
   const [sideBySide, setSideBySide] = useState<boolean>(true);
 
   async function GET_categories() {
     setCategories([] as Category[]);
-    const { data } = await ApiRequest<Category[]>("/api/category/");
+    const { data } = await ApiRequest<Category[]>("/api/categories/");
     setCategories(data as Category[]);
     // update selected categories
     setSelectedCategory(
@@ -77,7 +77,7 @@ export const SettingsProvider = ({
     async function set() {
       await AsyncStorage.setItem(
         "selectedCategory",
-        JSON.stringify(selectedCategory)
+        JSON.stringify(selectedCategory.filter((c) => Object.keys(c).length > 0))
       );
     }
     set();
@@ -90,7 +90,7 @@ export const SettingsProvider = ({
       if (selectedCategoryLocal) {
         setSelectedCategory(JSON.parse(selectedCategoryLocal) as Category[]);
       } else {
-        setSelectedCategory([]);
+        setSelectedCategory(() => []);
       }
     }
     get();

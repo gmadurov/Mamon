@@ -1,0 +1,32 @@
+{% extends 'main.html' %} {% block content %}
+
+<div class="">
+  <table class="table">
+    <thead>
+      <th></th>
+      <th>Naam</th>
+      <th>Bijnaam</th>
+      <th>Gebruiker</th>
+      <th>Acties</th>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td><img src="{{ user.image_url }}" alt="image" title="{{user.nickname}}" class="image is-64x64" /></td>
+        <td>{{ user.user.first_name }} {{ user.user.last_name }}</td>
+        <td>{{ user.nickname }}</td>
+        <td>{{ user.user.username }}</td>
+        <td>
+          <a href="{% url 'personelEdit' user.id%}" class="button is-info">Bewerken</a>
+          {% if user.active %}
+          <a href="{% url 'personelActivityToggle' user.id %}" class="button is-success">Activeren</a>
+          {% else %}<a href="{% url 'personelActivityToggle' user.id %}" class="button is-danger">Inactiveren</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock content %}

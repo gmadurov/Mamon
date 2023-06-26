@@ -15,12 +15,15 @@ def getOrderInfo(querySet, product):
 
 
 @register.filter
+def multiply(quantity, price):
+    return round(quantity * price, 2)
+
+
+@register.filter
+def round_to(amount, sigfigs):
+    return round((amount or 0), sigfigs)
+
+
+@register.filter
 def getTotal(purchases, product):
-    return sum(
-        [
-            purchase.orders.filter(product=product)
-            .aggregate(Sum("quantity"))
-            .get("quantity__sum")
-            for purchase in purchases
-        ]
-    )
+    return sum([purchase.orders.filter(product=product).aggregate(Sum("quantity")).get("quantity__sum") for purchase in purchases])

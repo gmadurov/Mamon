@@ -4,34 +4,38 @@
     
       <a class="pagination-previous"
         href="?{{ request|req_page:pageName|page_num:queryset.previous_page_number}}"
-        data-page="{{queryset.previous_page_number}}">&#10094; Previous</a>
+        data-page="{{queryset.previous_page_number}}">&#10094; Vorig</a>
     
     {% else %} {% comment %} {{request.GET.urlencode}}& {% endcomment %}
     <a class="pagination-previous is-disabled">
-      &#10094; Previous
+      &#10094; Vorig
     </a>
     {% endif %}
     
-    {% if queryset.has_next %}
-      <a class="pagination-next" href="?{{request|req_page:pageName|page_num:queryset.next_page_number}}" data-page="{{queryset.next_page_number}}">Next &#10095</a>
-    {% else %}
-    <a class="pagination-next is-disabled">Next &#10095</a>
-    {% endif %}
+    
 
     <ul class="pagination-list">
 
       {% for page in custom_range %}
-       {% if page == queryset.number %} 
-          {% comment %} {{request.GET.urlencode}}& {%   endcomment %}
+        {% if page == '…' %}
+        <li >
+          <p class="pagination-link is-disabled">{{page}}</p>
+        </li>
+       {% elif page == queryset.number %} 
           <li >
-            <a class="pagination-link is-current"href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a>
+            <a class="pagination-link is-current" href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a>
           </li>
-          {% else %} {% comment %} {{request.GET.urlencode}}& {% endcomment %}
+        {% else %}
           <li >
             <a class="pagination-link"href="?{{request|req_page:pageName|page_num:page}}" data-page="{{page}}">{{page}}</a>
           </li>
         {% endif %}
        {% endfor %} 
     </ul>
+    {% if queryset.has_next %}
+      <a class="pagination-next" href="?{{request|req_page:pageName|page_num:queryset.next_page_number}}" data-page="{{queryset.next_page_number}}">Volgende &#10095</a>
+    {% else %}
+    <a class="pagination-next is-disabled">Volgende &#10095</a>
+    {% endif %}
 </nav>
 {% endif %}

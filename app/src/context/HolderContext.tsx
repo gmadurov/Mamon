@@ -31,18 +31,18 @@ export const HolderProvider: FunctionComponent<Props> = ({ children }) => {
   const [searchHolders, setSearchHolders] = useState<Holder[]>([] as Holder[]);
   async function GET() {
     setHolders([] as Holder[]);
-    const { data } = await ApiRequest<Holder[]>("/api/holder/");
+    const { data } = await ApiRequest<Holder[]>("/api/holders/");
     setHolders(data);
   }
   async function POST(holder: Holder) {
-    const { data } = await ApiRequest<Holder>("/api/holder/", {
+    const { data } = await ApiRequest<Holder>("/api/holders/", {
       method: "POST",
       body: JSON.stringify(holder),
     });
     setHolders(() => [...holders, data]);
   }
   async function SEARCH(search: string) {
-    const { data } = await ApiRequest<Holder[]>("/api/holder/", {
+    const { data } = await ApiRequest<Holder[]>("/api/holders/", {
       method: "POST", // GET in react.js but not in Native
       body: JSON.stringify(search),
     });
@@ -50,7 +50,7 @@ export const HolderProvider: FunctionComponent<Props> = ({ children }) => {
     return data;
   }
   async function PUT(holder: Holder) {
-    const { data } = await ApiRequest<Holder>(`/api/holder/${holder.id}`, {
+    const { data } = await ApiRequest<Holder>(`/api/holders/${holder.id}`, {
       method: "PUT",
       body: JSON.stringify(holder),
     });
@@ -61,7 +61,7 @@ export const HolderProvider: FunctionComponent<Props> = ({ children }) => {
     );
   }
   async function DELETE(holder: Holder) {
-    await ApiRequest<Holder>(`/api/holder/${holder.id}`, {
+    await ApiRequest<Holder>(`/api/holders/${holder.id}`, {
       method: "DELETE",
     });
   }

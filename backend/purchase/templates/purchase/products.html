@@ -1,25 +1,46 @@
-{% extends 'main.html'%}{% load purchase_tags %} {% block content %} {% if products%}
+{% extends 'main.html'%}{% load purchase_tags %}{% load auth_tags %} {% block content %} {% if products%}
 <div>
-  <table class="table">
+  <h1 class="title" style="text-align: center">Producten</h1>
+  <table class="table" style="text-align: center">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Description</th>
+        <th>Producten</th>
+        <th>Prijs</th>
+        <th>Hoeveelheid besteld</th>
+        {% if request.user|has_group:'Bestuur' %}
+        <th>Acties</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
       {% for product in products %}
       <tr>
-        <td>{{ product.id }}</td>
         <td>
           <a href="{% url 'product' product.id %}">{{ product.name }}</a>
         </td>
         <td>€{{ product.price }}</td>
-        <td>{{ product.description }}</td>
-
         <td>{{quantity|get_item:product.id }}</td>
+        {% if request.user|has_group:'Bestuur' %}
+        <td>
+          <div class="field has-addons">
+            <a href="{% url 'product' product.id %}" class="control">
+              <button class="button">
+                <span>Inzicht</span>
+              </button>
+            </a>
+            <a href="{% url 'product activity toggle' product.id %}" class="control">
+              {% if product.active %}
+              <button class="button is-success">
+                <span>Inactiveren</span>
+              </button>
+              {% else %}
+              <button class="button is-danger">
+                <span>Activeren</span></button
+              >{% endif %}
+            </a>
+          </div>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
